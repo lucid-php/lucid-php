@@ -1,0 +1,31 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lucid-php-app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www
+    environment:
+      - ENV=development
+    user: "${UID:-1000}:${GID:-1000}"
+    depends_on:
+      - mariadb
+
+  mariadb:
+    image: mariadb:latest
+    container_name: lucid-php-mariadb
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: framework
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mariadbdata:/var/lib/mysql
+
+volumes:
+  mariadbdata:

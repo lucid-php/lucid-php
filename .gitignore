@@ -1,0 +1,51 @@
+# Composer
+/vendor/
+composer.lock
+
+# Environment & Config
+.env
+.env.local
+.env.*.local
+
+# Database
+*.sqlite
+*.db
+/storage/database/*.sqlite
+/storage/database/*.db
+
+# Logs
+/storage/logs/*.log
+*.log
+
+# Cache
+/storage/cache/*
+!/storage/cache/.gitkeep
+
+# Testing
+.phpunit.result.cache
+/coverage/
+/.phpunit.cache
+
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.phpstorm.meta.php
+_ide_helper.php
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build & Deploy
+/build/
+/dist/
+/deploy/
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/

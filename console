@@ -1,0 +1,139 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+// Bootstrap
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\Commands\MigrateCommand;
+use App\Commands\MigrateRollbackCommand;
+use App\Commands\QueueWorkCommand;
+use App\Commands\ScheduleRunCommand;
+use App\Commands\ScheduleListCommand;
+use Core\Config\Config;
+use Core\Console\ConsoleApplication;
+use Core\Console\ConsoleOutput;
+use Core\Container;
+use Core\Database\Database;
+use Core\Database\Migrator;
+use Core\Queue\QueueInterface;
+use Core\Queue\SyncQueue;
+use Core\Queue\DatabaseQueue;
+use Core\Mail\MailerInterface;
+use Core\Mail\SmtpMailer;
+use Core\Mail\LogMailer;
+use Core\Mail\ArrayMailer;
+use Core\Log\Logger;
+use Core\Log\Handler\StderrHandler;
+
+// Create container
+$container = new Container();
+
+// Register config
+$config = new Config(__DIR__ . '/config');
+$container->set(Config::class, $config);
+
+// Register database dependency (same logic as public/index.php)
+$container->set(Database::class, function () use ($config) {
+    $dbDriver = $config->get('database.driver');
+
+    if ($dbDriver === 'sqlite') {
+        $dbPath = __DIR__ . '/' . $config->get('database.sqlite.path');
+        if (!is_dir(dirname($dbPath))) {
+            mkdir(dirname($dbPath), 0777, true);
+        }
+        $dsn = 'sqlite:' . $dbPath;
+        $username = null;
+        $password = null;
+    } elseif ($dbDriver === 'mysql') {
+        $host = $config->get('database.mysql.host');
+        $port = $config->get('database.mysql.port');
+        $dbname = $config->get('database.mysql.database');
+        $charset = $config->get('database.mysql.charset');
+        
+        $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=$charset";
+        $username = $config->get('database.mysql.username');
+        $password = $config->get('database.mysql.password');
+    } else {
+        throw new \RuntimeException("Unsupported database driver: $dbDriver");
+    }
+
+    return new Database($dsn, $username, $password);
+});
+
+// Register migrator dependency
+$container->set(Migrator::class, function (Container $c) {
+    return new Migrator(
+        db: $c->get(Database::class),
+        migrationsPath: __DIR__ . '/database/migrations'
+    );
+});
+
+// Register repositories (needed for seed command)
+$container->set(\App\Repository\UserRepository::class, function (Container $c) {
+    return new \App\Repository\UserRepository($c->get(Database::class));
+});
+
+// Register queue system
+$container->set(QueueInterface::class, function (Container $c) use ($config) {
+    $queueDriver = $config->get('queue.driver', 'sync');
+    
+    if ($queueDriver === 'database') {
+        return new DatabaseQueue($c->get(Database::class));
+    }
+    
+    return new SyncQueue($c);
+});
+
+// Register mail system
+$container->set(MailerInterface::class, function (Container $c) use ($config) {
+    $mailDriver = $config->get('mail.driver', 'log');
+    $mailFrom = $config->get('mail.from.address', 'noreply@example.com');
+    
+    if ($mailDriver === 'smtp') {
+        return new SmtpMailer(
+            host: $config->get('mail.smtp.host'),
+            port: $config->get('mail.smtp.port'),
+            username: $config->get('mail.smtp.username'),
+            password: $config->get('mail.smtp.password'),
+            encryption: $config->get('mail.smtp.encryption'),
+            defaultFrom: $mailFrom,
+        );
+    } elseif ($mailDriver === 'array') {
+        return new ArrayMailer($mailFrom);
+    }
+    
+    // Default: Log mailer (logs emails for development)
+    $logger = $c->has(Logger::class)
+        ? $c->get(Logger::class)
+        : new Logger(handlers: [new StderrHandler()]);
+    
+    return new LogMailer($logger, $mailFrom);
+});
+
+// Register logger
+$container->set(Logger::class, function () {
+    return new Logger(
+        minimumLevel: \Core\Log\LogLevel::DEBUG,
+        handlers: [new StderrHandler()]
+    );
+});
+
+// Create console application
+$output = new ConsoleOutput();
+$console = new ConsoleApplication($container, $output);
+
+// Register commands explicitly (no auto-discovery)
+$console->registerCommands([
+    MigrateCommand::class,
+    MigrateRollbackCommand::class,
+    \App\Commands\DatabaseSeedCommand::class,
+    QueueWorkCommand::class,
+    ScheduleRunCommand::class,
+    ScheduleListCommand::class,
+]);
+
+// Run
+$exitCode = $console->run($argv);
+exit($exitCode);

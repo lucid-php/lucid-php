@@ -1,0 +1,75 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Core\Database\Database;
+use Core\Config\Config;
+
+// 1. Load Config
+$config = new Config(__DIR__ . '/../config');
+
+// 2. Database Connection
+$dbConnection = $config->get('database.driver');
+
+$dsn = '';
+$username = null;
+$password = null;
+
+if ($dbConnection === 'sqlite') {
+    $dbPath = __DIR__ . '/../' . $config->get('database.sqlite.path');
+    if (!is_dir(dirname($dbPath))) {
+        mkdir(dirname($dbPath), 0777, true);
+    }
+    $dsn = 'sqlite:' . $dbPath;
+} elseif ($dbConnection === 'mysql') {
+    $host = $config->get('database.mysql.host', '127.0.0.1');
+    $port = $config->get('database.mysql.port', '3306');
+    $dbname = $config->get('database.mysql.database', 'framework');
+    $username = $config->get('database.mysql.username');
+    $password = $config->get('database.mysql.password');
+    
+    $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
+}
+
+$db = new Database($dsn, $username, $password);
+
+// 3. Determine Seeder to run
+$seederName = $argv[1] ?? null;
+
+echo "Seeding database... ($dbConnection)\n";
+
+if ($seederName) {
+    // Run specific seeder
+    runSeeder($db, $seederName);
+} else {
+    // Run generic set (just UserSeeder for now as we don't have a registry)
+    // In a real framework, we'd have a DatabaseSeeder that calls others.
+    runSeeder($db, 'Database\Seeds\UserSeeder');
+}
+
+echo "Done.\n";
+
+function runSeeder(Database $db, string $class) {
+    // Basic namespace correction if user just types "UserSeeder"
+    if (!class_exists($class)) {
+        $namespaced = "Database\\Seeds\\" . $class;
+        if (class_exists($namespaced)) {
+            $class = $namespaced;
+        } else {
+            echo "Error: Seeder class '$class' not found.\n";
+            exit(1);
+        }
+    }
+
+    echo "Running: $class\n";
+    try {
+        $seeder = new $class($db);
+        $seeder->run();
+    } catch (\Throwable $e) {
+        echo "Failed to seed $class: " . $e->getMessage() . "\n";
+        exit(1);
+    }
+}

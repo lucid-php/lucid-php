@@ -1,0 +1,70 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Core\Database\Database;
+use Core\Database\Migrator;
+use Core\Config\Config;
+
+// 1. Load Config
+$config = new Config(__DIR__ . '/../config');
+
+// 2. Database Connection
+$dbConnection = $config->get('database.driver');
+
+$dsn = '';
+$username = null;
+$password = null;
+
+if ($dbConnection === 'sqlite') {
+    $dbPath = __DIR__ . '/../' . $config->get('database.sqlite.path');
+    if (!is_dir(dirname($dbPath))) {
+        mkdir(dirname($dbPath), 0777, true);
+    }
+    $dsn = 'sqlite:' . $dbPath;
+} elseif ($dbConnection === 'mysql') {
+    $host = $config->get('database.mysql.host', '127.0.0.1');
+    $port = $config->get('database.mysql.port', '3306');
+    $dbname = $config->get('database.mysql.database');
+    $username = $config->get('database.mysql.username');
+    $password = $config->get('database.mysql.password');
+    
+    $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
+} else {
+    echo "Unsupported DB_CONNECTION: $dbConnection\n";
+    exit(1);
+}
+
+try {
+    $db = new Database($dsn, $username, $password);
+} catch (\Exception $e) {
+    echo "Connection error: " . $e->getMessage() . "\n";
+    exit(1);
+}
+
+// 3. Run Migrations
+$migrationsPath = __DIR__ . '/../database/migrations';
+$migrator = new Migrator($db, $migrationsPath);
+
+$command = $argv[1] ?? 'up';
+
+echo "Running migrations command: $command ($dbConnection)\n";
+
+try {
+    if ($command === 'up') {
+        $migrator->migrate();
+    } elseif ($command === 'down') {
+        $migrator->rollback();
+    } else {
+        echo "Unknown command: $command\n";
+        echo "Usage: php bin/migrate [up|down]\n";
+        exit(1);
+    }
+    echo "Done.\n";
+} catch (\Throwable $e) {
+    echo "Migration failed: " . $e->getMessage() . "\n";
+    exit(1);
+}
