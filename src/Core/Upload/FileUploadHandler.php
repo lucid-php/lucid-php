@@ -206,8 +206,11 @@ class FileUploadHandler
         // Remove null bytes
         $path = str_replace("\0", '', $path);
         
-        // Remove directory traversal attempts
-        $path = str_replace('..', '', $path);
+        // Remove directory traversal attempts (multiple passes to catch encoded attempts)
+        do {
+            $before = $path;
+            $path = str_replace(['..', './'], '', $path);
+        } while ($path !== $before);
         
         // Remove leading slashes (prevent absolute paths)
         $path = ltrim($path, '/\\');

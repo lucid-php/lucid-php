@@ -154,12 +154,22 @@ class Response
         $filename = $filename ?? basename($path);
         $disposition = $inline ? 'inline' : 'attachment';
 
+        // Encode filename to prevent header injection and properly handle special characters
+        // Use RFC 5987 encoding for international characters
+        $encodedFilename = rawurlencode($filename);
+        
+        // Sanitize filename for ASCII compatibility - remove control characters and quotes
+        // Keep printable ASCII (0x20-0x7E) including spaces for better user experience
+        // Spaces are safe within quoted filename parameter per RFC 2616
+        $safeFilename = preg_replace('/[^\x20-\x7E]/', '', $filename);
+        $safeFilename = str_replace(['"', '\\', "\r", "\n"], '', $safeFilename); // Remove problematic chars
+        
         return new self(
             content: $content,
             status: 200,
             headers: [
                 'Content-Type' => $mimeType,
-                'Content-Disposition' => "$disposition; filename=\"$filename\"",
+                'Content-Disposition' => "$disposition; filename=\"$safeFilename\"; filename*=UTF-8''" . $encodedFilename,
                 'Content-Length' => (string) strlen($content),
             ]
         );
@@ -207,7 +217,10 @@ class Response
         http_response_code($this->status);
 
         foreach ($this->headers as $key => $value) {
-            header("{$key}: {$value}");
+            // Prevent header injection by validating header values
+            // Remove any newline characters that could be used for injection
+            $sanitizedValue = str_replace(["\r", "\n"], '', $value);
+            header("{$key}: {$sanitizedValue}");
         }
 
         echo $this->content;

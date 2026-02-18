@@ -16,8 +16,12 @@ use Core\Database\Database;
  */
 class DatabaseQueue implements QueueInterface
 {
+    /**
+     * @param array<class-string> $allowedJobClasses Whitelist of job classes allowed to be unserialized
+     */
     public function __construct(
-        private final Database $db
+        private final Database $db,
+        private readonly array $allowedJobClasses = [],
     ) {}
 
     public function push(object $job, string $queue = 'default'): void
@@ -62,7 +66,13 @@ class DatabaseQueue implements QueueInterface
         );
 
         // Unserialize job payload
-        $job = unserialize($row['payload']);
+        // SECURITY: Only allow explicitly configured job classes to prevent object injection
+        // Configure allowed classes when instantiating DatabaseQueue in your container
+        try {
+            $job = unserialize($row['payload'], ['allowed_classes' => $this->allowedJobClasses]);
+        } catch (\Throwable $e) {
+            throw new \RuntimeException("Failed to unserialize job: " . $e->getMessage());
+        }
 
         return new QueuedJob(
             id: $row['id'],

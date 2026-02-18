@@ -31,6 +31,13 @@ class QueueWorker
     {
         $job = $queuedJob->job;
         
+        // Validate that job has a handle method
+        if (!method_exists($job, 'handle')) {
+            throw new \RuntimeException(
+                "Job class " . get_class($job) . " must implement a handle() method"
+            );
+        }
+        
         try {
             // Resolve dependencies for job's handle method
             $reflection = new \ReflectionClass($job);

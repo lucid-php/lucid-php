@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $e($title ?? 'Lucid-PHP') ?></title>
+    <title><?= $escape($title ?? 'Lucid-PHP') ?></title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -79,8 +79,8 @@
     </header>
     <main>
         <div class="card">
-            <h2><?= $e($title) ?></h2>
-            <p style="color: #6b7280; margin-top: 0.5rem;"><?= $e($subtitle ?? '') ?></p>
+            <h2><?= $escape($title) ?></h2>
+            <p style="color: #6b7280; margin-top: 0.5rem;"><?= $escape($subtitle ?? '') ?></p>
         </div>
 
         <?php if (empty($users)): ?>
@@ -95,10 +95,10 @@
                 <?php foreach ($users as $user): ?>
                     <div class="user-card">
                         <div class="user-info">
-                            <h3><?= $e($user['name']) ?></h3>
-                            <p><?= $e($user['email']) ?></p>
+                            <h3><?= $escape($user['name']) ?></h3>
+                            <p><?= $escape($user['email']) ?></p>
                         </div>
-                        <span class="badge">ID: <?= $e((string)$user['id']) ?></span>
+                        <span class="badge">ID: <?= $escape((string)$user['id']) ?></span>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -108,7 +108,7 @@
             <h3 style="margin-bottom: 0.5rem;">About This Page</h3>
             <p style="color: #6b7280; font-size: 0.875rem;">
                 This is a plain PHP template rendered with <code>Response::view()</code>. 
-                No magic, no custom syntax - just explicit variable passing and XSS-safe output via <code>$e()</code>.
+                No magic, no custom syntax - just explicit variable passing and XSS-safe output via <code>$escape()</code>.
             </p>
         </div>
     </main>

@@ -38,10 +38,11 @@ class View
         }
 
         // Extract variables into local scope
+        // Note: Using EXTR_SKIP to prevent overwriting existing variables like $templatePath
         extract($data, EXTR_SKIP);
         
         // Make escape function available as closure
-        $e = fn(?string $value): string => htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
+        $escape = fn(?string $value): string => htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
         
         // Capture output
         ob_start();
@@ -49,9 +50,9 @@ class View
         try {
             require $templatePath;
             return ob_get_clean();
-        } catch (\Throwable $e) {
+        } catch (\Throwable $exception) {
             ob_end_clean();
-            throw new RuntimeException("Error rendering template {$template}: {$e->getMessage()}", 0, $e);
+            throw new RuntimeException("Error rendering template {$template}: {$exception->getMessage()}", 0, $exception);
         }
     }
 
@@ -67,15 +68,41 @@ class View
     /**
      * Resolve template path
      * Adds .php extension if not present
+     * Validates against path traversal attacks
      */
     private function resolveTemplatePath(string $template): string
     {
+        // Convert dot notation to path (e.g., "users.profile" -> "users/profile")
         $template = str_replace('.', '/', $template);
         
+        // Add .php extension if not present
         if (!str_ends_with($template, '.php')) {
             $template .= '.php';
         }
         
-        return $this->viewsPath . '/' . $template;
+        // Check for path traversal attempts AFTER extension is added
+        // This ensures "safe/../evil" patterns are caught
+        if (str_contains($template, '..') || str_starts_with($template, '/')) {
+            throw new RuntimeException("Template path traversal detected: {$template}");
+        }
+        
+        $templatePath = $this->viewsPath . '/' . $template;
+        
+        // Additional validation using realpath after file exists
+        // This catches any symbolic link or filesystem-level traversal
+        if (file_exists($templatePath)) {
+            $realPath = realpath($templatePath);
+            $realViewsPath = realpath($this->viewsPath);
+            
+            if ($realPath === false || $realViewsPath === false) {
+                throw new RuntimeException("Invalid template path: {$template}");
+            }
+            
+            if (!str_starts_with($realPath, $realViewsPath)) {
+                throw new RuntimeException("Template path traversal detected: {$template}");
+            }
+        }
+        
+        return $templatePath;
     }
 }

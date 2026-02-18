@@ -112,6 +112,9 @@ class CronExpression
         // Step values (*/5)
         if (str_contains($part, '*/')) {
             $step = (int) explode('/', $part)[1];
+            if ($step <= 0) {
+                throw new \InvalidArgumentException("Step value must be greater than zero, got: {$step}");
+            }
             $values = [];
             for ($i = $min; $i <= $max; $i += $step) {
                 $values[] = $i;
@@ -121,17 +124,33 @@ class CronExpression
 
         // Lists (1,3,5)
         if (str_contains($part, ',')) {
-            return array_map('intval', explode(',', $part));
+            $values = array_map('intval', explode(',', $part));
+            foreach ($values as $value) {
+                if ($value < $min || $value > $max) {
+                    throw new \InvalidArgumentException("Value {$value} out of range [{$min}, {$max}]");
+                }
+            }
+            return $values;
         }
 
         // Ranges (1-5)
         if (str_contains($part, '-')) {
             [$start, $end] = array_map('intval', explode('-', $part));
+            if ($start > $end) {
+                throw new \InvalidArgumentException("Invalid range: {$start}-{$end} (start must be <= end)");
+            }
+            if ($start < $min || $end > $max) {
+                throw new \InvalidArgumentException("Range [{$start}, {$end}] out of bounds [{$min}, {$max}]");
+            }
             return range($start, $end);
         }
 
         // Single value
-        return [(int) $part];
+        $value = (int) $part;
+        if ($value < $min || $value > $max) {
+            throw new \InvalidArgumentException("Value {$value} out of range [{$min}, {$max}]");
+        }
+        return [$value];
     }
 
     /**
@@ -187,6 +206,9 @@ class CronExpression
 
     public static function hourlyAt(int $minute): string
     {
+        if ($minute < 0 || $minute > 59) {
+            throw new \InvalidArgumentException("Minute must be between 0 and 59, got: {$minute}");
+        }
         return "{$minute} * * * *";
     }
 
@@ -197,6 +219,12 @@ class CronExpression
 
     public static function dailyAt(int $hour, int $minute = 0): string
     {
+        if ($hour < 0 || $hour > 23) {
+            throw new \InvalidArgumentException("Hour must be between 0 and 23, got: {$hour}");
+        }
+        if ($minute < 0 || $minute > 59) {
+            throw new \InvalidArgumentException("Minute must be between 0 and 59, got: {$minute}");
+        }
         return "{$minute} {$hour} * * *";
     }
 
@@ -207,6 +235,15 @@ class CronExpression
 
     public static function weeklyOn(int $dayOfWeek, int $hour = 0, int $minute = 0): string
     {
+        if ($dayOfWeek < 0 || $dayOfWeek > 6) {
+            throw new \InvalidArgumentException("Day of week must be between 0 and 6, got: {$dayOfWeek}");
+        }
+        if ($hour < 0 || $hour > 23) {
+            throw new \InvalidArgumentException("Hour must be between 0 and 23, got: {$hour}");
+        }
+        if ($minute < 0 || $minute > 59) {
+            throw new \InvalidArgumentException("Minute must be between 0 and 59, got: {$minute}");
+        }
         return "{$minute} {$hour} * * {$dayOfWeek}";
     }
 
@@ -217,6 +254,15 @@ class CronExpression
 
     public static function monthlyOn(int $day, int $hour = 0, int $minute = 0): string
     {
+        if ($day < 1 || $day > 31) {
+            throw new \InvalidArgumentException("Day must be between 1 and 31, got: {$day}");
+        }
+        if ($hour < 0 || $hour > 23) {
+            throw new \InvalidArgumentException("Hour must be between 0 and 23, got: {$hour}");
+        }
+        if ($minute < 0 || $minute > 59) {
+            throw new \InvalidArgumentException("Minute must be between 0 and 59, got: {$minute}");
+        }
         return "{$minute} {$hour} {$day} * *";
     }
 }

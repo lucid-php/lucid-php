@@ -65,8 +65,8 @@ class CsrfMiddleware implements MiddlewareInterface
      */
     private function getCsrfAttribute(Request $request): ?Csrf
     {
-        $controller = $request->getAttribute('controller');
-        $method = $request->getAttribute('method');
+        $controller = $request->getAttribute('_controller');
+        $method = $request->getAttribute('_method');
 
         if ($controller === null || $method === null) {
             return null;
