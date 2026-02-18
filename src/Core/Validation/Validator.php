@@ -34,9 +34,11 @@ class Validator
         $constructor = $reflection->getConstructor();
         
         if (!$constructor) {
-             // If no constructor, just return instance (assuming public properties set logic later?)
-             // For strict DTOs, we prefer constructor promotion.
-             return new $class;
+             // DTOs without constructor-promoted properties cannot be validated
+             // This ensures explicit validation through constructor parameters
+             throw new ValidationException([
+                 '_class' => ['DTO must have constructor with promoted properties for validation']
+             ]);
         }
 
         $args = [];
@@ -64,12 +66,8 @@ class Validator
                  } elseif ($parameter->allowsNull()) {
                      $args[] = null;
                  } else {
-                    // Check if we already caught this as "Required" error?
-                    // If not, and it's missing, we can't instantiate.
-                    // But if it wasn't marked required, but is missing and no default... that's a PHP error.
-                    // For now, let's assume valid strict DTOs have #[Required] or sensible defaults.
-                    
-                    // If we have errors, we won't instantiate anyway. But we need to fill the array index to avoid offset errors in this loop if we continued.
+                    // Required parameter missing - should be caught by validation
+                    // Add placeholder to maintain argument order
                     $args[] = null; 
                  }
             }

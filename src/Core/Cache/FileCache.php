@@ -84,7 +84,8 @@ readonly class FileCache implements CacheInterface
         }
 
         try {
-            $data = unserialize($contents);
+            // Use allowed_classes to prevent object injection attacks
+            $data = unserialize($contents, ['allowed_classes' => false]);
         } catch (\Exception) {
             // Corrupted cache file, delete it
             @unlink($filePath);

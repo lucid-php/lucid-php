@@ -38,10 +38,11 @@ class View
         }
 
         // Extract variables into local scope
+        // Note: Using EXTR_SKIP to prevent overwriting existing variables like $templatePath
         extract($data, EXTR_SKIP);
         
         // Make escape function available as closure
-        $e = fn(?string $value): string => htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
+        $escape = fn(?string $value): string => htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
         
         // Capture output
         ob_start();
@@ -49,9 +50,9 @@ class View
         try {
             require $templatePath;
             return ob_get_clean();
-        } catch (\Throwable $e) {
+        } catch (\Throwable $exception) {
             ob_end_clean();
-            throw new RuntimeException("Error rendering template {$template}: {$e->getMessage()}", 0, $e);
+            throw new RuntimeException("Error rendering template {$template}: {$exception->getMessage()}", 0, $exception);
         }
     }
 
@@ -67,6 +68,7 @@ class View
     /**
      * Resolve template path
      * Adds .php extension if not present
+     * Validates against path traversal attacks
      */
     private function resolveTemplatePath(string $template): string
     {
@@ -76,6 +78,20 @@ class View
             $template .= '.php';
         }
         
-        return $this->viewsPath . '/' . $template;
+        $templatePath = $this->viewsPath . '/' . $template;
+        
+        // Validate that resolved path is within views directory
+        $realPath = realpath(dirname($templatePath));
+        $realViewsPath = realpath($this->viewsPath);
+        
+        if ($realPath === false || $realViewsPath === false) {
+            throw new RuntimeException("Invalid template path: {$template}");
+        }
+        
+        if (!str_starts_with($realPath, $realViewsPath)) {
+            throw new RuntimeException("Template path traversal detected: {$template}");
+        }
+        
+        return $templatePath;
     }
 }

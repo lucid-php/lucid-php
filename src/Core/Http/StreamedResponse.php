@@ -63,6 +63,11 @@ class StreamedResponse
         $filename = $this->filename ?? basename($this->path);
         $disposition = $this->inline ? 'inline' : 'attachment';
 
+        // Encode filename to prevent header injection and properly handle special characters
+        // Use RFC 5987 encoding for international characters
+        $encodedFilename = rawurlencode($filename);
+        $contentDisposition = "$disposition; filename=\"" . str_replace('"', '', $filename) . "\"; filename*=UTF-8''" . $encodedFilename;
+
         // Check for range request
         $rangeHeader = $_SERVER['HTTP_RANGE'] ?? null;
         $range = $this->supportRanges && $rangeHeader ? $this->parseRange($rangeHeader, $fileSize) : null;
@@ -71,7 +76,7 @@ class StreamedResponse
             // Partial content response
             http_response_code(206);
             header('Content-Type: ' . $this->mimeType);
-            header('Content-Disposition: ' . "$disposition; filename=\"$filename\"");
+            header('Content-Disposition: ' . $contentDisposition);
             header('Accept-Ranges: bytes');
             header('Content-Range: bytes ' . $range['start'] . '-' . $range['end'] . '/' . $fileSize);
             header('Content-Length: ' . $range['length']);
@@ -81,7 +86,7 @@ class StreamedResponse
             // Full content response
             http_response_code(200);
             header('Content-Type: ' . $this->mimeType);
-            header('Content-Disposition: ' . "$disposition; filename=\"$filename\"");
+            header('Content-Disposition: ' . $contentDisposition);
             header('Content-Length: ' . (string) $fileSize);
             
             if ($this->supportRanges) {

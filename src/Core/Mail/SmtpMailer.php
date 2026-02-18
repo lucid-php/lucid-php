@@ -17,6 +17,8 @@ class SmtpMailer implements MailerInterface
         private string $password,
         private string $encryption = 'tls', // tls, ssl, or empty
         string $defaultFrom = '',
+        private bool $verifyPeer = true, // Enable SSL verification by default for security
+        private bool $allowSelfSigned = false, // Disallow self-signed certs by default
     ) {
         $this->defaultFrom = $defaultFrom ?: $username;
     }
@@ -41,9 +43,9 @@ class SmtpMailer implements MailerInterface
     {
         $context = stream_context_create([
             'ssl' => [
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-                'allow_self_signed' => true,
+                'verify_peer' => $this->verifyPeer,
+                'verify_peer_name' => $this->verifyPeer,
+                'allow_self_signed' => $this->allowSelfSigned,
             ],
         ]);
 
