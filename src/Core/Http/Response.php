@@ -158,12 +158,16 @@ class Response
         // Use RFC 5987 encoding for international characters
         $encodedFilename = rawurlencode($filename);
         
+        // Sanitize filename for ASCII compatibility - remove control characters and quotes
+        $safeFilename = preg_replace('/[^\x20-\x7E]/', '', $filename); // Keep printable ASCII
+        $safeFilename = str_replace(['"', '\\', "\r", "\n"], '', $safeFilename); // Remove problematic chars
+        
         return new self(
             content: $content,
             status: 200,
             headers: [
                 'Content-Type' => $mimeType,
-                'Content-Disposition' => "$disposition; filename=\"" . str_replace('"', '', $filename) . "\"; filename*=UTF-8''" . $encodedFilename,
+                'Content-Disposition' => "$disposition; filename=\"$safeFilename\"; filename*=UTF-8''" . $encodedFilename,
                 'Content-Length' => (string) strlen($content),
             ]
         );

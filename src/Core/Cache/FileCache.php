@@ -85,6 +85,9 @@ readonly class FileCache implements CacheInterface
 
         try {
             // Use allowed_classes to prevent object injection attacks
+            // SECURITY: Only arrays and scalar values can be cached
+            // If you need to cache objects, use JSON serialization instead
+            // or explicitly allow specific safe classes: ['allowed_classes' => [SomeClass::class]]
             $data = unserialize($contents, ['allowed_classes' => false]);
         } catch (\Exception) {
             // Corrupted cache file, delete it

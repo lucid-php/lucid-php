@@ -80,15 +80,12 @@ class View
         
         $templatePath = $this->viewsPath . '/' . $template;
         
-        // Validate that resolved path is within views directory
-        $realPath = realpath(dirname($templatePath));
-        $realViewsPath = realpath($this->viewsPath);
+        // Normalize path and validate it's within views directory
+        // Use string operations for validation before file existence check
+        $normalizedTemplate = str_replace(['\\', '../', './'], ['/', '', ''], $template);
         
-        if ($realPath === false || $realViewsPath === false) {
-            throw new RuntimeException("Invalid template path: {$template}");
-        }
-        
-        if (!str_starts_with($realPath, $realViewsPath)) {
+        // Check for path traversal attempts
+        if (str_contains($template, '..') || str_starts_with($template, '/')) {
             throw new RuntimeException("Template path traversal detected: {$template}");
         }
         

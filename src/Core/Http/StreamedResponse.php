@@ -66,7 +66,12 @@ class StreamedResponse
         // Encode filename to prevent header injection and properly handle special characters
         // Use RFC 5987 encoding for international characters
         $encodedFilename = rawurlencode($filename);
-        $contentDisposition = "$disposition; filename=\"" . str_replace('"', '', $filename) . "\"; filename*=UTF-8''" . $encodedFilename;
+        
+        // Sanitize filename for ASCII compatibility - remove control characters and quotes
+        $safeFilename = preg_replace('/[^\x20-\x7E]/', '', $filename); // Keep printable ASCII
+        $safeFilename = str_replace(['"', '\\', "\r", "\n"], '', $safeFilename); // Remove problematic chars
+        
+        $contentDisposition = "$disposition; filename=\"$safeFilename\"; filename*=UTF-8''" . $encodedFilename;
 
         // Check for range request
         $rangeHeader = $_SERVER['HTTP_RANGE'] ?? null;
