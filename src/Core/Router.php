@@ -255,8 +255,13 @@ class Router
      */
     private function convertToRegex(string $path): string
     {
-        // Escape forward slashes and special regex characters
-        $pattern = preg_replace('/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/', '(?<$1>[^/]+)', $path);
+        // First escape the path for use in regex
+        $escaped = preg_quote($path, '#');
+        
+        // Then replace the escaped placeholders with capture groups
+        // Note: preg_quote escapes { and } to \{ and \}
+        $pattern = preg_replace('/\\\\\\{([a-zA-Z_][a-zA-Z0-9_]*)\\\\\\}/', '(?<$1>[^/]+)', $escaped);
+        
         return '#^' . $pattern . '$#';
     }
 }

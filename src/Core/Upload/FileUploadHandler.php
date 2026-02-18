@@ -206,8 +206,11 @@ class FileUploadHandler
         // Remove null bytes
         $path = str_replace("\0", '', $path);
         
-        // Remove directory traversal attempts
-        $path = str_replace('..', '', $path);
+        // Remove directory traversal attempts (multiple passes to catch encoded attempts)
+        do {
+            $before = $path;
+            $path = str_replace(['..', './'], '', $path);
+        } while ($path !== $before);
         
         // Remove leading slashes (prevent absolute paths)
         $path = ltrim($path, '/\\');
@@ -215,7 +218,7 @@ class FileUploadHandler
         // Replace backslashes with forward slashes
         $path = str_replace('\\', '/', $path);
         
-        if ($path === '') {
+        if ($path === '' || str_contains($path, '..')) {
             throw new RuntimeException("Invalid path after sanitization");
         }
 

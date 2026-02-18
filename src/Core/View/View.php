@@ -78,15 +78,26 @@ class View
             $template .= '.php';
         }
         
-        $templatePath = $this->viewsPath . '/' . $template;
-        
-        // Normalize path and validate it's within views directory
-        // Use string operations for validation before file existence check
-        $normalizedTemplate = str_replace(['\\', '../', './'], ['/', '', ''], $template);
-        
-        // Check for path traversal attempts
+        // Check for path traversal attempts before building path
         if (str_contains($template, '..') || str_starts_with($template, '/')) {
             throw new RuntimeException("Template path traversal detected: {$template}");
+        }
+        
+        $templatePath = $this->viewsPath . '/' . $template;
+        
+        // Additional validation using realpath after file exists
+        // This catches any symbolic link or filesystem-level traversal
+        if (file_exists($templatePath)) {
+            $realPath = realpath($templatePath);
+            $realViewsPath = realpath($this->viewsPath);
+            
+            if ($realPath === false || $realViewsPath === false) {
+                throw new RuntimeException("Invalid template path: {$template}");
+            }
+            
+            if (!str_starts_with($realPath, $realViewsPath)) {
+                throw new RuntimeException("Template path traversal detected: {$template}");
+            }
         }
         
         return $templatePath;

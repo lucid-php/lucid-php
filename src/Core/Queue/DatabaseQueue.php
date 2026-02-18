@@ -62,7 +62,22 @@ class DatabaseQueue implements QueueInterface
         );
 
         // Unserialize job payload
-        $job = unserialize($row['payload']);
+        // SECURITY: Only allow known job classes to prevent object injection
+        // In production, maintain an explicit allowlist of job classes
+        $allowedJobClasses = [
+            \App\Job\SendWelcomeEmailJob::class,
+            \App\Job\ProcessOrderJob::class,
+            \App\Job\SendDailySummaryJob::class,
+            \App\Job\CleanupOldLogsJob::class,
+            \App\Job\DatabaseCleanupJob::class,
+            // Add other job classes here
+        ];
+        
+        try {
+            $job = unserialize($row['payload'], ['allowed_classes' => $allowedJobClasses]);
+        } catch (\Throwable $e) {
+            throw new \RuntimeException("Failed to unserialize job: " . $e->getMessage());
+        }
 
         return new QueuedJob(
             id: $row['id'],
