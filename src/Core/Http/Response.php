@@ -159,7 +159,9 @@ class Response
         $encodedFilename = rawurlencode($filename);
         
         // Sanitize filename for ASCII compatibility - remove control characters and quotes
-        $safeFilename = preg_replace('/[^\x20-\x7E]/', '', $filename); // Keep printable ASCII
+        // Keep printable ASCII (0x20-0x7E) including spaces for better user experience
+        // Spaces are safe within quoted filename parameter per RFC 2616
+        $safeFilename = preg_replace('/[^\x20-\x7E]/', '', $filename);
         $safeFilename = str_replace(['"', '\\', "\r", "\n"], '', $safeFilename); // Remove problematic chars
         
         return new self(

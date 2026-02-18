@@ -259,7 +259,11 @@ class Router
         $escaped = preg_quote($path, '#');
         
         // Then replace the escaped placeholders with capture groups
-        // Note: preg_quote escapes { and } to \{ and \}
+        // Note: preg_quote escapes { and } to \{ and \}, so we need to match those literal
+        // backslashes in our pattern. Each backslash in the pattern needs to be escaped:
+        // - \\\\ matches a literal backslash
+        // - \\{ matches the escaped brace
+        // Result: \\\\\\{ matches the pattern \{ (which is what preg_quote produces)
         $pattern = preg_replace('/\\\\\\{([a-zA-Z_][a-zA-Z0-9_]*)\\\\\\}/', '(?<$1>[^/]+)', $escaped);
         
         return '#^' . $pattern . '$#';

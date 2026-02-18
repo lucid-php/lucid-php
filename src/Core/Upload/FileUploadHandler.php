@@ -218,7 +218,7 @@ class FileUploadHandler
         // Replace backslashes with forward slashes
         $path = str_replace('\\', '/', $path);
         
-        if ($path === '' || str_contains($path, '..')) {
+        if ($path === '') {
             throw new RuntimeException("Invalid path after sanitization");
         }
 

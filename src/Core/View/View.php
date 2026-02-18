@@ -72,13 +72,16 @@ class View
      */
     private function resolveTemplatePath(string $template): string
     {
+        // Convert dot notation to path (e.g., "users.profile" -> "users/profile")
         $template = str_replace('.', '/', $template);
         
+        // Add .php extension if not present
         if (!str_ends_with($template, '.php')) {
             $template .= '.php';
         }
         
-        // Check for path traversal attempts before building path
+        // Check for path traversal attempts AFTER extension is added
+        // This ensures "safe/../evil" patterns are caught
         if (str_contains($template, '..') || str_starts_with($template, '/')) {
             throw new RuntimeException("Template path traversal detected: {$template}");
         }

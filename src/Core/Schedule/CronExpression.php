@@ -113,7 +113,7 @@ class CronExpression
         if (str_contains($part, '*/')) {
             $step = (int) explode('/', $part)[1];
             if ($step <= 0) {
-                throw new \InvalidArgumentException("Step value must be positive, got: {$step}");
+                throw new \InvalidArgumentException("Step value must be greater than zero, got: {$step}");
             }
             $values = [];
             for ($i = $min; $i <= $max; $i += $step) {
