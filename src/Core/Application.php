@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Core;
 
+use Core\Cache\CacheInterface;
 use Core\Http\Request;
 
 class Application
@@ -11,10 +12,10 @@ class Application
     private Container $container;
     private Router $router;
 
-    public function __construct()
+    public function __construct(?CacheInterface $cache = null)
     {
         $this->container = new Container();
-        $this->router = new Router($this->container);
+        $this->router = new Router($this->container, $cache);
     }
 
     public function getContainer(): Container

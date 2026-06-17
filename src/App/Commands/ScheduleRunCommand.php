@@ -33,7 +33,8 @@ class ScheduleRunCommand implements CommandInterface
         bool $verbose = false
     ): int {
         $timezone = new DateTimeZone($this->config->get('schedule.timezone', 'UTC'));
-        $scheduler = new Scheduler($output, $timezone);
+        $lock = new \Core\Schedule\FileLock(dirname(__DIR__, 3) . '/storage/locks');
+        $scheduler = new Scheduler($output, $timezone, $lock);
 
         // Get registered scheduled jobs from config
         $jobClasses = $this->config->get('schedule.tasks', []);

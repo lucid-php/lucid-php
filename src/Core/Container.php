@@ -19,14 +19,31 @@ class Container
 {
     private array $instances = [];
 
+    /** @var array<string, class-string> Interface/abstract => concrete class */
+    private array $bindings = [];
+
     public function set(string $class, object $instance): void
     {
         $this->instances[$class] = $instance;
     }
 
+    /**
+     * Bind an interface (or abstract class) to a concrete implementation, so
+     * autowiring can resolve a dependency type-hinted on the interface.
+     *
+     * Explicit: you declare the mapping in bootstrap; nothing is auto-discovered.
+     *
+     * @param class-string $abstract The interface or abstract class name
+     * @param class-string $concrete The concrete class to instantiate for it
+     */
+    public function bind(string $abstract, string $concrete): void
+    {
+        $this->bindings[$abstract] = $concrete;
+    }
+
     public function has(string $class): bool
     {
-        return isset($this->instances[$class]);
+        return isset($this->instances[$class]) || isset($this->bindings[$class]);
     }
 
     #[\NoDiscard]
@@ -34,14 +51,19 @@ class Container
     {
         if (isset($this->instances[$class])) {
             $instance = $this->instances[$class];
-            
+
             // If instance is a closure, execute it
             if ($instance instanceof \Closure) {
                 $instance = $instance($this);
                 $this->instances[$class] = $instance; // Cache the result
             }
-            
+
             return $instance;
+        }
+
+        // Resolve interface/abstract bindings to their concrete implementation.
+        if (isset($this->bindings[$class])) {
+            return $this->get($this->bindings[$class]);
         }
 
         return $this->resolve($class);

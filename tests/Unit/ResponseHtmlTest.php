@@ -39,7 +39,7 @@ class ResponseHtmlTest extends TestCase
             mkdir($viewsPath, 0755, true);
         }
         
-        file_put_contents($testViewPath, '<h1><?= $e($title) ?></h1>');
+        file_put_contents($testViewPath, '<h1><?= $escape($title) ?></h1>');
         
         try {
             $response = Response::view('test_temp', ['title' => 'Test']);

@@ -59,6 +59,8 @@ use Core\Attribute\Route;
 use Core\Attribute\RoutePrefix;
 use Core\Attribute\Middleware;
 use Core\Attribute\QueryParam;
+use Core\Attribute\Authorize;
+use Core\Middleware\AuthorizationMiddleware;
 use Core\Event\EventDispatcher;
 use Core\Pagination\Paginator;
 use App\Middleware\LoggerMiddleware;
@@ -247,15 +249,14 @@ class ApiController
     #[Route('DELETE', '/users/{id}')]
     #[Middleware(AuthMiddleware::class)]
     #[Middleware(CorsMiddleware::class)]
+    #[Middleware(AuthorizationMiddleware::class)]
+    #[Authorize('users.delete')]
     #[RateLimit(requests: 5, window: 60)]
     public function deleteUser(int $id, Request $request): Response
     {
-        $currentUser = $request->getAttribute('user');
-        
-        // Example: Only admins can delete users
-        if (!isset($currentUser->is_admin) || !$currentUser->is_admin) {
-            throw new ForbiddenException('Admin access required');
-        }
+        // Authorization is enforced by #[Authorize('users.delete')] above, which
+        // AuthorizationMiddleware checks against App\Security\SimpleAuthorizer
+        // (runs after AuthMiddleware has set the 'user' attribute).
 
         // Find user before deletion for event
         $users = $this->userRepository->findAll();

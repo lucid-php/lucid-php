@@ -20,7 +20,8 @@ class Scheduler
 
     public function __construct(
         private readonly OutputInterface $output,
-        private readonly DateTimeZone $timezone
+        private readonly DateTimeZone $timezone,
+        private readonly ?LockInterface $lock = null
     ) {}
 
     /**
@@ -47,6 +48,25 @@ class Scheduler
                 continue;
             }
 
+            // Overlap protection: a task that opts in must not run while a prior
+            // instance of itself is still executing.
+            $acquiredLock = null;
+            if ($task->preventsOverlap()) {
+                if ($this->lock === null) {
+                    throw new \RuntimeException(
+                        "Task '{$task->getDescription()}' requests withoutOverlapping but the Scheduler has no lock configured."
+                    );
+                }
+
+                if (!$this->lock->acquire($task->getDescription())) {
+                    $this->output->info("Skipping (already running): {$task->getDescription()}");
+                    $stats['skipped']++;
+                    continue;
+                }
+
+                $acquiredLock = $this->lock;
+            }
+
             $this->output->info("Running: {$task->getDescription()}");
 
             try {
@@ -57,6 +77,8 @@ class Scheduler
                 $stats['failed']++;
                 $this->output->error("✗ Failed: {$task->getDescription()}");
                 $this->output->error("  Error: {$e->getMessage()}");
+            } finally {
+                $acquiredLock?->release($task->getDescription());
             }
         }
 

@@ -13,10 +13,14 @@ namespace Core\Http;
  */
 class Response
 {
+    /**
+     * @param array<Cookie> $cookies Cookies to emit as Set-Cookie headers
+     */
     public function __construct(
         public private(set) string $content = '',
         public private(set) int $status = 200,
-        public private(set) array $headers = []
+        public private(set) array $headers = [],
+        public private(set) array $cookies = []
     ) {
     }
 
@@ -96,11 +100,12 @@ class Response
     {
         $headers = $this->headers;
         $headers[$name] = $value;
-        
+
         return new self(
             content: $this->content,
             status: $this->status,
-            headers: $headers
+            headers: $headers,
+            cookies: $this->cookies
         );
     }
 
@@ -115,7 +120,23 @@ class Response
         return new self(
             content: $this->content,
             status: $this->status,
-            headers: array_merge($this->headers, $headers)
+            headers: array_merge($this->headers, $headers),
+            cookies: $this->cookies
+        );
+    }
+
+    /**
+     * Return a new Response carrying an additional cookie.
+     * Follows the immutability pattern - returns a new instance.
+     */
+    #[\NoDiscard]
+    public function withCookie(Cookie $cookie): self
+    {
+        return new self(
+            content: $this->content,
+            status: $this->status,
+            headers: $this->headers,
+            cookies: [...$this->cookies, $cookie]
         );
     }
 
@@ -221,6 +242,11 @@ class Response
             // Remove any newline characters that could be used for injection
             $sanitizedValue = str_replace(["\r", "\n"], '', $value);
             header("{$key}: {$sanitizedValue}");
+        }
+
+        // Emit cookies (validated at construction in the Cookie value object).
+        foreach ($this->cookies as $cookie) {
+            setcookie($cookie->name, $cookie->value, $cookie->options());
         }
 
         echo $this->content;

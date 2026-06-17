@@ -28,7 +28,7 @@ class QueueTest extends TestCase
         // Setup in-memory database
         $this->db = new Database('sqlite::memory:', null, null);
         
-        // Create jobs table
+        // Create jobs table (mirrors database/migrations/005)
         $this->db->execute("
             CREATE TABLE jobs (
                 id TEXT PRIMARY KEY,
@@ -36,13 +36,27 @@ class QueueTest extends TestCase
                 payload TEXT NOT NULL,
                 attempts INTEGER NOT NULL DEFAULT 0,
                 available_at INTEGER NOT NULL,
-                created_at INTEGER NOT NULL
+                created_at INTEGER NOT NULL,
+                reserved_at INTEGER DEFAULT NULL,
+                reservation_token TEXT DEFAULT NULL
             )
         ");
 
         // Create index
         $this->db->execute("
             CREATE INDEX idx_jobs_queue_available ON jobs(queue, available_at)
+        ");
+
+        // Failed jobs table (mirrors database/migrations/006)
+        $this->db->execute("
+            CREATE TABLE failed_jobs (
+                id TEXT PRIMARY KEY,
+                queue TEXT NOT NULL DEFAULT 'default',
+                payload TEXT NOT NULL,
+                attempts INTEGER NOT NULL DEFAULT 0,
+                exception TEXT NOT NULL,
+                failed_at INTEGER NOT NULL
+            )
         ");
 
         // Setup container
@@ -63,7 +77,7 @@ class QueueTest extends TestCase
 
     public function test_database_queue_can_push_and_pop_jobs(): void
     {
-        $queue = new DatabaseQueue($this->db);
+        $queue = new DatabaseQueue($this->db, [SendWelcomeEmailJob::class, ProcessOrderJob::class]);
         
         $job = new SendWelcomeEmailJob(
             userId: 123,
@@ -90,7 +104,7 @@ class QueueTest extends TestCase
 
     public function test_database_queue_respects_queue_names(): void
     {
-        $queue = new DatabaseQueue($this->db);
+        $queue = new DatabaseQueue($this->db, [SendWelcomeEmailJob::class, ProcessOrderJob::class]);
 
         $emailJob = new SendWelcomeEmailJob(123, 'John', 'john@example.com');
         $orderJob = new ProcessOrderJob(456, 99.99, []);
@@ -110,7 +124,7 @@ class QueueTest extends TestCase
 
     public function test_database_queue_returns_null_when_empty(): void
     {
-        $queue = new DatabaseQueue($this->db);
+        $queue = new DatabaseQueue($this->db, [SendWelcomeEmailJob::class, ProcessOrderJob::class]);
 
         $this->assertNull($queue->pop());
         $this->assertEquals(0, $queue->size());
@@ -118,7 +132,7 @@ class QueueTest extends TestCase
 
     public function test_database_queue_can_clear(): void
     {
-        $queue = new DatabaseQueue($this->db);
+        $queue = new DatabaseQueue($this->db, [SendWelcomeEmailJob::class, ProcessOrderJob::class]);
 
         $queue->push(new SendWelcomeEmailJob(1, 'A', 'a@example.com'));
         $queue->push(new SendWelcomeEmailJob(2, 'B', 'b@example.com'));
@@ -151,7 +165,7 @@ class QueueTest extends TestCase
 
     public function test_worker_can_process_job_with_dependencies(): void
     {
-        $queue = new DatabaseQueue($this->db);
+        $queue = new DatabaseQueue($this->db, [SendWelcomeEmailJob::class, ProcessOrderJob::class]);
         $worker = new QueueWorker($queue, $this->container);
 
         $job = new SendWelcomeEmailJob(
@@ -173,7 +187,7 @@ class QueueTest extends TestCase
 
     public function test_multiple_jobs_processed_in_order(): void
     {
-        $queue = new DatabaseQueue($this->db);
+        $queue = new DatabaseQueue($this->db, [SendWelcomeEmailJob::class, ProcessOrderJob::class]);
 
         // Push jobs in order
         $queue->push(new ProcessOrderJob(1, 10.0, []));

@@ -128,8 +128,11 @@ $console = new ConsoleApplication($container, $output);
 $console->registerCommands([
     MigrateCommand::class,
     MigrateRollbackCommand::class,
+    \App\Commands\MigrateStatusCommand::class,
     \App\Commands\DatabaseSeedCommand::class,
     QueueWorkCommand::class,
+    \App\Commands\QueueFailedCommand::class,
+    \App\Commands\QueueRetryCommand::class,
     ScheduleRunCommand::class,
     ScheduleListCommand::class,
 ]);

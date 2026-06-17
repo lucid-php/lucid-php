@@ -10,6 +10,10 @@ use Core\Database\Database;
 use Core\Event\EventDispatcher;
 use Core\Http\ExceptionHandler;
 use Core\Middleware\ExceptionMiddleware;
+use Core\Middleware\SecurityHeadersMiddleware;
+use Core\Middleware\SecurityHeadersConfig;
+use Core\Security\AuthorizerInterface;
+use App\Security\SimpleAuthorizer;
 use Core\Queue\QueueInterface;
 use Core\Queue\SyncQueue;
 use Core\Queue\DatabaseQueue;
@@ -44,6 +48,21 @@ $app->getContainer()->set(ExceptionMiddleware::class, $exceptionMiddleware);
 
 // Register exception middleware globally (catches all exceptions)
 $app->addGlobalMiddleware(ExceptionMiddleware::class);
+
+// --- Security Headers (Explicit, Secure Defaults) ---
+$securityHeaders = new SecurityHeadersMiddleware(
+    new SecurityHeadersConfig(
+        // Enable HSTS only when serving over HTTPS in production.
+        hstsMaxAge: $config->get('app.https', false) ? 31536000 : null,
+    )
+);
+$app->getContainer()->set(SecurityHeadersMiddleware::class, $securityHeaders);
+$app->addGlobalMiddleware(SecurityHeadersMiddleware::class);
+
+// --- Authorization (Explicit Policy Binding) ---
+// Bind the app's authorizer to the framework contract; AuthorizationMiddleware
+// (used by #[Authorize] routes) is then autowired with it from the container.
+$app->getContainer()->bind(AuthorizerInterface::class, SimpleAuthorizer::class);
 
 // --- Database Setup (Zero-Magic) ---
 $dbDriver = $config->get('database.driver');

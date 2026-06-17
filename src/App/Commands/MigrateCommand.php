@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Commands;
 
 use Core\Attribute\ConsoleCommand;
-use Core\Attribute\Option;
 use Core\Console\CommandInterface;
 use Core\Console\OutputInterface;
 use Core\Database\Migrator;
@@ -20,16 +19,13 @@ class MigrateCommand implements CommandInterface
         private readonly Migrator $migrator
     ) {}
 
-    public function execute(
-        OutputInterface $output,
-        #[Option('step', 's', 'Number of migrations to run', 0)]
-        int $step = 0
-    ): int {
+    public function execute(OutputInterface $output): int
+    {
         $output->info('Running migrations...');
         $output->writeln('');
 
         try {
-            $migrations = $this->migrator->migrate($step);
+            $migrations = $this->migrator->migrate();
 
             if (empty($migrations)) {
                 $output->warning('No migrations to run.');

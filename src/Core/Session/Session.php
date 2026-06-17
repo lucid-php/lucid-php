@@ -32,11 +32,13 @@ class Session implements SessionInterface
             return;
         }
 
-        if (!empty($this->options)) {
-            session_start($this->options);
-        } else {
-            session_start();
-        }
+        // Secure-by-default session cookie. Caller-supplied options win, so an
+        // app can override (e.g. set cookie_secure based on the request scheme).
+        $secureDefaults = [
+            'cookie_httponly' => true,
+            'cookie_samesite' => 'Lax',
+        ];
+        session_start($this->options + $secureDefaults);
 
         $this->started = true;
     }

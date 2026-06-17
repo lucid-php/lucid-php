@@ -120,8 +120,8 @@ class CsrfMiddlewareTest extends TestCase
             server: []
         );
         $request = $request
-            ->withAttribute('controller', MockCsrfController::class)
-            ->withAttribute('method', 'create');
+            ->withAttribute('_controller', MockCsrfController::class)
+            ->withAttribute('_method', 'create');
 
         $handler = $this->createMockHandler(new Response('OK', 200));
         
@@ -142,8 +142,8 @@ class CsrfMiddlewareTest extends TestCase
             server: ['HTTP_X_CSRF_TOKEN' => $token]
         );
         $request = $request
-            ->withAttribute('controller', MockCsrfController::class)
-            ->withAttribute('method', 'create');
+            ->withAttribute('_controller', MockCsrfController::class)
+            ->withAttribute('_method', 'create');
 
         $handler = $this->createMockHandler(new Response('OK', 200));
         
@@ -164,8 +164,8 @@ class CsrfMiddlewareTest extends TestCase
             server: []
         );
         $request = $request
-            ->withAttribute('controller', MockCsrfController::class)
-            ->withAttribute('method', 'create');
+            ->withAttribute('_controller', MockCsrfController::class)
+            ->withAttribute('_method', 'create');
 
         $handler = $this->createMockHandler(new Response('OK', 200));
         
@@ -186,8 +186,8 @@ class CsrfMiddlewareTest extends TestCase
             server: []
         );
         $request = $request
-            ->withAttribute('controller', MockCsrfController::class)
-            ->withAttribute('method', 'create');
+            ->withAttribute('_controller', MockCsrfController::class)
+            ->withAttribute('_method', 'create');
 
         $handler = $this->createMockHandler(new Response('OK', 200));
         
@@ -207,8 +207,8 @@ class CsrfMiddlewareTest extends TestCase
             server: []
         );
         $request = $request
-            ->withAttribute('controller', MockCsrfController::class)
-            ->withAttribute('method', 'create');
+            ->withAttribute('_controller', MockCsrfController::class)
+            ->withAttribute('_method', 'create');
 
         $handler = $this->createMockHandler(new Response('OK', 200));
         
@@ -230,8 +230,8 @@ class CsrfMiddlewareTest extends TestCase
             server: []
         );
         $request = $request
-            ->withAttribute('controller', MockCustomCsrfController::class)
-            ->withAttribute('method', 'create');
+            ->withAttribute('_controller', MockCustomCsrfController::class)
+            ->withAttribute('_method', 'create');
 
         $handler = $this->createMockHandler(new Response('OK', 200));
         

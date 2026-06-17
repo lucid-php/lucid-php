@@ -46,7 +46,9 @@ class ResponseFileTest extends TestCase
         $response = Response::file($this->testFile, 'download.txt', 'text/plain');
 
         $this->assertSame('text/plain', $response->headers['Content-Type']);
-        $this->assertSame('attachment; filename="download.txt"', $response->headers['Content-Disposition']);
+        // RFC 5987: an ASCII filename plus a UTF-8 filename* fallback.
+        $this->assertStringStartsWith('attachment; filename="download.txt"', $response->headers['Content-Disposition']);
+        $this->assertStringContainsString("filename*=UTF-8''download.txt", $response->headers['Content-Disposition']);
         $this->assertSame('12', $response->headers['Content-Length']); // "Test content" is 12 bytes
     }
 

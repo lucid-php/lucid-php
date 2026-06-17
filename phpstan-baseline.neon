@@ -13,54 +13,6 @@ parameters:
 			path: console
 
 		-
-			message: '#^Method Core\\Database\\Migrator\:\:migrate\(\) invoked with 1 parameter, 0 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: src/App/Commands/MigrateCommand.php
-
-		-
-			message: '#^Result of method Core\\Database\\Migrator\:\:migrate\(\) \(void\) is used\.$#'
-			identifier: method.void
-			count: 1
-			path: src/App/Commands/MigrateCommand.php
-
-		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
-			count: 1
-			path: src/App/Commands/MigrateCommand.php
-
-		-
-			message: '#^Variable \$migrations in empty\(\) always exists and is always falsy\.$#'
-			identifier: empty.variable
-			count: 1
-			path: src/App/Commands/MigrateCommand.php
-
-		-
-			message: '#^Method Core\\Database\\Migrator\:\:rollback\(\) invoked with 1 parameter, 0 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: src/App/Commands/MigrateRollbackCommand.php
-
-		-
-			message: '#^Result of method Core\\Database\\Migrator\:\:rollback\(\) \(void\) is used\.$#'
-			identifier: method.void
-			count: 1
-			path: src/App/Commands/MigrateRollbackCommand.php
-
-		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
-			count: 1
-			path: src/App/Commands/MigrateRollbackCommand.php
-
-		-
-			message: '#^Variable \$migrations in empty\(\) always exists and is always falsy\.$#'
-			identifier: empty.variable
-			count: 1
-			path: src/App/Commands/MigrateRollbackCommand.php
-
-		-
 			message: '#^Unreachable statement \- code above always terminates\.$#'
 			identifier: deadCode.unreachable
 			count: 1

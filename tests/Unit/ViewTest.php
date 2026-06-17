@@ -62,9 +62,9 @@ class ViewTest extends TestCase
     }
 
     #[Test]
-    public function it_escapes_html_with_e_function(): void
+    public function it_escapes_html_with_escape_function(): void
     {
-        file_put_contents($this->tempDir . '/escape.php', '<?= $e($content) ?>');
+        file_put_contents($this->tempDir . '/escape.php', '<?= $escape($content) ?>');
         
         $result = $this->view->render('escape', ['content' => '<script>alert("xss")</script>']);
         

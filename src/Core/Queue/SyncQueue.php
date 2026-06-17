@@ -8,16 +8,19 @@ use Core\Container;
 
 /**
  * Synchronous Queue (No Queue)
- * 
+ *
  * Executes jobs immediately instead of queuing them.
  * Perfect for:
  * - Local development
  * - Testing
  * - Environments without queue workers
- * 
+ *
  * Philosophy:
  * - No magic - you see exactly when jobs execute
  * - Explicit - jobs run inline, not in background
+ *
+ * Because jobs run inline, exceptions propagate to the caller (no retry / failed
+ * store). The acknowledge methods are no-ops: there is nothing to persist.
  */
 class SyncQueue implements QueueInterface
 {
@@ -25,26 +28,33 @@ class SyncQueue implements QueueInterface
         private readonly Container $container
     ) {}
 
-    public function push(object $job, string $queue = 'default'): void
+    public function push(object $job, string $queue = 'default', int $delaySeconds = 0): void
     {
-        // Execute immediately instead of queuing
+        // Execute immediately (delay is ignored in sync mode). Exceptions
+        // propagate to the caller — there is no background retry here.
         $worker = new QueueWorker($this, $this->container);
-        
-        $queuedJob = new QueuedJob(
-            id: 'sync-' . uniqid(),
-            job: $job,
-            queue: $queue,
-            attempts: 0,
-            availableAt: time(),
-        );
-        
-        $worker->processJob($queuedJob);
+        $worker->runJob($job);
     }
 
     public function pop(string $queue = 'default'): ?QueuedJob
     {
         // Sync queue never has jobs waiting
         return null;
+    }
+
+    public function delete(QueuedJob $job): void
+    {
+        // No-op: nothing was persisted.
+    }
+
+    public function release(QueuedJob $job, int $delaySeconds = 0): void
+    {
+        // No-op: nothing was persisted.
+    }
+
+    public function fail(QueuedJob $job, string $exception): void
+    {
+        // No-op: nothing was persisted.
     }
 
     public function size(string $queue = 'default'): int

@@ -132,4 +132,32 @@ class ConfigTest extends TestCase
 
         $config->load('invalid');
     }
+
+    public function test_typed_getters_return_typed_values(): void
+    {
+        $config = new Config($this->testConfigPath);
+
+        $this->assertSame('mysql', $config->getString('database.driver'));
+        $this->assertSame(3306, $config->getInt('database.mysql.port'));
+        $this->assertSame(['host' => 'localhost', 'port' => 3306], $config->getArray('database.mysql'));
+    }
+
+    public function test_typed_getters_use_defaults_for_missing_keys(): void
+    {
+        $config = new Config($this->testConfigPath);
+
+        $this->assertSame('sqlite', $config->getString('database.missing', 'sqlite'));
+        $this->assertSame(42, $config->getInt('database.missing', 42));
+        $this->assertTrue($config->getBool('database.missing', true));
+    }
+
+    public function test_get_int_throws_on_non_numeric_value(): void
+    {
+        $config = new Config($this->testConfigPath);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage("Config key 'database.driver' expected int");
+
+        $config->getInt('database.driver');
+    }
 }

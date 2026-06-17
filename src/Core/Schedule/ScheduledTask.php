@@ -16,8 +16,18 @@ readonly class ScheduledTask
     public function __construct(
         private string $description,
         private string $cronExpression,
-        private \Closure $callback
+        private \Closure $callback,
+        private bool $withoutOverlapping = false
     ) {}
+
+    /**
+     * Whether this task must not run concurrently with a still-running instance
+     * of itself (enforced by the Scheduler via a lock).
+     */
+    public function preventsOverlap(): bool
+    {
+        return $this->withoutOverlapping;
+    }
 
     /**
      * Check if this task should run at the given time

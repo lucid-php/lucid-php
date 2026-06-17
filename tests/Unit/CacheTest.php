@@ -322,8 +322,9 @@ class CacheTest extends TestCase
 
     public function test_file_cache_stores_various_types(): void
     {
-        $cache = new FileCache($this->tempDir);
-        
+        // Opt stdClass into the deserialization allowlist; objects are not restored by default.
+        $cache = new FileCache($this->tempDir, [\stdClass::class]);
+
         $cache->set('string', 'text', 60);
         $cache->set('int', 42, 60);
         $cache->set('array', ['a', 'b', 'c'], 60);

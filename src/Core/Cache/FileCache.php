@@ -26,9 +26,14 @@ readonly class FileCache implements CacheInterface
 {
     /**
      * @param string $path Directory path for cache files
+     * @param array<class-string> $allowedClasses Classes permitted when unserializing cached
+     *        values. Empty (default) means scalars/arrays only — objects are NOT deserialized
+     *        (returned as the default), preventing object-injection attacks. Pass an explicit
+     *        allowlist to cache specific value objects.
      */
     public function __construct(
-        private string $path
+        private string $path,
+        private array $allowedClasses = []
     ) {
         $this->ensureDirectoryExists();
     }
@@ -84,11 +89,11 @@ readonly class FileCache implements CacheInterface
         }
 
         try {
-            // Use allowed_classes to prevent object injection attacks
-            // SECURITY: Only arrays and scalar values can be cached
-            // If you need to cache objects, use JSON serialization instead
-            // or explicitly allow specific safe classes: ['allowed_classes' => [SomeClass::class]]
-            $data = unserialize($contents, ['allowed_classes' => false]);
+            // SECURITY: prevent object-injection. By default only scalars/arrays are
+            // restored (allowed_classes => false); an explicit allowlist opts specific
+            // value objects in. Configured via the constructor, never implicitly.
+            $allowedClasses = $this->allowedClasses === [] ? false : $this->allowedClasses;
+            $data = unserialize($contents, ['allowed_classes' => $allowedClasses]);
         } catch (\Exception) {
             // Corrupted cache file, delete it
             @unlink($filePath);

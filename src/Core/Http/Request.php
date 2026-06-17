@@ -17,6 +17,7 @@ class Request
         public private(set) array $server = [],
         public private(set) array $files = [],
         public private(set) array $attributes = [],
+        public private(set) array $cookies = [],
     ) {
     }
 
@@ -35,6 +36,14 @@ class Request
     public function getQueryParam(string $name, mixed $default = null): mixed
     {
         return $this->query[$name] ?? $default;
+    }
+
+    /**
+     * Get a cookie value by name.
+     */
+    public function getCookie(string $name, ?string $default = null): ?string
+    {
+        return $this->cookies[$name] ?? $default;
     }
 
     /**
@@ -102,6 +111,7 @@ class Request
             body: $body,
             server: $_SERVER,
             files: $files,
+            cookies: $_COOKIE,
         );
     }
 }

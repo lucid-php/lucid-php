@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Core;
 
+use Core\Attribute\Cache;
 use Core\Attribute\Middleware;
 use Core\Attribute\Route;
 use Core\Attribute\RoutePrefix;
 use Core\Attribute\QueryParam;
+use Core\Cache\CacheInterface;
 use Core\Http\ApiResponse;
 use Core\Http\HttpException;
 use Core\Http\Request;
@@ -27,7 +29,10 @@ class Router
     private array $globalMiddlewares = [];
     private Validator $validator;
 
-    public function __construct(private readonly Container $container) {
+    public function __construct(
+        private readonly Container $container,
+        private readonly ?CacheInterface $cache = null
+    ) {
         $this->validator = new Validator();
     }
 
@@ -153,11 +158,95 @@ class Router
             }
         };
 
+        // Optional response caching via #[Cache], wrapped around the controller
+        // action so middleware still runs on every request.
+        $coreAction = $this->wrapWithCache($coreAction, $controllerClass, $methodName, $request);
+
         // Create the Stack and Execute
         // Exceptions will be caught by ExceptionMiddleware if registered
         $stack = new MiddlewareStack($middlewares, $coreAction);
-        
+
         return $stack->handle($request);
+    }
+
+    /**
+     * If the routed method declares #[Cache] and the request is safely
+     * cacheable, serve from / store into the cache around the controller action.
+     */
+    private function wrapWithCache(callable $coreAction, string $controller, string $method, Request $request): callable
+    {
+        if ($this->cache === null) {
+            return $coreAction;
+        }
+
+        $cacheAttr = $this->getCacheAttribute($controller, $method);
+        if ($cacheAttr === null || !$this->isCacheable($request)) {
+            return $coreAction;
+        }
+
+        $cache = $this->cache;
+        $key = $this->cacheKey($request);
+
+        $cached = $cache->get($key);
+        if (is_array($cached) && isset($cached['content'], $cached['status'], $cached['headers'])) {
+            return fn(Request $req): Response => new Response($cached['content'], $cached['status'], $cached['headers']);
+        }
+
+        return function (Request $req) use ($coreAction, $cache, $key, $cacheAttr): Response {
+            $response = $coreAction($req);
+
+            // Only cache plain 2xx responses (never streamed or error responses).
+            if ($response instanceof Response && $response->status >= 200 && $response->status < 300) {
+                $cache->set($key, [
+                    'content' => $response->content,
+                    'status' => $response->status,
+                    'headers' => $response->headers,
+                ], $cacheAttr->ttl);
+            }
+
+            return $response;
+        };
+    }
+
+    private function getCacheAttribute(string $controller, string $method): ?Cache
+    {
+        try {
+            $methodRef = (new ReflectionClass($controller))->getMethod($method);
+            $attributes = $methodRef->getAttributes(Cache::class);
+
+            return $attributes === [] ? null : $attributes[0]->newInstance();
+        } catch (\ReflectionException) {
+            return null;
+        }
+    }
+
+    /**
+     * Response caching is restricted to anonymous GET requests so that
+     * per-user or authenticated responses are never shared.
+     */
+    private function isCacheable(Request $request): bool
+    {
+        if ($request->method !== 'GET') {
+            return false;
+        }
+
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            return false;
+        }
+
+        if (!empty($request->server['HTTP_AUTHORIZATION'])) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function cacheKey(Request $request): string
+    {
+        $query = $request->query;
+        ksort($query);
+
+        return 'route_cache:' . md5($request->method . ' ' . $request->uri . '?' . http_build_query($query));
     }
     
     private function resolveMethodDependencies(string $controller, string $method, Request $request): array
