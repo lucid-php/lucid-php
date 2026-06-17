@@ -8,7 +8,7 @@ class Config
 {
     private array $config = [];
 
-    public function __construct(private final string $configPath)
+    public function __construct(private readonly string $configPath)
     {
         if (!is_dir($configPath)) {
             throw new \RuntimeException("Config directory not found: {$configPath}");

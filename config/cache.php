@@ -23,14 +23,14 @@ return [
      * 
      * Options: 'file', 'array'
      */
-    'default' => env('CACHE_DRIVER', 'file'),
+    'default' => getenv('CACHE_DRIVER') ?: 'file',
 
     /**
      * Default TTL (Time To Live) in seconds
      * 
      * Used when no TTL is specified explicitly
      */
-    'default_ttl' => (int) env('CACHE_DEFAULT_TTL', 3600), // 1 hour
+    'default_ttl' => (int) (getenv('CACHE_DEFAULT_TTL') ?: 3600), // 1 hour
 
     /**
      * Driver-specific configuration
@@ -41,7 +41,7 @@ return [
              * Directory path for cache files
              * Must be writable by the application
              */
-            'path' => env('CACHE_FILE_PATH', __DIR__ . '/../storage/cache'),
+            'path' => getenv('CACHE_FILE_PATH') ?: __DIR__ . '/../storage/cache',
         ],
 
         'array' => [
@@ -58,7 +58,7 @@ return [
      * Useful for namespacing caches in shared environments
      * or preventing key collisions across applications
      */
-    'prefix' => env('CACHE_PREFIX', 'app_cache'),
+    'prefix' => getenv('CACHE_PREFIX') ?: 'app_cache',
 
     /**
      * Named cache stores for different use cases
@@ -67,18 +67,18 @@ return [
      */
     'stores' => [
         'http' => [
-            'driver' => env('CACHE_HTTP_DRIVER', 'file'),
-            'ttl' => (int) env('CACHE_HTTP_TTL', 300), // 5 minutes
+            'driver' => getenv('CACHE_HTTP_DRIVER') ?: 'file',
+            'ttl' => (int) (getenv('CACHE_HTTP_TTL') ?: 300), // 5 minutes
         ],
 
         'database' => [
-            'driver' => env('CACHE_DB_DRIVER', 'file'),
-            'ttl' => (int) env('CACHE_DB_TTL', 600), // 10 minutes
+            'driver' => getenv('CACHE_DB_DRIVER') ?: 'file',
+            'ttl' => (int) (getenv('CACHE_DB_TTL') ?: 600), // 10 minutes
         ],
 
         'sessions' => [
-            'driver' => env('CACHE_SESSION_DRIVER', 'file'),
-            'ttl' => (int) env('CACHE_SESSION_TTL', 7200), // 2 hours
+            'driver' => getenv('CACHE_SESSION_DRIVER') ?: 'file',
+            'ttl' => (int) (getenv('CACHE_SESSION_TTL') ?: 7200), // 2 hours
         ],
     ],
 ];

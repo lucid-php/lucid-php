@@ -26,7 +26,7 @@ class CorsMiddleware implements MiddlewareInterface
     private bool $allowCredentials;
     private int $maxAge;
 
-    public function __construct(private final Config $config)
+    public function __construct(private readonly Config $config)
     {
         // Explicit configuration loading - no defaults, no magic
         $corsConfig = $this->config->all('cors');

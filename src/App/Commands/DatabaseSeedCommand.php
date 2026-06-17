@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Commands;
 
 use App\Repository\UserRepository;
-use Core\Attributes\Argument;
-use Core\Attributes\ConsoleCommand;
-use Core\Attributes\Option;
+use Core\Attribute\Argument;
+use Core\Attribute\ConsoleCommand;
+use Core\Attribute\Option;
 use Core\Console\CommandInterface;
 use Core\Console\OutputInterface;
 

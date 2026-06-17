@@ -27,7 +27,7 @@ class Router
     private array $globalMiddlewares = [];
     private Validator $validator;
 
-    public function __construct(private final Container $container) {
+    public function __construct(private readonly Container $container) {
         $this->validator = new Validator();
     }
 

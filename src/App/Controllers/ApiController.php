@@ -74,8 +74,8 @@ use Core\Http\Response;
 class ApiController
 {
     public function __construct(
-        private final UserRepository $userRepository,
-        private final EventDispatcher $events
+        private readonly UserRepository $userRepository,
+        private readonly EventDispatcher $events
     ) {}
 
     // Generous rate limit for health checks

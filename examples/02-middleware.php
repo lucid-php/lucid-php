@@ -88,7 +88,7 @@ class SecureController
     }
     
     // Method-level middleware - only this method requires admin
-    #[Route('DELETE', '/users/:id')]
+    #[Route('DELETE', '/users/{id}')]
     #[Middleware(AdminOnlyMiddleware::class)]
     public function deleteUser(): Response
     {
@@ -107,7 +107,7 @@ echo "   #[Middleware(ApiKeyMiddleware::class)]\n";
 echo "   class SecureController { ... }\n\n";
 
 echo "3. Method-level Middleware (applies to specific method):\n";
-echo "   #[Route('DELETE', '/users/:id')]\n";
+echo "   #[Route('DELETE', '/users/{id}')]\n";
 echo "   #[Middleware(AdminOnlyMiddleware::class)]\n";
 echo "   public function deleteUser() { ... }\n\n";
 

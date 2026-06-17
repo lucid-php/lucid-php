@@ -20,7 +20,7 @@ class DatabaseQueue implements QueueInterface
      * @param array<class-string> $allowedJobClasses Whitelist of job classes allowed to be unserialized
      */
     public function __construct(
-        private final Database $db,
+        private readonly Database $db,
         private readonly array $allowedJobClasses = [],
     ) {}
 

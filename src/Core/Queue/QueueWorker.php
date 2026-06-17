@@ -20,8 +20,8 @@ use Throwable;
 class QueueWorker
 {
     public function __construct(
-        private final QueueInterface $queue,
-        private final Container $container
+        private readonly QueueInterface $queue,
+        private readonly Container $container
     ) {}
 
     /**

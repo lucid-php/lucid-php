@@ -111,7 +111,7 @@ class UserController
         ], 201);
     }
     
-    #[Route('PUT', '/users/:id')]
+    #[Route('PUT', '/users/{id}')]
     public function updateUser(UpdateUserDTO $dto): Response
     {
         $updates = array_filter([

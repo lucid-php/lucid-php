@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Core\Attributes\ConsoleCommand;
+use Core\Attribute\ConsoleCommand;
 use Core\Console\CommandInterface;
 use Core\Console\ConsoleApplication;
 use Core\Console\ConsoleOutput;

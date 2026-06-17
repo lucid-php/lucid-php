@@ -22,7 +22,7 @@ use Core\Container;
 class SyncQueue implements QueueInterface
 {
     public function __construct(
-        private final Container $container
+        private readonly Container $container
     ) {}
 
     public function push(object $job, string $queue = 'default'): void

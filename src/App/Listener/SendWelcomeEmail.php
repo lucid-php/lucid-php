@@ -19,7 +19,7 @@ use Core\Queue\QueueInterface;
 class SendWelcomeEmail
 {
     public function __construct(
-        private final QueueInterface $queue
+        private readonly QueueInterface $queue
     ) {}
 
     /**

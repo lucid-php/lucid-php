@@ -14,6 +14,16 @@ readonly class HttpRequest
         public int $timeout = 30,
         public bool $verifySSL = true,
     ) {
+        // Only http/https are permitted. Without this guard a user-influenced
+        // URL could reach file://, gopher://, dict:// etc. (SSRF). Validate once
+        // here since this is an immutable value object.
+        $scheme = parse_url($url, PHP_URL_SCHEME);
+
+        if (!in_array($scheme, ['http', 'https'], true)) {
+            throw new \InvalidArgumentException(
+                "Unsupported URL scheme for HTTP request: " . ($scheme ?? 'none') . ". Only http and https are allowed."
+            );
+        }
     }
 
     public static function get(string $url, array $headers = []): self

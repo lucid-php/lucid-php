@@ -234,7 +234,7 @@ echo "=== Example 9: Serving Uploaded Files ===\n\n";
 echo "Controller to serve files with authentication:\n\n";
 echo "class FileController\n";
 echo "{\n";
-echo "    #[Route('GET', '/files/:filename')]\n";
+echo "    #[Route('GET', '/files/{filename}')]\n";
 echo "    public function download(Request \$request): Response\n";
 echo "    {\n";
 echo "        \$filename = \$request->params['filename'];\n";

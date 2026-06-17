@@ -20,9 +20,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Core\Console\ConsoleApplication;
 use Core\Console\CommandInterface;
 use Core\Console\OutputInterface;
-use Core\Attributes\ConsoleCommand;
-use Core\Attributes\Argument;
-use Core\Attributes\Option;
+use Core\Attribute\ConsoleCommand;
+use Core\Attribute\Argument;
+use Core\Attribute\Option;
 
 echo "Console Commands Examples:\n";
 echo "==========================\n\n";

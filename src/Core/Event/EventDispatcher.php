@@ -22,7 +22,7 @@ class EventDispatcher
     private array $listeners = [];
 
     public function __construct(
-        private final Container $container
+        private readonly Container $container
     ) {}
 
     /**

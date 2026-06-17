@@ -79,6 +79,11 @@ class Migrator
     private function getMigrationFiles(): array
     {
         $files = scandir($this->migrationsPath);
+
+        if ($files === false) {
+            throw DatabaseException::migrationsPathUnreadable($this->migrationsPath);
+        }
+
         $filtered = array_filter($files, fn($f) => str_ends_with($f, '.up.sql'));
         return array_values($filtered); // Re-index
     }

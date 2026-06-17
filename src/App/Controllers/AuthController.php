@@ -17,8 +17,8 @@ use Core\Http\Response;
 class AuthController
 {
     public function __construct(
-        private final UserRepository $userRepository,
-        private final TokenRepository $tokenRepository
+        private readonly UserRepository $userRepository,
+        private readonly TokenRepository $tokenRepository
     ) {}
 
     // Very strict rate limit for login attempts (security)

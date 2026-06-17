@@ -2,17 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Core\Attributes;
+namespace Core\Attribute;
 
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PARAMETER)]
-readonly class Option
+readonly class Argument
 {
     public function __construct(
         public string $name,
-        public string $shortcut = '',
         public string $description = '',
-        public mixed $default = null
+        public bool $required = true
     ) {}
 }

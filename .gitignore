@@ -21,10 +21,11 @@ composer.lock
 /storage/cache/*
 !/storage/cache/.gitkeep
 
-# Testing
+# Testing & Static Analysis
 .phpunit.result.cache
 /coverage/
 /.phpunit.cache
+/.php-cs-fixer.cache
 
 # IDE & Editors
 .vscode/

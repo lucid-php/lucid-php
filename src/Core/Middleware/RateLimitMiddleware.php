@@ -38,7 +38,7 @@ class RateLimitMiddleware implements MiddlewareInterface
     private string $identifierHeader;
 
     public function __construct(
-        private final RateLimitStore $store,
+        private readonly RateLimitStore $store,
         Config $config,
     ) {
         $rateLimitConfig = $config->all('ratelimit');

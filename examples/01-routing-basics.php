@@ -51,7 +51,7 @@ class PostController
         return Response::json($post, 201);
     }
     
-    #[Route('GET', '/:id')]
+    #[Route('GET', '/{id}')]
     public function show(Request $request): Response
     {
         // In a real app, you'd extract the :id parameter
@@ -66,7 +66,7 @@ class PostController
         return Response::json($post);
     }
     
-    #[Route('PUT', '/:id')]
+    #[Route('PUT', '/{id}')]
     public function update(Request $request): Response
     {
         $data = $request->body;
@@ -81,7 +81,7 @@ class PostController
         return Response::json($post);
     }
     
-    #[Route('DELETE', '/:id')]
+    #[Route('DELETE', '/{id}')]
     public function delete(Request $request): Response
     {
         return Response::json(['message' => 'Post deleted successfully']);
@@ -93,9 +93,9 @@ echo "================\n\n";
 
 echo "GET    /api/posts      - List all posts\n";
 echo "POST   /api/posts      - Create a new post\n";
-echo "GET    /api/posts/:id  - Get a specific post\n";
-echo "PUT    /api/posts/:id  - Update a post\n";
-echo "DELETE /api/posts/:id  - Delete a post\n\n";
+echo "GET    /api/posts/{id}  - Get a specific post\n";
+echo "PUT    /api/posts/{id}  - Update a post\n";
+echo "DELETE /api/posts/{id}  - Delete a post\n\n";
 
 echo "To test these routes, add PostController to your routes/web.php:\n";
 echo "\$router->registerControllers([\n";

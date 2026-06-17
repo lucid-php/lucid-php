@@ -1,0 +1,18 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 5
+    paths:
+        - src
+        - config
+        - public
+        - console
+        - bin
+    excludePaths:
+        # Examples are intentionally illustrative documentation, not production code.
+        - examples
+        # View templates rely on extract()ed variables PHPStan cannot see.
+        - src/App/Views
+    # Tests are validated by running them; PHPUnit's assertions produce
+    # "always evaluate to true" narrowing noise under static analysis.

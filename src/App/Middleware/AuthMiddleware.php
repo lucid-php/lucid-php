@@ -13,7 +13,7 @@ use Core\Http\Response;
 
 class AuthMiddleware implements MiddlewareInterface
 {
-    public function __construct(private final TokenRepository $tokenRepository)
+    public function __construct(private readonly TokenRepository $tokenRepository)
     {
     }
 

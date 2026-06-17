@@ -74,4 +74,12 @@ class DatabaseException extends Exception
     {
         return new self("Database connection failed: {$error}");
     }
+
+    /**
+     * Migrations directory could not be read
+     */
+    public static function migrationsPathUnreadable(string $path): self
+    {
+        return new self("Cannot read migrations directory: {$path}");
+    }
 }

@@ -66,16 +66,27 @@ class UserRepository
     
     public function update(int $id, array $data): bool
     {
+        // Values are bound as parameters, but COLUMN NAMES cannot be bound —
+        // they are part of the SQL text. Interpolating untrusted array keys
+        // straight into the query is a SQL-injection hole. So we validate every
+        // key against an explicit allowlist of updatable columns and reject
+        // anything else. Explicit over convenient.
+        $allowedColumns = ['name', 'email', 'password'];
+
         $fields = [];
         $params = ['id' => $id];
-        
+
         foreach ($data as $key => $value) {
+            if (!in_array($key, $allowedColumns, true)) {
+                throw new \InvalidArgumentException("Column '$key' is not updatable.");
+            }
+
             $fields[] = "$key = :$key";
             $params[$key] = $value;
         }
-        
+
         $fieldsStr = implode(', ', $fields);
-        
+
         return $this->db->execute(
             "UPDATE users SET $fieldsStr WHERE id = :id",
             $params
