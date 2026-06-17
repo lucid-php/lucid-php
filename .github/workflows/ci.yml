@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Tests & Static Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: dom, mbstring, xml, pdo_sqlite   # uri + pdo_sqlite ship with 8.5; listed for safety
+          coverage: none
+          tools: composer
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Run tests
+        run: composer test
+
+      - name: Static analysis (PHPStan)
+        run: composer analyse
+
+      # Advisory: reports style drift but does NOT fail the build, because the
+      # existing codebase predates the php-cs-fixer config. After running
+      # `composer cs-fix` once and committing, delete `continue-on-error` to enforce.
+      - name: Code style (php-cs-fixer)
+        run: composer cs
+        continue-on-error: true
