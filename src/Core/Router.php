@@ -88,39 +88,70 @@ class Router
         }
     }
 
-    public function dispatch(Request $request): Response
+    /**
+     * Find the route that handles a method + path, if any.
+     *
+     * @return array{route: array<string, mixed>, params: array<string, string>}|null
+     */
+    public function match(string $method, string $path): ?array
     {
-        // PHP 8.5: Use native URI extension for RFC 3986 compliant parsing
-        $uri = (new Uri($request->uri))->getPath();
-        $routesForMethod = $this->routes[$request->method] ?? [];
-        
-        $handlerConfig = null;
-        $params = [];
-
-        // Try to match the URI against registered routes
-        foreach ($routesForMethod as $route) {
-            if ($route['path'] === $uri) {
-                // Exact match (no parameters)
-                $handlerConfig = $route;
-                break;
+        foreach ($this->routes[$method] ?? [] as $route) {
+            if ($route['path'] === $path) {
+                return ['route' => $route, 'params' => []];
             }
-            
-            // Try pattern match (with parameters)
-            if (preg_match($route['pattern'], $uri, $matches)) {
-                $handlerConfig = $route;
-                // Extract named parameters
+
+            if (preg_match($route['pattern'], $path, $matches)) {
+                $params = [];
                 foreach ($matches as $key => $value) {
                     if (!is_int($key)) {
                         $params[$key] = $value;
                     }
                 }
-                break;
+
+                return ['route' => $route, 'params' => $params];
             }
         }
 
-        if (!$handlerConfig) {
+        return null;
+    }
+
+    /**
+     * All registered routes, flattened for introspection.
+     *
+     * @return array<int, array{method: string, path: string, controller: string, action: string, middlewares: array<int, string>}>
+     */
+    public function getRoutes(): array
+    {
+        $routes = [];
+
+        foreach ($this->routes as $httpMethod => $entries) {
+            foreach ($entries as $entry) {
+                $routes[] = [
+                    'method' => $httpMethod,
+                    'path' => $entry['path'],
+                    'controller' => $entry['controller'],
+                    'action' => $entry['method'],
+                    'middlewares' => $entry['middlewares'],
+                ];
+            }
+        }
+
+        return $routes;
+    }
+
+    public function dispatch(Request $request): Response
+    {
+        // PHP 8.5: Use native URI extension for RFC 3986 compliant parsing
+        $uri = (new Uri($request->uri))->getPath();
+
+        $matched = $this->match($request->method, $uri);
+
+        if ($matched === null) {
             return new Response("404 Not Found", 404);
         }
+
+        $handlerConfig = $matched['route'];
+        $params = $matched['params'];
 
         $controllerClass = $handlerConfig['controller'];
         $methodName = $handlerConfig['method'];

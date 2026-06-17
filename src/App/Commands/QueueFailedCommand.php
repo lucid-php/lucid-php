@@ -42,7 +42,7 @@ class QueueFailedCommand implements CommandInterface
         foreach ($failed as $job) {
             $when = date('Y-m-d H:i:s', (int) $job['failed_at']);
             $output->writeln("  <comment>{$job['id']}</comment>  [{$job['queue']}]  attempts={$job['attempts']}  {$when}");
-            $output->writeln("    " . str_replace("\n", ' ', substr((string) $job['exception'], 0, 200)));
+            $output->writeln("    <dim>" . str_replace("\n", ' ', substr((string) $job['exception'], 0, 200)) . "</dim>");
         }
 
         $output->writeln('');

@@ -65,8 +65,8 @@ class ScheduleRunCommand implements CommandInterface
                 $now = new DateTimeImmutable('now', $timezone);
                 $nextRun = $task->getNextRunTime($now);
                 $output->writeln("Registered: {$job->getDescription()}");
-                $output->writeln("  Schedule: {$job->schedule()}");
-                $output->writeln("  Next run: {$nextRun->format('Y-m-d H:i:s T')}");
+                $output->writeln("  Schedule: <comment>{$job->schedule()}</comment>");
+                $output->writeln("  Next run: <comment>{$nextRun->format('Y-m-d H:i:s T')}</comment>");
                 $output->writeln('');
             }
         }

@@ -41,7 +41,7 @@ class MigrateStatusCommand implements CommandInterface
             if ($row['applied']) {
                 $output->success("  [✓] {$row['migration']}  (batch {$row['batch']})");
             } else {
-                $output->writeln("  [ ] {$row['migration']}  (pending)");
+                $output->writeln("  [ ] {$row['migration']}  <comment>(pending)</comment>");
             }
         }
 

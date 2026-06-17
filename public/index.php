@@ -23,9 +23,6 @@ use Core\Mail\LogMailer;
 use Core\Mail\ArrayMailer;
 use Core\Log\Logger;
 use Core\Log\Handler\StderrHandler;
-use App\Controllers\HomeController;
-use App\Controllers\ApiController;
-use App\Controllers\AuthController;
 use App\Event\UserCreated;
 use App\Event\UserDeleted;
 use App\Listener\SendWelcomeEmail;
@@ -146,11 +143,7 @@ $events->listen(UserDeleted::class, [
 // Register EventDispatcher in container
 $app->getContainer()->set(EventDispatcher::class, $events);
 
-// Explicitly register controllers
-$app->registerControllers([
-    HomeController::class,
-    ApiController::class,
-    AuthController::class,
-]);
+// Explicitly register controllers (single source of truth: config/controllers.php)
+$app->registerControllers($config->getArray('controllers.list'));
 
 $app->run();

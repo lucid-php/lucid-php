@@ -129,12 +129,19 @@ $console->registerCommands([
     MigrateCommand::class,
     MigrateRollbackCommand::class,
     \App\Commands\MigrateStatusCommand::class,
+    \App\Commands\MakeMigrationCommand::class,
     \App\Commands\DatabaseSeedCommand::class,
     QueueWorkCommand::class,
     \App\Commands\QueueFailedCommand::class,
     \App\Commands\QueueRetryCommand::class,
+    \App\Commands\QueueStatusCommand::class,
     ScheduleRunCommand::class,
     ScheduleListCommand::class,
+    \App\Commands\RouteListCommand::class,
+    \App\Commands\RouteMatchCommand::class,
+    \App\Commands\ConfigShowCommand::class,
+    \App\Commands\DbStatusCommand::class,
+    \App\Commands\CacheClearCommand::class,
 ]);
 
 // Run

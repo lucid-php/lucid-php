@@ -35,7 +35,7 @@ class ScheduleListCommand implements CommandInterface
         }
 
         $output->info('Scheduled Tasks');
-        $output->writeln(str_repeat('-', 80));
+        $output->writeln('<dim>' . str_repeat('-', 80) . '</dim>');
         $output->writeln('');
 
         $now = new DateTimeImmutable('now', $timezone);
@@ -59,10 +59,10 @@ class ScheduleListCommand implements CommandInterface
                 $minutesUntil = floor(($timeUntil % 3600) / 60);
 
                 $output->writeln(($i + 1) . ". {$description}");
-                $output->writeln("   Class:     " . $jobClass);
-                $output->writeln("   Schedule:  {$cronExpression}");
-                $output->writeln("   Next run:  {$nextRun->format('Y-m-d H:i:s T')}");
-                $output->writeln("   In:        {$hoursUntil}h {$minutesUntil}m");
+                $output->writeln("   Class:     <comment>" . $jobClass . "</comment>");
+                $output->writeln("   Schedule:  <comment>{$cronExpression}</comment>");
+                $output->writeln("   Next run:  <comment>{$nextRun->format('Y-m-d H:i:s T')}</comment>");
+                $output->writeln("   In:        <comment>{$hoursUntil}h {$minutesUntil}m</comment>");
                 $output->writeln('');
 
             } catch (\Throwable $e) {
@@ -71,7 +71,7 @@ class ScheduleListCommand implements CommandInterface
             }
         }
 
-        $output->writeln(str_repeat('-', 80));
+        $output->writeln('<dim>' . str_repeat('-', 80) . '</dim>');
         $output->success('Total tasks: ' . count($jobClasses));
 
         return 0;

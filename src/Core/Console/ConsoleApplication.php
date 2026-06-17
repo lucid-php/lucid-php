@@ -244,7 +244,7 @@ class ConsoleApplication
     private function showHelp(): void
     {
         $this->output->writeln('');
-        $this->output->writeln('Available commands:');
+        $this->output->writeln('<comment>Available commands:</comment>');
         $this->output->writeln('');
 
         if (empty($this->commands)) {
@@ -254,13 +254,24 @@ class ConsoleApplication
 
         $maxLength = max(array_map('strlen', array_keys($this->commands)));
 
+        // Group commands by their namespace prefix (e.g. "queue:") so related
+        // commands list together, with a blank line between groups.
+        $grouped = [];
         foreach ($this->commands as $name => $config) {
-            $padding = str_repeat(' ', $maxLength - strlen($name) + 2);
-            $description = $config['description'] ?: 'No description';
-            $this->output->writeln("  {$name}{$padding}{$description}");
+            $group = str_contains($name, ':') ? substr($name, 0, strpos($name, ':')) : '';
+            $grouped[$group][$name] = $config;
         }
+        ksort($grouped);
 
-        $this->output->writeln('');
+        foreach ($grouped as $commands) {
+            ksort($commands);
+            foreach ($commands as $name => $config) {
+                $padding = str_repeat(' ', $maxLength - strlen($name) + 2);
+                $description = $config['description'] ?: '<dim>No description</dim>';
+                $this->output->writeln("  <info>{$name}</info>{$padding}{$description}");
+            }
+            $this->output->writeln('');
+        }
     }
 
     /**
