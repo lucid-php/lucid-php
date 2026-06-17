@@ -114,9 +114,15 @@ class CurlHttpClient implements HttpClientInterface
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
         
-        // Follow redirects
+        // Follow redirects, but never let a redirect downgrade the scheme to
+        // file://, gopher://, dict://, etc. HttpRequest only validates the
+        // *initial* URL's scheme; this constrains every subsequent hop too.
+        // NOTE: this does not stop a redirect to an internal HTTP host
+        // (e.g. http://169.254.169.254) — that requires host/IP allow-listing,
+        // which should be added if request URLs can come from user input.
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+        curl_setopt($ch, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
     }
 
     private function prepareBody(mixed $body, array $headers): string

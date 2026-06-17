@@ -9,7 +9,7 @@ use RuntimeException;
 
 /**
  * Handles file upload storage with explicit configuration.
- * 
+ *
  * No magic paths, no auto-naming - everything is explicit.
  * Provides security helpers for path traversal prevention.
  */
@@ -40,10 +40,10 @@ class FileUploadHandler
 
     /**
      * Store uploaded file with explicit filename.
-     * 
+     *
      * Prevents path traversal attacks by sanitizing filename.
      * Returns absolute path to stored file.
-     * 
+     *
      * @param UploadedFile $file The uploaded file to store
      * @param string $filename Desired filename (will be sanitized)
      * @param string|null $subdirectory Optional subdirectory within upload directory
@@ -53,12 +53,12 @@ class FileUploadHandler
     public function store(UploadedFile $file, string $filename, ?string $subdirectory = null): string
     {
         $safeFilename = $this->sanitizeFilename($filename);
-        
+
         $targetDirectory = $this->uploadDirectory;
         if ($subdirectory !== null) {
             $safeSubdirectory = $this->sanitizePath($subdirectory);
             $targetDirectory = rtrim($this->uploadDirectory, '/') . '/' . $safeSubdirectory;
-            
+
             if (!is_dir($targetDirectory)) {
                 if (!mkdir($targetDirectory, 0755, true)) {
                     throw new RuntimeException("Failed to create subdirectory: $targetDirectory");
@@ -80,10 +80,10 @@ class FileUploadHandler
 
     /**
      * Store uploaded file with generated unique filename.
-     * 
+     *
      * Uses uniqid() with more entropy for uniqueness.
      * Preserves original file extension.
-     * 
+     *
      * @param UploadedFile $file The uploaded file to store
      * @param string|null $subdirectory Optional subdirectory
      * @return string Absolute path to stored file
@@ -93,7 +93,7 @@ class FileUploadHandler
     {
         $extension = $file->getExtension();
         $uniqueName = uniqid('upload_', true);
-        
+
         if ($extension !== '') {
             $uniqueName .= '.' . $extension;
         }
@@ -103,11 +103,11 @@ class FileUploadHandler
 
     /**
      * Store uploaded file with hashed filename.
-     * 
+     *
      * Uses SHA-256 hash of file contents as filename.
      * Useful for content-addressable storage.
      * Returns existing file path if hash collision (same content already exists).
-     * 
+     *
      * @param UploadedFile $file The uploaded file to store
      * @param string|null $subdirectory Optional subdirectory
      * @return string Absolute path to stored file
@@ -118,7 +118,7 @@ class FileUploadHandler
         $contents = $file->getContents();
         $hash = hash('sha256', $contents);
         $extension = $file->getExtension();
-        
+
         $filename = $extension !== '' ? "$hash.$extension" : $hash;
 
         $targetDirectory = $this->uploadDirectory;
@@ -139,10 +139,10 @@ class FileUploadHandler
 
     /**
      * Delete a file from the upload directory.
-     * 
+     *
      * Explicit deletion - no automatic cleanup.
      * Validates path is within upload directory to prevent path traversal.
-     * 
+     *
      * @param string $path Absolute path to file
      * @throws RuntimeException if deletion fails or path is invalid
      */
@@ -159,8 +159,12 @@ class FileUploadHandler
             throw new RuntimeException("Upload directory does not exist: {$this->uploadDirectory}");
         }
 
-        // Ensure file is within upload directory (prevent path traversal)
-        if (!str_starts_with($realPath, $realUploadDir)) {
+        // Ensure file is within upload directory (prevent path traversal).
+        // Require a separator boundary so a sibling directory sharing the same
+        // prefix (e.g. "/data/uploads-evil" vs "/data/uploads") cannot pass.
+        if ($realPath !== $realUploadDir
+            && !str_starts_with($realPath, $realUploadDir . DIRECTORY_SEPARATOR)
+        ) {
             throw new RuntimeException("File is outside upload directory: $path");
         }
 
@@ -171,7 +175,7 @@ class FileUploadHandler
 
     /**
      * Sanitize filename to prevent path traversal and security issues.
-     * 
+     *
      * Removes: directory separators, null bytes, control characters
      * Preserves: alphanumeric, dots, hyphens, underscores
      */
@@ -179,18 +183,18 @@ class FileUploadHandler
     {
         // Remove any directory separators
         $filename = basename($filename);
-        
+
         // Remove null bytes and control characters
         $filename = preg_replace('/[\x00-\x1F\x7F]/u', '', $filename);
-        
+
         // Replace spaces with underscores
         $filename = str_replace(' ', '_', $filename);
-        
+
         // Remove any remaining dangerous characters
         $filename = preg_replace('/[^a-zA-Z0-9._-]/', '', $filename);
-        
+
         if ($filename === '' || $filename === '.' || $filename === '..') {
-            throw new RuntimeException("Invalid filename after sanitization");
+            throw new RuntimeException('Invalid filename after sanitization');
         }
 
         return $filename;
@@ -198,28 +202,28 @@ class FileUploadHandler
 
     /**
      * Sanitize path to prevent directory traversal.
-     * 
+     *
      * Removes: .., null bytes, absolute path indicators
      */
     private function sanitizePath(string $path): string
     {
         // Remove null bytes
         $path = str_replace("\0", '', $path);
-        
+
         // Remove directory traversal attempts (multiple passes to catch encoded attempts)
         do {
             $before = $path;
             $path = str_replace(['..', './'], '', $path);
         } while ($path !== $before);
-        
+
         // Remove leading slashes (prevent absolute paths)
         $path = ltrim($path, '/\\');
-        
+
         // Replace backslashes with forward slashes
         $path = str_replace('\\', '/', $path);
-        
+
         if ($path === '') {
-            throw new RuntimeException("Invalid path after sanitization");
+            throw new RuntimeException('Invalid path after sanitization');
         }
 
         return $path;

@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Core\Http;
 
-use Core\Http\Response;
 use Core\Validation\ValidationException;
 use Throwable;
 
 /**
  * Exception Handler
- * 
+ *
  * Philosophy: Explicit exception-to-response mapping. No magic recovery.
  * Every exception type is explicitly mapped to an HTTP status code.
  * Development mode shows full details, production shows safe messages.
@@ -19,11 +18,12 @@ class ExceptionHandler
 {
     public function __construct(
         private readonly bool $debug = false
-    ) {}
+    ) {
+    }
 
     /**
      * Convert an exception into an HTTP Response
-     * 
+     *
      * Explicit mapping:
      * - ValidationException -> 422 Unprocessable Entity
      * - NotFoundException -> 404 Not Found
@@ -69,7 +69,7 @@ class ExceptionHandler
     {
         $response = [
             'error' => $this->getErrorTitle($statusCode),
-            'message' => $exception->getMessage(),
+            'message' => $this->getSafeMessage($exception),
         ];
 
         // ValidationException: always include validation details
@@ -86,6 +86,28 @@ class ExceptionHandler
         }
 
         return $response;
+    }
+
+    /**
+     * Return a message that is safe to expose to the client.
+     *
+     * In debug mode the real message is always shown. In production only
+     * intentionally client-facing exceptions (HttpException hierarchy and
+     * ValidationException) expose their message; any other (500-level)
+     * exception is masked with a generic message to avoid leaking internal
+     * details such as SQL errors, file paths, or stack-trace fragments.
+     */
+    private function getSafeMessage(Throwable $exception): string
+    {
+        if ($this->debug) {
+            return $exception->getMessage();
+        }
+
+        if ($exception instanceof HttpException || $exception instanceof ValidationException) {
+            return $exception->getMessage();
+        }
+
+        return 'An unexpected error occurred.';
     }
 
     /**
@@ -112,7 +134,7 @@ class ExceptionHandler
     private function formatTrace(array $trace): array
     {
         return array_slice(
-            array_map(fn($frame) => [
+            array_map(fn ($frame) => [
                 'file' => $frame['file'] ?? 'unknown',
                 'line' => $frame['line'] ?? 0,
                 'function' => ($frame['class'] ?? '') . ($frame['type'] ?? '') . $frame['function'],

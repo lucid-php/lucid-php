@@ -9,8 +9,8 @@ use Core\Http\ConflictException;
 use Core\Http\ExceptionHandler;
 use Core\Http\ForbiddenException;
 use Core\Http\NotFoundException;
-use Core\Http\UnauthorizedException;
 use Core\Http\Response;
+use Core\Http\UnauthorizedException;
 use Core\Validation\ValidationException;
 use Exception;
 use PHPUnit\Framework\TestCase;
@@ -26,7 +26,7 @@ class ExceptionHandlerTest extends TestCase
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertSame(404, $response->status);
-        
+
         $data = json_decode($response->content, true);
         $this->assertSame('Not Found', $data['error']);
         $this->assertSame('User not found', $data['message']);
@@ -41,7 +41,7 @@ class ExceptionHandlerTest extends TestCase
         $response = $handler->handle($exception);
 
         $this->assertSame(401, $response->status);
-        
+
         $data = json_decode($response->content, true);
         $this->assertSame('Unauthorized', $data['error']);
         $this->assertSame('Invalid token', $data['message']);
@@ -55,7 +55,7 @@ class ExceptionHandlerTest extends TestCase
         $response = $handler->handle($exception);
 
         $this->assertSame(403, $response->status);
-        
+
         $data = json_decode($response->content, true);
         $this->assertSame('Forbidden', $data['error']);
     }
@@ -68,7 +68,7 @@ class ExceptionHandlerTest extends TestCase
         $response = $handler->handle($exception);
 
         $this->assertSame(400, $response->status);
-        
+
         $data = json_decode($response->content, true);
         $this->assertSame('Bad Request', $data['error']);
     }
@@ -81,7 +81,7 @@ class ExceptionHandlerTest extends TestCase
         $response = $handler->handle($exception);
 
         $this->assertSame(409, $response->status);
-        
+
         $data = json_decode($response->content, true);
         $this->assertSame('Conflict', $data['error']);
     }
@@ -95,7 +95,7 @@ class ExceptionHandlerTest extends TestCase
         $response = $handler->handle($exception);
 
         $this->assertSame(422, $response->status);
-        
+
         $data = json_decode($response->content, true);
         $this->assertSame('Validation Failed', $data['error']);
         $this->assertArrayHasKey('details', $data);
@@ -110,10 +110,12 @@ class ExceptionHandlerTest extends TestCase
         $response = $handler->handle($exception);
 
         $this->assertSame(500, $response->status);
-        
+
         $data = json_decode($response->content, true);
         $this->assertSame('Internal Server Error', $data['error']);
-        $this->assertSame('Something went wrong', $data['message']);
+        // In production, unexpected exception messages must not leak to clients.
+        $this->assertSame('An unexpected error occurred.', $data['message']);
+        $this->assertStringNotContainsString('Something went wrong', $response->content);
     }
 
     public function testDebugModeIncludesStackTrace(): void
@@ -149,7 +151,7 @@ class ExceptionHandlerTest extends TestCase
     public function testStackTraceLimitedToTenFrames(): void
     {
         $handler = new ExceptionHandler(debug: true);
-        
+
         // Create exception with deep stack
         $exception = $this->createDeepStackException();
 
@@ -164,14 +166,44 @@ class ExceptionHandlerTest extends TestCase
         return $this->level1();
     }
 
-    private function level1(): Exception { return $this->level2(); }
-    private function level2(): Exception { return $this->level3(); }
-    private function level3(): Exception { return $this->level4(); }
-    private function level4(): Exception { return $this->level5(); }
-    private function level5(): Exception { return $this->level6(); }
-    private function level6(): Exception { return $this->level7(); }
-    private function level7(): Exception { return $this->level8(); }
-    private function level8(): Exception { return $this->level9(); }
-    private function level9(): Exception { return $this->level10(); }
-    private function level10(): Exception { return new Exception('Deep stack'); }
+    private function level1(): Exception
+    {
+        return $this->level2();
+    }
+    private function level2(): Exception
+    {
+        return $this->level3();
+    }
+    private function level3(): Exception
+    {
+        return $this->level4();
+    }
+    private function level4(): Exception
+    {
+        return $this->level5();
+    }
+    private function level5(): Exception
+    {
+        return $this->level6();
+    }
+    private function level6(): Exception
+    {
+        return $this->level7();
+    }
+    private function level7(): Exception
+    {
+        return $this->level8();
+    }
+    private function level8(): Exception
+    {
+        return $this->level9();
+    }
+    private function level9(): Exception
+    {
+        return $this->level10();
+    }
+    private function level10(): Exception
+    {
+        return new Exception('Deep stack');
+    }
 }

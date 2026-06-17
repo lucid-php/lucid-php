@@ -139,4 +139,35 @@ class MailTest extends TestCase
         $sent = $mailer->getSent();
         $this->assertSame('custom@example.com', $sent[0]->from);
     }
+
+    public function test_rejects_header_injection_in_subject(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Mail::create('user@example.com', "Subject\r\nBcc: victim@evil.com", 'Body');
+    }
+
+    public function test_rejects_smtp_command_injection_in_recipient(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Mail::create("user@example.com>\r\nRCPT TO:<spam@evil.com", 'Subject', 'Body');
+    }
+
+    public function test_rejects_invalid_recipient_address(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Mail::create('not-an-email', 'Subject', 'Body');
+    }
+
+    public function test_rejects_injection_in_cc(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Mail::create('user@example.com', 'Subject', 'Body')
+            ->withCc(["ok@example.com\r\nBcc: victim@evil.com"]);
+    }
+
+    public function test_allows_newlines_in_body(): void
+    {
+        $mail = Mail::create('user@example.com', 'Subject', "Line one\r\nLine two\nLine three");
+        $this->assertStringContainsString('Line two', $mail->body);
+    }
 }

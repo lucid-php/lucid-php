@@ -160,7 +160,9 @@ class CorsMiddlewareTest extends TestCase
 
         $response = $middleware->process($request, $handler);
 
-        $this->assertEquals('https://any-site.com', $response->headers['Access-Control-Allow-Origin']);
+        // A wildcard config (without credentials) must emit a literal '*' rather
+        // than reflecting the caller's origin.
+        $this->assertEquals('*', $response->headers['Access-Control-Allow-Origin']);
 
         // Cleanup
         unlink($tempConfig . '/cors.php');
@@ -209,8 +211,10 @@ class CorsMiddlewareTest extends TestCase
 
     private function createMockHandler(Response $response): RequestHandlerInterface
     {
-        return new class($response) implements RequestHandlerInterface {
-            public function __construct(private Response $response) {}
+        return new class ($response) implements RequestHandlerInterface {
+            public function __construct(private Response $response)
+            {
+            }
 
             public function handle(Request $request): Response
             {
@@ -224,7 +228,9 @@ class CorsMiddlewareTest extends TestCase
         $tempDir = sys_get_temp_dir() . '/test_cors_' . uniqid();
         mkdir($tempDir);
 
-        file_put_contents($tempDir . '/cors.php', <<<'PHP'
+        file_put_contents(
+            $tempDir . '/cors.php',
+            <<<'PHP'
 <?php
 return [
     'allowed_origins' => ['*'],
@@ -245,7 +251,9 @@ PHP
         $tempDir = sys_get_temp_dir() . '/test_cors_cred_' . uniqid();
         mkdir($tempDir);
 
-        file_put_contents($tempDir . '/cors.php', <<<'PHP'
+        file_put_contents(
+            $tempDir . '/cors.php',
+            <<<'PHP'
 <?php
 return [
     'allowed_origins' => ['http://localhost:3000'],

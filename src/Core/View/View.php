@@ -8,7 +8,7 @@ use RuntimeException;
 
 /**
  * Simple PHP Template Renderer
- * 
+ *
  * Philosophy: Explicit, no magic
  * - Explicit template paths (no auto-discovery)
  * - Variables explicitly passed and extracted
@@ -19,11 +19,12 @@ class View
 {
     public function __construct(
         private readonly string $viewsPath
-    ) {}
+    ) {
+    }
 
     /**
      * Render a template file with data
-     * 
+     *
      * @param string $template Relative path from views directory (e.g., 'users/profile')
      * @param array<string, mixed> $data Variables to extract into template scope
      * @return string Rendered HTML
@@ -32,7 +33,7 @@ class View
     public function render(string $template, array $data = []): string
     {
         $templatePath = $this->resolveTemplatePath($template);
-        
+
         if (!file_exists($templatePath)) {
             throw new RuntimeException("View template not found: {$template}");
         }
@@ -40,13 +41,13 @@ class View
         // Extract variables into local scope
         // Note: Using EXTR_SKIP to prevent overwriting existing variables like $templatePath
         extract($data, EXTR_SKIP);
-        
+
         // Make escape function available as closure
-        $escape = fn(?string $value): string => htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
-        
+        $escape = fn (?string $value): string => htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
+
         // Capture output
         ob_start();
-        
+
         try {
             require $templatePath;
             return ob_get_clean();
@@ -74,35 +75,39 @@ class View
     {
         // Convert dot notation to path (e.g., "users.profile" -> "users/profile")
         $template = str_replace('.', '/', $template);
-        
+
         // Add .php extension if not present
         if (!str_ends_with($template, '.php')) {
             $template .= '.php';
         }
-        
+
         // Check for path traversal attempts AFTER extension is added
         // This ensures "safe/../evil" patterns are caught
         if (str_contains($template, '..') || str_starts_with($template, '/')) {
             throw new RuntimeException("Template path traversal detected: {$template}");
         }
-        
+
         $templatePath = $this->viewsPath . '/' . $template;
-        
+
         // Additional validation using realpath after file exists
         // This catches any symbolic link or filesystem-level traversal
         if (file_exists($templatePath)) {
             $realPath = realpath($templatePath);
             $realViewsPath = realpath($this->viewsPath);
-            
+
             if ($realPath === false || $realViewsPath === false) {
                 throw new RuntimeException("Invalid template path: {$template}");
             }
-            
-            if (!str_starts_with($realPath, $realViewsPath)) {
+
+            // Require a separator boundary so a sibling directory sharing the
+            // same prefix cannot satisfy the containment check.
+            if ($realPath !== $realViewsPath
+                && !str_starts_with($realPath, $realViewsPath . DIRECTORY_SEPARATOR)
+            ) {
                 throw new RuntimeException("Template path traversal detected: {$template}");
             }
         }
-        
+
         return $templatePath;
     }
 }

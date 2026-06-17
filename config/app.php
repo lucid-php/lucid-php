@@ -22,9 +22,11 @@ return [
     |--------------------------------------------------------------------------
     | Debug Mode
     |--------------------------------------------------------------------------
-    | When enabled, detailed error messages are shown
+    | When enabled, detailed error messages are shown. MUST stay false in
+    | production: debug responses expose stack traces, file paths, and raw
+    | exception messages (including DB errors). Enable via APP_DEBUG=1 locally.
     */
-    'debug' => true,
+    'debug' => filter_var(getenv('APP_DEBUG'), FILTER_VALIDATE_BOOLEAN),
 
     /*
     |--------------------------------------------------------------------------
