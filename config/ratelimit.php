@@ -43,12 +43,12 @@ return [
 
     /**
      * Storage Backend
-     * 
-     * Not implemented yet - currently always uses InMemoryRateLimitStore.
-     * Future: 'redis', 'database', etc.
-     * 
-     * Note: In-memory storage resets on server restart and
-     * doesn't work across multiple servers.
+     *
+     * The concrete RateLimitStore is wired explicitly in public/index.php, which
+     * binds DatabaseRateLimitStore so counters are shared across PHP-FPM workers
+     * and survive restarts (requires the rate_limits migration). The in-memory
+     * store remains available for single-process/dev use, but it does NOT
+     * enforce limits across multiple workers.
      */
-    // 'storage' => 'memory',
+    // 'storage' => 'database',
 ];

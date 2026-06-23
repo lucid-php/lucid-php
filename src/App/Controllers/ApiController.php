@@ -66,7 +66,6 @@ use Core\Pagination\Paginator;
 use App\Middleware\LoggerMiddleware;
 use App\Middleware\AuthMiddleware;
 use Core\Http\NotFoundException;
-use Core\Http\ForbiddenException;
 use Core\Middleware\CorsMiddleware;
 use Core\Http\Request;
 use Core\Http\Response;
@@ -406,14 +405,14 @@ class ApiController
     #[Route('POST', '/admin/broadcast')]
     #[Middleware(AuthMiddleware::class)]
     #[Middleware(CorsMiddleware::class)]
+    #[Middleware(AuthorizationMiddleware::class)]
+    #[Authorize('admin.broadcast')]
     #[RateLimit(requests: 1, window: 60)]
     public function adminBroadcast(Request $request): Response
     {
-        $currentUser = $request->getAttribute('user');
-        
-        if (!isset($currentUser->is_admin) || !$currentUser->is_admin) {
-            throw new ForbiddenException('Admin access required');
-        }
+        // Authorization is enforced by #[Authorize('admin.broadcast')] above,
+        // which AuthorizationMiddleware checks against the role->permissions map
+        // in config/authorization.php (runs after AuthMiddleware sets 'user').
 
         // Broadcast logic would go here
         return Response::json([

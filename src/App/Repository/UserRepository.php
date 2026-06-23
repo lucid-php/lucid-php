@@ -43,7 +43,8 @@ class UserRepository extends AbstractRepository
             name: $row['name'],
             email: $row['email'],
             password: $row['password'],
-            created_at: $row['created_at']
+            created_at: $row['created_at'],
+            role: $row['role'] ?? 'user',
         ), $rows);
     }
 
@@ -63,7 +64,8 @@ class UserRepository extends AbstractRepository
             name: $row['name'],
             email: $row['email'],
             password: $row['password'],
-            created_at: $row['created_at']
+            created_at: $row['created_at'],
+            role: $row['role'] ?? 'user',
         );
     }
 }

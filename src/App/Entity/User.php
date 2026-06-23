@@ -12,5 +12,6 @@ class User
         public string $email,
         public string $password, // Hashed
         public ?string $created_at = null,
+        public string $role = 'user',
     ) {}
 }

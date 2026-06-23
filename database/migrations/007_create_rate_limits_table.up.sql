@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS rate_limits (
+    rate_key VARCHAR(255) PRIMARY KEY,
+    hits INT NOT NULL DEFAULT 0,
+    reset_at INT NOT NULL DEFAULT 0
+);

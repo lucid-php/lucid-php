@@ -12,6 +12,9 @@ use Core\Http\ExceptionHandler;
 use Core\Middleware\ExceptionMiddleware;
 use Core\Middleware\SecurityHeadersMiddleware;
 use Core\Middleware\SecurityHeadersConfig;
+use Core\Middleware\RateLimitMiddleware;
+use Core\RateLimit\RateLimitStore;
+use Core\RateLimit\DatabaseRateLimitStore;
 use Core\Security\AuthorizerInterface;
 use App\Security\SimpleAuthorizer;
 use Core\Queue\QueueInterface;
@@ -88,6 +91,16 @@ if ($dbDriver === 'sqlite') {
 $db = new Database($dsn, $username, $password);
 $app->getContainer()->set(Database::class, $db);
 $app->getContainer()->set(Config::class, $config);
+
+// --- Rate Limiting (shared, DB-backed store) ---
+// Registered globally: the middleware no-ops on routes without a #[RateLimit]
+// attribute, so global registration simply makes the per-route limits actually
+// enforce. A DB-backed store is used (not in-memory) so counters are shared
+// across PHP-FPM workers and survive restarts — without this the strict login
+// limit and write-endpoint limits are silently ineffective under concurrency.
+$rateLimitStore = new DatabaseRateLimitStore($db);
+$app->getContainer()->set(RateLimitStore::class, $rateLimitStore);
+$app->addGlobalMiddleware(RateLimitMiddleware::class);
 
 // --- Queue System Setup (Explicit Driver Configuration) ---
 $queueDriver = $config->get('queue.driver', 'sync');

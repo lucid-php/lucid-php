@@ -4,25 +4,41 @@ declare(strict_types=1);
 
 namespace App\Security;
 
+use Core\Config\Config;
 use Core\Http\Request;
 use Core\Security\AuthorizerInterface;
 
 /**
- * Reference authorizer for the sample application.
+ * Role-based authorizer for the sample application.
  *
  * Reads the authenticated principal placed on the request by AuthMiddleware
- * ('user' attribute) and maps abilities to a simple rule. A real app would
- * delegate to roles/permissions/policies here — the framework stays out of it.
+ * (the 'user' attribute) and grants an ability only if it is listed for the
+ * user's role in config/authorization.php (or that role lists the '*' wildcard).
+ *
+ * Fails closed: no authenticated user, an unknown role, or an unlisted ability
+ * all result in denial. There is no implicit super-user — 'admin' is privileged
+ * only because the config grants it those abilities.
  */
 class SimpleAuthorizer implements AuthorizerInterface
 {
+    public function __construct(
+        private readonly Config $config
+    ) {}
+
     public function authorize(string $ability, Request $request): bool
     {
         $user = $request->getAttribute('user');
 
-        return match ($ability) {
-            'users.delete' => isset($user->is_admin) && $user->is_admin,
-            default => false,
-        };
+        if ($user === null) {
+            return false;
+        }
+
+        $role = $user->role ?? 'user';
+
+        $roles = $this->config->all('authorization')['roles'] ?? [];
+        $permissions = $roles[$role] ?? [];
+
+        return in_array('*', $permissions, true)
+            || in_array($ability, $permissions, true);
     }
 }

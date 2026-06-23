@@ -129,13 +129,16 @@ readonly class FileCache implements CacheInterface
         }
 
         try {
-            $data = unserialize($contents);
+            // SECURITY: same object-injection guard as get(). has() only ever
+            // reads the expires_at scalar, so it never needs to restore objects.
+            $allowedClasses = $this->allowedClasses === [] ? false : $this->allowedClasses;
+            $data = unserialize($contents, ['allowed_classes' => $allowedClasses]);
         } catch (\Exception) {
             @unlink($filePath);
             return false;
         }
 
-        if (!isset($data['expires_at'])) {
+        if (!is_array($data) || !isset($data['expires_at'])) {
             @unlink($filePath);
             return false;
         }
