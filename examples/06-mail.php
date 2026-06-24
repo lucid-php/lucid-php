@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * Example 6: Mail System
- * 
+ *
  * Demonstrates:
  * - Sending emails via SMTP
  * - Using different mail drivers (SMTP, Log, Array)
@@ -14,13 +14,13 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Core\Mail\Mail;
-use Core\Mail\SmtpMailer;
-use Core\Mail\LogMailer;
-use Core\Mail\ArrayMailer;
-use Core\Mail\MailerInterface;
 use Core\Log\Logger;
 use Core\Log\LogLevel;
+use Core\Mail\ArrayMailer;
+use Core\Mail\LogMailer;
+use Core\Mail\Mail;
+use Core\Mail\MailerInterface;
+use Core\Mail\SmtpMailer;
 
 echo "Mail System Examples:\n";
 echo "====================\n\n";
@@ -170,8 +170,9 @@ class SendWelcomeEmailJob
         private string $userEmail,
         private string $userName,
         private MailerInterface $mailer
-    ) {}
-    
+    ) {
+    }
+
     public function handle(): void
     {
         $mail = Mail::create(
@@ -208,7 +209,7 @@ class EmailTemplate
         <a href="{$activationLink}">Activate Account</a>
         HTML;
     }
-    
+
     public static function orderConfirmation(int $orderId, float $total): string
     {
         return <<<HTML
@@ -218,7 +219,7 @@ class EmailTemplate
         <p>We'll notify you when your order ships.</p>
         HTML;
     }
-    
+
     public static function passwordReset(string $resetLink): string
     {
         return <<<HTML

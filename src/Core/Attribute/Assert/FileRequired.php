@@ -9,7 +9,7 @@ use Core\Http\UploadedFile;
 
 /**
  * Validates that a file was uploaded successfully.
- * 
+ *
  * Checks both that value is UploadedFile and upload was successful.
  * Explicit file requirement - no assumptions.
  */

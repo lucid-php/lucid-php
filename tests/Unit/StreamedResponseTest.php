@@ -17,7 +17,7 @@ class StreamedResponseTest extends TestCase
     {
         $this->testDir = sys_get_temp_dir() . '/framework_stream_test_' . uniqid();
         mkdir($this->testDir, 0755, true);
-        
+
         $this->testFile = $this->testDir . '/stream.txt';
         file_put_contents($this->testFile, 'Streamed content for testing');
     }

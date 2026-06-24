@@ -7,24 +7,24 @@ namespace Tests\Feature;
 use App\Controllers\ApiController;
 use App\Event\UserCreated;
 use App\Event\UserDeleted;
-use App\Listener\SendWelcomeEmail;
-use App\Listener\LogUserCreation;
 use App\Listener\CleanupUserData;
+use App\Listener\LogUserCreation;
+use App\Listener\SendWelcomeEmail;
 use App\Repository\UserRepository;
 use Core\Container;
 use Core\Database\Database;
 use Core\Event\EventDispatcher;
 use Core\Http\ExceptionHandler;
 use Core\Http\Request;
+use Core\Log\Handler\StderrHandler;
+use Core\Log\Logger;
+use Core\Log\LogLevel;
+use Core\Mail\ArrayMailer;
+use Core\Mail\MailerInterface;
 use Core\Middleware\ExceptionMiddleware;
 use Core\Queue\QueueInterface;
 use Core\Queue\SyncQueue;
 use Core\Router;
-use Core\Log\Logger;
-use Core\Log\LogLevel;
-use Core\Log\Handler\StderrHandler;
-use Core\Mail\MailerInterface;
-use Core\Mail\ArrayMailer;
 use PHPUnit\Framework\TestCase;
 
 class EventSystemTest extends TestCase
@@ -38,9 +38,9 @@ class EventSystemTest extends TestCase
     {
         // Setup in-memory database
         $this->db = new Database('sqlite::memory:', null, null);
-        
+
         // Create users table
-        $this->db->execute("
+        $this->db->execute('
             CREATE TABLE users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -48,47 +48,50 @@ class EventSystemTest extends TestCase
                 password TEXT NOT NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
-        ");
+        ');
 
         // Setup container
         $container = new Container();
         $container->set(Database::class, $this->db);
         $container->set(UserRepository::class, new UserRepository($this->db));
-        
+
         // Setup logger for jobs
         $logger = new Logger(
             minimumLevel: LogLevel::DEBUG,
             handlers: [new StderrHandler(json: false)]
         );
         $container->set(Logger::class, $logger);
-        
+
         // Setup mailer for jobs
         $mailer = new ArrayMailer();
         $container->set(MailerInterface::class, $mailer);
-        
+
         // Setup queue system (sync for tests)
         $queue = new SyncQueue($container);
         $container->set(QueueInterface::class, $queue);
-        
+
         // Setup event dispatcher
         $this->events = new EventDispatcher($container);
-        
+
         // Create a test listener that tracks dispatched events
-        $testListener = new class($this->dispatchedEvents) {
-            public function __construct(private array &$events) {}
-            
-            public function handle(object $event): void {
+        $testListener = new class ($this->dispatchedEvents) {
+            public function __construct(private array &$events)
+            {
+            }
+
+            public function handle(object $event): void
+            {
                 $this->events[] = $event;
             }
         };
-        
+
         // Register listeners
         $this->events->listen(UserCreated::class, SendWelcomeEmail::class);
         $this->events->listen(UserCreated::class, LogUserCreation::class);
         $this->events->listen(UserDeleted::class, CleanupUserData::class);
-        
+
         $container->set(EventDispatcher::class, $this->events);
-        
+
         // Setup exception handling
         $exceptionHandler = new ExceptionHandler(debug: false);
         $container->set(ExceptionHandler::class, $exceptionHandler);
@@ -109,7 +112,7 @@ class EventSystemTest extends TestCase
             body: [
                 'name' => 'Event Test User',
                 'email' => 'event@example.com',
-                'password' => 'password123'
+                'password' => 'password123',
             ],
             server: []
         );
@@ -117,9 +120,9 @@ class EventSystemTest extends TestCase
         $response = $this->router->dispatch($request);
 
         $this->assertEquals(201, $response->status);
-        
+
         // Verify user was created in database
-        $users = $this->db->query("SELECT * FROM users WHERE email = ?", ['event@example.com']);
+        $users = $this->db->query('SELECT * FROM users WHERE email = ?', ['event@example.com']);
         $this->assertCount(1, $users);
         $this->assertEquals('Event Test User', $users[0]['name']);
     }
@@ -129,13 +132,13 @@ class EventSystemTest extends TestCase
         // Verify listeners are explicitly registered (no magic)
         $this->assertTrue($this->events->hasListeners(UserCreated::class));
         $this->assertTrue($this->events->hasListeners(UserDeleted::class));
-        
+
         $createdListeners = $this->events->getListeners(UserCreated::class);
         $deletedListeners = $this->events->getListeners(UserDeleted::class);
-        
+
         $this->assertCount(2, $createdListeners);
         $this->assertCount(1, $deletedListeners);
-        
+
         $this->assertContains(SendWelcomeEmail::class, $createdListeners);
         $this->assertContains(LogUserCreation::class, $createdListeners);
         $this->assertContains(CleanupUserData::class, $deletedListeners);
@@ -152,7 +155,7 @@ class EventSystemTest extends TestCase
         $this->assertEquals(123, $event->userId);
         $this->assertEquals('John Doe', $event->name);
         $this->assertEquals('john@example.com', $event->email);
-        
+
         // Readonly properties cannot be modified (would be compile-time error)
         // This test just verifies the properties exist and are typed
         $this->assertIsInt($event->userId);
@@ -173,7 +176,7 @@ class EventSystemTest extends TestCase
         );
 
         $this->events->dispatch($event);
-        
+
         // Verify event was created correctly
         $this->assertEquals($user->id, $event->userId);
         $this->assertEquals($user->email, $event->email);

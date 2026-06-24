@@ -27,7 +27,8 @@ class ConfigShowCommand implements CommandInterface
 
     public function __construct(
         private readonly Config $config
-    ) {}
+    ) {
+    }
 
     public function execute(
         OutputInterface $output,
@@ -59,7 +60,7 @@ class ConfigShowCommand implements CommandInterface
     {
         $files = glob(dirname(__DIR__, 3) . '/config/*.php') ?: [];
 
-        return array_map(fn(string $path): string => basename($path, '.php'), $files);
+        return array_map(fn (string $path): string => basename($path, '.php'), $files);
     }
 
     /**

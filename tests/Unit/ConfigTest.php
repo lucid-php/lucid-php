@@ -48,7 +48,7 @@ class ConfigTest extends TestCase
     public function test_load_caches_config(): void
     {
         $config = new Config($this->testConfigPath);
-        
+
         $first = $config->load('test');
         $second = $config->load('test');
 

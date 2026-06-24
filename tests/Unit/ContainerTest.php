@@ -25,7 +25,7 @@ class ContainerTest extends TestCase
     {
         $container = new Container();
         $instance = $container->get(SimpleService::class);
-        
+
         $this->assertInstanceOf(SimpleService::class, $instance);
     }
 
@@ -38,7 +38,7 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(DependentService::class, $service);
         $this->assertInstanceOf(SimpleService::class, $service->simple);
     }
-    
+
     #[Test]
     public function it_throws_exception_if_class_not_found(): void
     {
@@ -89,20 +89,33 @@ class ContainerTest extends TestCase
     }
 }
 
-class SimpleService {}
-
-class DependentService {
-    public function __construct(public SimpleService $simple) {}
+class SimpleService
+{
 }
 
-interface GreeterInterface {
+class DependentService
+{
+    public function __construct(public SimpleService $simple)
+    {
+    }
+}
+
+interface GreeterInterface
+{
     public function greet(): string;
 }
 
-class EnglishGreeter implements GreeterInterface {
-    public function greet(): string { return 'Hello'; }
+class EnglishGreeter implements GreeterInterface
+{
+    public function greet(): string
+    {
+        return 'Hello';
+    }
 }
 
-class GreeterConsumer {
-    public function __construct(public GreeterInterface $greeter) {}
+class GreeterConsumer
+{
+    public function __construct(public GreeterInterface $greeter)
+    {
+    }
 }

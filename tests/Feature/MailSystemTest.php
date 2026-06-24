@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Job\SendWelcomeEmailJob;
+use Core\Container;
 use Core\Mail\ArrayMailer;
 use Core\Mail\MailerInterface;
-use Core\Container;
 use PHPUnit\Framework\TestCase;
 
 class MailSystemTest extends TestCase
@@ -27,10 +27,10 @@ class MailSystemTest extends TestCase
         $job->handle($mailer);
 
         $this->assertSame(1, $mailer->count());
-        
+
         $sent = $mailer->getSent();
         $email = $sent[0];
-        
+
         $this->assertSame('john@example.com', $email->to);
         $this->assertSame('Welcome to Our Platform!', $email->subject);
         $this->assertStringContainsString('John Doe', $email->body);
@@ -49,7 +49,7 @@ class MailSystemTest extends TestCase
         $job2->handle($mailer);
 
         $this->assertSame(2, $mailer->count());
-        
+
         $sent = $mailer->getSent();
         $this->assertSame('user1@example.com', $sent[0]->to);
         $this->assertSame('user2@example.com', $sent[1]->to);

@@ -15,40 +15,40 @@ class CurlHttpClient implements HttpClientInterface
     public function send(HttpRequest $request): HttpResponse
     {
         $startTime = microtime(true);
-        
+
         $ch = curl_init($request->url);
-        
+
         if ($ch === false) {
             throw HttpClientException::connectionFailed($request, 'Failed to initialize cURL');
         }
 
         try {
             $this->configureCurl($ch, $request);
-            
+
             $responseBody = curl_exec($ch);
-            
+
             if ($responseBody === false) {
                 $error = curl_error($ch);
                 $errno = curl_errno($ch);
-                
+
                 if ($errno === CURLE_OPERATION_TIMEOUTED) {
                     throw HttpClientException::timeout($request);
                 }
-                
+
                 throw HttpClientException::fromCurl($error, $request);
             }
-            
+
             $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-            
+
             $headerString = substr($responseBody, 0, $headerSize);
             $body = substr($responseBody, $headerSize);
-            
+
             $headers = $this->parseHeaders($headerString);
             $duration = microtime(true) - $startTime;
-            
+
             return new HttpResponse($statusCode, $body, $headers, $duration);
-            
+
         } finally {
             // curl_close() is deprecated in PHP 8.5 (no-op since PHP 8.0)
             // Resources are automatically freed
@@ -85,26 +85,26 @@ class CurlHttpClient implements HttpClientInterface
         // Return headers in response
         curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        
+
         // Timeout
         $timeout = $request->timeout > 0 ? $request->timeout : $this->defaultTimeout;
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-        
+
         // SSL Verification
         $verifySSL = $request->verifySSL ?? $this->defaultVerifySSL;
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $verifySSL);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, $verifySSL ? 2 : 0);
-        
+
         // Method
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $request->method);
-        
+
         // Body
         if ($request->body !== null) {
             $body = $this->prepareBody($request->body, $request->headers);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
         }
-        
+
         // Headers
         if (!empty($request->headers)) {
             $headers = [];
@@ -113,7 +113,7 @@ class CurlHttpClient implements HttpClientInterface
             }
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
-        
+
         // Follow redirects, but never let a redirect downgrade the scheme to
         // file://, gopher://, dict://, etc. HttpRequest only validates the
         // *initial* URL's scheme; this constrains every subsequent hop too.
@@ -130,25 +130,25 @@ class CurlHttpClient implements HttpClientInterface
         // Check if Content-Type is application/json
         $isJson = false;
         foreach ($headers as $name => $value) {
-            if (strcasecmp($name, 'Content-Type') === 0 && 
+            if (strcasecmp($name, 'Content-Type') === 0 &&
                 str_contains(strtolower($value), 'application/json')) {
                 $isJson = true;
                 break;
             }
         }
-        
+
         if ($isJson && (is_array($body) || is_object($body))) {
             return json_encode($body);
         }
-        
+
         if (is_string($body)) {
             return $body;
         }
-        
+
         if (is_array($body)) {
             return http_build_query($body);
         }
-        
+
         return (string) $body;
     }
 
@@ -156,14 +156,14 @@ class CurlHttpClient implements HttpClientInterface
     {
         $headers = [];
         $lines = explode("\r\n", $headerString);
-        
+
         foreach ($lines as $line) {
             if (str_contains($line, ':')) {
                 [$name, $value] = explode(':', $line, 2);
                 $headers[trim($name)] = trim($value);
             }
         }
-        
+
         return $headers;
     }
 }

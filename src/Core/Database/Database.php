@@ -26,7 +26,7 @@ class Database
         try {
             $this->pdo = new PDO($dsn, $username, $password, $options + $defaultOptions);
         } catch (PDOException $e) {
-            throw new \Exception("Database connection failed: " . $e->getMessage());
+            throw new \Exception('Database connection failed: ' . $e->getMessage());
         }
     }
 
@@ -36,12 +36,12 @@ class Database
         $stmt->execute($params);
         return $stmt->fetchAll();
     }
-    
+
     public function execute(string $sql, array $params = []): bool
     {
         return $this->pdo->prepare($sql)->execute($params);
     }
-    
+
     public function lastInsertId(): string|false
     {
         return $this->pdo->lastInsertId();
@@ -54,10 +54,10 @@ class Database
 
     /**
      * Begin a database transaction
-     * 
+     *
      * Explicit transaction start. Must be paired with commit() or rollback().
      * Philosophy: No auto-commit, no hidden behavior.
-     * 
+     *
      * @throws DatabaseException if transaction cannot be started
      */
     public function beginTransaction(): void
@@ -73,9 +73,9 @@ class Database
 
     /**
      * Commit the current transaction
-     * 
+     *
      * Makes all changes permanent. Explicit commit required.
-     * 
+     *
      * @throws DatabaseException if not in transaction or commit fails
      */
     public function commit(): void
@@ -91,9 +91,9 @@ class Database
 
     /**
      * Rollback the current transaction
-     * 
+     *
      * Discards all changes. Call on error/exception.
-     * 
+     *
      * @throws DatabaseException if not in transaction or rollback fails
      */
     public function rollback(): void
@@ -117,15 +117,15 @@ class Database
 
     /**
      * Execute a callback within a transaction
-     * 
+     *
      * Automatically handles commit/rollback based on callback success/failure.
      * Throws exception on failure (after rollback).
-     * 
+     *
      * Philosophy-compliant because:
      * - Explicit method call (transaction(...))
      * - Callback makes the transactional code visible
      * - Exception propagation is explicit
-     * 
+     *
      * @template T
      * @param callable(): T $callback
      * @return T

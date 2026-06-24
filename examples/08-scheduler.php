@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * Example 8: Task Scheduler
- * 
+ *
  * Demonstrates:
  * - Cron-like task scheduling
  * - Scheduled job classes
@@ -14,11 +14,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Core\Schedule\Scheduler;
-use Core\Schedule\ScheduledTask;
 use Core\Schedule\CronExpression;
 use Core\Schedule\ScheduledJobInterface;
-use Core\Console\OutputInterface;
+use Core\Schedule\Scheduler;
 
 // ===========================
 // Example Scheduled Jobs
@@ -31,26 +29,26 @@ class CleanupOldLogsJob implements ScheduledJobInterface
     {
         return CronExpression::daily(); // Runs at 00:00 every day
     }
-    
+
     public function execute(): void
     {
         echo "[Cleanup] Starting log cleanup...\n";
-        
+
         $logDir = __DIR__ . '/../storage/logs';
         $daysToKeep = 30;
         $cutoffDate = new \DateTimeImmutable("-{$daysToKeep} days");
-        
+
         echo "  Removing logs older than {$cutoffDate->format('Y-m-d')}\n";
-        
+
         // Simulate cleanup
         sleep(1);
-        
+
         echo "  ✓ Cleaned up old logs\n";
     }
-    
+
     public function getDescription(): string
     {
-        return "Clean up logs older than 30 days";
+        return 'Clean up logs older than 30 days';
     }
 }
 
@@ -61,23 +59,23 @@ class BackupDatabaseJob implements ScheduledJobInterface
     {
         return CronExpression::hourly(); // Runs at :00 of every hour
     }
-    
+
     public function execute(): void
     {
         echo "[Backup] Creating database backup...\n";
-        
+
         $timestamp = date('Y-m-d_H-i-s');
         $backupFile = "backup_{$timestamp}.sql";
-        
+
         echo "  Creating: {$backupFile}\n";
         sleep(2);
-        
+
         echo "  ✓ Backup completed\n";
     }
-    
+
     public function getDescription(): string
     {
-        return "Create hourly database backup";
+        return 'Create hourly database backup';
     }
 }
 
@@ -88,24 +86,24 @@ class GenerateWeeklyReportJob implements ScheduledJobInterface
     {
         return CronExpression::weekly(); // Runs every Monday at 00:00
     }
-    
+
     public function execute(): void
     {
         echo "[Report] Generating weekly report...\n";
-        
+
         $startDate = new \DateTimeImmutable('last monday');
         $endDate = new \DateTimeImmutable('last sunday');
-        
+
         echo "  Period: {$startDate->format('Y-m-d')} to {$endDate->format('Y-m-d')}\n";
-        
+
         sleep(3);
-        
+
         echo "  ✓ Report generated and emailed\n";
     }
-    
+
     public function getDescription(): string
     {
-        return "Generate and send weekly sales report";
+        return 'Generate and send weekly sales report';
     }
 }
 
@@ -116,29 +114,29 @@ class CheckHealthJob implements ScheduledJobInterface
     {
         return CronExpression::everyFiveMinutes(); // Runs every 5 minutes
     }
-    
+
     public function execute(): void
     {
         echo "[Health] Checking system health...\n";
-        
+
         $checks = [
             'Database' => true,
             'Redis' => true,
             'Disk Space' => true,
             'API Services' => true,
         ];
-        
+
         foreach ($checks as $service => $status) {
             $icon = $status ? '✓' : '✗';
             echo "  {$icon} {$service}\n";
         }
-        
+
         echo "  All systems operational\n";
     }
-    
+
     public function getDescription(): string
     {
-        return "Check system health every 5 minutes";
+        return 'Check system health every 5 minutes';
     }
 }
 
@@ -150,22 +148,22 @@ class SendReminderEmailsJob implements ScheduledJobInterface
         // Every weekday at 9 AM
         return '0 9 * * 1-5';
     }
-    
+
     public function execute(): void
     {
         echo "[Email] Sending reminder emails...\n";
-        
+
         $count = rand(10, 50);
         echo "  Sending {$count} reminder emails\n";
-        
+
         sleep(2);
-        
+
         echo "  ✓ {$count} emails sent\n";
     }
-    
+
     public function getDescription(): string
     {
-        return "Send reminder emails at 9 AM on weekdays";
+        return 'Send reminder emails at 9 AM on weekdays';
     }
 }
 

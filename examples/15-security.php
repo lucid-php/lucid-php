@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * Example 15: Security Features
- * 
+ *
  * Demonstrates:
  * - CSRF protection
  * - Rate limiting
@@ -15,10 +15,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use Core\RateLimit\InMemoryRateLimitStore;
 use Core\Security\CsrfTokenManager;
 use Core\Session\Session;
-use Core\RateLimit\RateLimitStore;
-use Core\RateLimit\InMemoryRateLimitStore;
 
 echo "Security Features Examples:\n";
 echo "===========================\n\n";
@@ -37,7 +36,7 @@ $csrf = new CsrfTokenManager($session);
 
 // Generate token for form
 $token = $csrf->generateToken();
-echo "Generated CSRF token: " . substr($token, 0, 16) . "...\n\n";
+echo 'Generated CSRF token: ' . substr($token, 0, 16) . "...\n\n";
 
 echo "HTML Form with CSRF:\n";
 echo "<form method=\"POST\" action=\"/profile/update\">\n";
@@ -50,12 +49,12 @@ echo "</form>\n\n";
 $submittedToken = $token; // In real scenario, from $_POST['_csrf']
 $isValid = $csrf->validateToken($submittedToken);
 
-echo "Token validation: " . ($isValid ? "✓ Valid" : "✗ Invalid") . "\n";
+echo 'Token validation: ' . ($isValid ? '✓ Valid' : '✗ Invalid') . "\n";
 echo "After validation, token is consumed (cannot be reused)\n\n";
 
 // Try to reuse token
 $isValid2 = $csrf->validateToken($submittedToken);
-echo "Reusing same token: " . ($isValid2 ? "✓ Valid" : "✗ Invalid (expected)") . "\n\n";
+echo 'Reusing same token: ' . ($isValid2 ? '✓ Valid' : '✗ Invalid (expected)') . "\n\n";
 
 // ===========================
 // Example 2: CSRF Middleware
@@ -96,7 +95,7 @@ echo "Rate Limiting (max 5 requests per minute):\n\n";
 
 for ($i = 1; $i <= 7; $i++) {
     $count = $store->increment($key, $window);
-    
+
     if ($count <= $maxAttempts) {
         $remaining = $maxAttempts - $count;
         echo "  Request $i: ✓ Allowed (remaining: $remaining)\n";
@@ -148,7 +147,7 @@ $window = 900; // 15 minutes
 
 for ($i = 1; $i <= 6; $i++) {
     $count = $store2->increment($key, $window);
-    
+
     if ($count <= $maxAttempts) {
         echo "  Attempt $i: Login attempt allowed\n";
     } else {
@@ -156,7 +155,7 @@ for ($i = 1; $i <= 6; $i++) {
         $secondsRemaining = $resetTime - time();
         echo "  Attempt $i: ✗ Too many failed attempts. Locked out.\n";
         echo "  Remaining attempts: 0\n";
-        echo "  Try again in " . ceil($secondsRemaining / 60) . " minutes\n";
+        echo '  Try again in ' . ceil($secondsRemaining / 60) . " minutes\n";
         break;
     }
 }
@@ -223,11 +222,11 @@ $password = 'user-password-123';
 
 // Hash password
 $hash = password_hash($password, PASSWORD_ARGON2ID);
-echo "Password hash: " . substr($hash, 0, 30) . "...\n\n";
+echo 'Password hash: ' . substr($hash, 0, 30) . "...\n\n";
 
 // Verify password
 $isValid = password_verify($password, $hash);
-echo "Password verification: " . ($isValid ? "✓ Valid" : "✗ Invalid") . "\n\n";
+echo 'Password verification: ' . ($isValid ? '✓ Valid' : '✗ Invalid') . "\n\n";
 
 echo "Best practices:\n";
 echo "  ✓ Use PASSWORD_ARGON2ID (or PASSWORD_BCRYPT)\n";

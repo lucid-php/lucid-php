@@ -8,7 +8,7 @@ use RuntimeException;
 
 /**
  * Represents an uploaded file from a multipart/form-data request.
- * 
+ *
  * Immutable value object wrapping PHP's $_FILES array.
  * All properties are explicitly typed - no hidden state.
  */
@@ -80,7 +80,7 @@ readonly class UploadedFile
 
     /**
      * Get actual MIME type by reading file contents.
-     * 
+     *
      * More reliable than client-provided MIME type.
      * Returns null if file doesn't exist or can't be read.
      */
@@ -103,10 +103,10 @@ readonly class UploadedFile
 
     /**
      * Move uploaded file to destination.
-     * 
+     *
      * Explicit method - no automatic storage.
      * Caller is responsible for path validation.
-     * 
+     *
      * @throws RuntimeException if move fails
      */
     public function moveTo(string $destination): void
@@ -116,7 +116,7 @@ readonly class UploadedFile
         }
 
         if (!is_uploaded_file($this->tmpPath)) {
-            throw new RuntimeException("File was not uploaded via HTTP POST");
+            throw new RuntimeException('File was not uploaded via HTTP POST');
         }
 
         $directory = dirname($destination);
@@ -133,7 +133,7 @@ readonly class UploadedFile
 
     /**
      * Get file contents.
-     * 
+     *
      * @throws RuntimeException if file can't be read
      */
     public function getContents(): string
@@ -144,7 +144,7 @@ readonly class UploadedFile
 
         $contents = file_get_contents($this->tmpPath);
         if ($contents === false) {
-            throw new RuntimeException("Failed to read uploaded file");
+            throw new RuntimeException('Failed to read uploaded file');
         }
 
         return $contents;

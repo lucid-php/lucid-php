@@ -32,11 +32,11 @@ readonly class HttpResponse
     public function json(): mixed
     {
         $decoded = json_decode($this->body, true);
-        
+
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new \RuntimeException('Failed to decode JSON: ' . json_last_error_msg());
         }
-        
+
         return $decoded;
     }
 
@@ -47,7 +47,7 @@ readonly class HttpResponse
                 return $value;
             }
         }
-        
+
         return null;
     }
 

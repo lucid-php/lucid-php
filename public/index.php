@@ -4,35 +4,38 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use App\Event\UserCreated;
+use App\Event\UserDeleted;
+use App\Listener\CleanupUserData;
+use App\Listener\LogUserCreation;
+use App\Listener\SendWelcomeEmail;
+use App\Security\SimpleAuthorizer;
 use Core\Application;
 use Core\Config\Config;
 use Core\Database\Database;
 use Core\Event\EventDispatcher;
+use Core\GraphQL\GraphQLConfig;
+use Core\GraphQL\GraphQLRegistry;
 use Core\Http\ExceptionHandler;
-use Core\Middleware\ExceptionMiddleware;
-use Core\Middleware\SecurityHeadersMiddleware;
-use Core\Middleware\SecurityHeadersConfig;
-use Core\Middleware\RateLimitMiddleware;
-use Core\RateLimit\RateLimitStore;
-use Core\RateLimit\DatabaseRateLimitStore;
-use Core\Security\AuthorizerInterface;
-use App\Security\SimpleAuthorizer;
-use Core\Queue\QueueInterface;
-use Core\Queue\SyncQueue;
-use Core\Queue\DatabaseQueue;
+use Core\Log\Handler\StderrHandler;
+use Core\Log\Logger;
+use Core\Mail\ArrayMailer;
+use Core\Mail\LogMailer;
 use Core\Mail\MailerInterface;
 use Core\Mail\SmtpMailer;
-use Core\Mail\LogMailer;
-use Core\Mail\ArrayMailer;
-use Core\Log\Logger;
-use Core\Log\Handler\StderrHandler;
-use App\Event\UserCreated;
-use App\Event\UserDeleted;
-use App\Listener\SendWelcomeEmail;
-use App\Listener\LogUserCreation;
-use App\Listener\CleanupUserData;
+use Core\Middleware\ExceptionMiddleware;
+use Core\Middleware\RateLimitMiddleware;
+use Core\Middleware\SecurityHeadersConfig;
+use Core\Middleware\SecurityHeadersMiddleware;
+use Core\Queue\DatabaseQueue;
+use Core\Queue\QueueInterface;
+use Core\Queue\SyncQueue;
+use Core\RateLimit\DatabaseRateLimitStore;
+use Core\RateLimit\RateLimitStore;
+use Core\Security\AuthorizerInterface;
 
 $app = new Application();
+$app->getContainer()->set(\Core\Container::class, $app->getContainer());
 
 // --- Configuration (Explicit PHP Files) ---
 $config = new Config(__DIR__ . '/../config');
@@ -80,7 +83,7 @@ if ($dbDriver === 'sqlite') {
     $port = $config->get('database.mysql.port');
     $dbname = $config->get('database.mysql.database');
     $charset = $config->get('database.mysql.charset');
-    
+
     $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=$charset";
     $username = $config->get('database.mysql.username');
     $password = $config->get('database.mysql.password');
@@ -91,6 +94,18 @@ if ($dbDriver === 'sqlite') {
 $db = new Database($dsn, $username, $password);
 $app->getContainer()->set(Database::class, $db);
 $app->getContainer()->set(Config::class, $config);
+
+// --- GraphQL Setup (Explicit Registry + Typed Config) ---
+$graphqlRegistry = new GraphQLRegistry();
+$graphqlConfig = new GraphQLConfig(
+    debug: $config->getBool('graphql.debug', false),
+    introspectionEnabled: $config->getBool('graphql.introspection_enabled', true),
+    maxDepth: $config->has('graphql.max_depth') ? $config->getInt('graphql.max_depth') : null,
+    maxComplexity: $config->has('graphql.max_complexity') ? $config->getInt('graphql.max_complexity') : null,
+);
+
+$app->getContainer()->set(GraphQLRegistry::class, $graphqlRegistry);
+$app->getContainer()->set(GraphQLConfig::class, $graphqlConfig);
 
 // --- Rate Limiting (shared, DB-backed store) ---
 // Registered globally: the middleware no-ops on routes without a #[RateLimit]
@@ -134,7 +149,7 @@ if ($mailDriver === 'smtp') {
     $logger = $app->getContainer()->has(Logger::class)
         ? $app->getContainer()->get(Logger::class)
         : new Logger(handlers: [new StderrHandler()]);
-    
+
     $mailer = new LogMailer($logger, $mailFrom);
 }
 

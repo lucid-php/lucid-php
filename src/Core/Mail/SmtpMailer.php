@@ -72,9 +72,9 @@ class SmtpMailer implements MailerInterface
 
         // Start TLS if required
         if ($this->encryption === 'tls') {
-            $this->sendCommand($socket, "STARTTLS");
+            $this->sendCommand($socket, 'STARTTLS');
             if (!stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
-                throw new Exception("Failed to enable TLS encryption");
+                throw new Exception('Failed to enable TLS encryption');
             }
             $this->sendCommand($socket, "EHLO {$this->host}");
         }
@@ -84,7 +84,7 @@ class SmtpMailer implements MailerInterface
 
     private function authenticate($socket): void
     {
-        $this->sendCommand($socket, "AUTH LOGIN");
+        $this->sendCommand($socket, 'AUTH LOGIN');
         $this->sendCommand($socket, base64_encode($this->username));
         $this->sendCommand($socket, base64_encode($this->password));
     }
@@ -104,7 +104,7 @@ class SmtpMailer implements MailerInterface
         }
 
         // DATA
-        $this->sendCommand($socket, "DATA");
+        $this->sendCommand($socket, 'DATA');
 
         // Headers and body
         $message = $this->buildMessage($mail);
@@ -118,7 +118,7 @@ class SmtpMailer implements MailerInterface
             "From: {$mail->from}",
             "To: {$mail->to}",
             "Subject: {$mail->subject}",
-            "MIME-Version: 1.0",
+            'MIME-Version: 1.0',
         ];
 
         if ($mail->replyTo) {
@@ -126,13 +126,13 @@ class SmtpMailer implements MailerInterface
         }
 
         if (!empty($mail->cc)) {
-            $headers[] = "Cc: " . implode(', ', $mail->cc);
+            $headers[] = 'Cc: ' . implode(', ', $mail->cc);
         }
 
         if ($mail->isHtml) {
-            $headers[] = "Content-Type: text/html; charset=UTF-8";
+            $headers[] = 'Content-Type: text/html; charset=UTF-8';
         } else {
-            $headers[] = "Content-Type: text/plain; charset=UTF-8";
+            $headers[] = 'Content-Type: text/plain; charset=UTF-8';
         }
 
         return implode("\r\n", $headers) . "\r\n\r\n" . $mail->body;

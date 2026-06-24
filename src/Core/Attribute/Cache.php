@@ -20,5 +20,6 @@ readonly class Cache
 {
     public function __construct(
         public int $ttl = 60
-    ) {}
+    ) {
+    }
 }

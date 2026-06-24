@@ -8,16 +8,16 @@ use Attribute;
 
 /**
  * Integer Validation Rule
- * 
+ *
  * Validates that a value is an integer or integer string.
- * 
+ *
  * Philosophy: Explicit Over Convenient
  * - Checks for integer values
  * - Accepts numeric strings that represent integers
  * - No floating point values
- * 
+ *
  * Example:
- * 
+ *
  * #[Integer]
  * public string|int $count
  */

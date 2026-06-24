@@ -6,7 +6,6 @@ namespace Tests\Unit;
 
 use Core\Http\UploadedFile;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 
 class UploadedFileTest extends TestCase
 {

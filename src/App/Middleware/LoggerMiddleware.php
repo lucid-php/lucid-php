@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Middleware;
 
 use Core\Http\MiddlewareInterface;
-use Core\Http\RequestHandlerInterface;
 use Core\Http\Request;
+use Core\Http\RequestHandlerInterface;
 use Core\Http\Response;
 
 class LoggerMiddleware implements MiddlewareInterface
@@ -28,7 +28,7 @@ class LoggerMiddleware implements MiddlewareInterface
         // Check if we need to modify the response (Response is read-only)
         // Since Response uses private(set), we probably need 'withHeader' method if we want to modify it.
         // For now, we just return it.
-        
+
         return $response;
     }
 }

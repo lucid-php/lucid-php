@@ -29,7 +29,7 @@ class MiddlewareStack implements RequestHandlerInterface
         }
 
         $middleware = $this->middlewares[$this->index];
-        
+
         // Advance the pointer for the *next* call to handle()
         // We clone the stack so each 'next' handler has the correct index state
         // This is a simple recursive simulation without nested objects.

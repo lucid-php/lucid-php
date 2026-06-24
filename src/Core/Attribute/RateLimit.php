@@ -8,14 +8,14 @@ use Attribute;
 
 /**
  * RateLimit Attribute
- * 
+ *
  * Explicitly declares rate limiting rules for a route.
  * No hidden defaults, no magic.
- * 
+ *
  * Philosophy: Explicit over convenient.
  * - Want rate limiting? Declare it explicitly with numbers.
  * - Want no rate limit? Don't add the attribute.
- * 
+ *
  * @example
  * #[RateLimit(requests: 100, window: 60)]  // 100 requests per 60 seconds
  * #[RateLimit(requests: 10, window: 1)]    // 10 requests per second (strict)

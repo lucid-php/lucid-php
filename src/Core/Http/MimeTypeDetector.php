@@ -6,10 +6,10 @@ namespace Core\Http;
 
 /**
  * MIME Type Detection Helper
- * 
+ *
  * Explicit MIME type detection - no magic guessing.
  * Uses finfo extension for reliable detection based on file content.
- * 
+ *
  * Philosophy:
  * - Explicit detection (must call explicitly, no automatic detection)
  * - Content-based (not extension-based)
@@ -45,10 +45,10 @@ class MimeTypeDetector
 
     /**
      * Detect MIME type from file contents.
-     * 
+     *
      * Uses fileinfo extension (finfo) to detect MIME type
      * by analyzing actual file contents, not extension.
-     * 
+     *
      * @param string $path Absolute path to file
      * @return string MIME type (defaults to application/octet-stream if detection fails)
      */
@@ -70,10 +70,10 @@ class MimeTypeDetector
 
     /**
      * Get MIME type by file extension (less reliable).
-     * 
+     *
      * Extension-based lookup. Not recommended for security-critical
      * operations - use detect() for content-based detection.
-     * 
+     *
      * @param string $extension File extension (without dot)
      * @return string MIME type or application/octet-stream if unknown
      */
@@ -85,10 +85,10 @@ class MimeTypeDetector
 
     /**
      * Detect MIME type with explicit extension fallback.
-     * 
+     *
      * Tries content-based detection first, falls back to extension.
      * Explicit two-step process - no hidden fallback.
-     * 
+     *
      * @param string $path Absolute path to file
      * @param string $extension File extension for fallback
      * @return string MIME type
@@ -96,7 +96,7 @@ class MimeTypeDetector
     public static function detectWithFallback(string $path, string $extension): string
     {
         $detected = self::detect($path);
-        
+
         // If detection returned generic type, try extension
         if ($detected === 'application/octet-stream') {
             return self::fromExtension($extension);
@@ -107,10 +107,10 @@ class MimeTypeDetector
 
     /**
      * Check if MIME type is safe for inline display.
-     * 
+     *
      * Explicit whitelist of MIME types safe to display inline.
      * Used to prevent XSS attacks from user-uploaded content.
-     * 
+     *
      * @param string $mimeType MIME type to check
      * @return bool True if safe for inline display
      */

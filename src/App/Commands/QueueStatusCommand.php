@@ -25,7 +25,8 @@ class QueueStatusCommand implements CommandInterface
     public function __construct(
         private readonly Database $db,
         private readonly Config $config
-    ) {}
+    ) {
+    }
 
     public function execute(OutputInterface $output): int
     {
@@ -38,9 +39,9 @@ class QueueStatusCommand implements CommandInterface
 
         try {
             $pending = $this->db->query(
-                "SELECT queue, COUNT(*) AS c FROM jobs WHERE reserved_at IS NULL GROUP BY queue ORDER BY queue"
+                'SELECT queue, COUNT(*) AS c FROM jobs WHERE reserved_at IS NULL GROUP BY queue ORDER BY queue'
             );
-            $failed = (int) $this->db->query("SELECT COUNT(*) AS c FROM failed_jobs")[0]['c'];
+            $failed = (int) $this->db->query('SELECT COUNT(*) AS c FROM failed_jobs')[0]['c'];
         } catch (\Throwable $e) {
             $output->error('Could not read queue tables (have you run migrations?): ' . $e->getMessage());
             return 1;
@@ -49,7 +50,7 @@ class QueueStatusCommand implements CommandInterface
         if ($pending === []) {
             $output->info('No pending jobs.');
         } else {
-            $rows = array_map(fn(array $row): array => [$row['queue'], $row['c']], $pending);
+            $rows = array_map(fn (array $row): array => [$row['queue'], $row['c']], $pending);
             $output->table(['Queue', 'Pending'], $rows);
         }
 

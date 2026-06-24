@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Core\Schedule\FileLock;
-use Core\Schedule\Scheduler;
-use Core\Schedule\ScheduledTask;
 use Core\Console\OutputInterface;
+use Core\Schedule\FileLock;
+use Core\Schedule\ScheduledTask;
+use Core\Schedule\Scheduler;
 use DateTimeZone;
 use PHPUnit\Framework\TestCase;
 
@@ -49,7 +49,9 @@ class SchedulerOverlapTest extends TestCase
         $task = new ScheduledTask(
             description: 'report',
             cronExpression: '* * * * *', // always due
-            callback: function () use (&$runs): void { $runs++; },
+            callback: function () use (&$runs): void {
+                $runs++;
+            },
             withoutOverlapping: true,
         );
 
@@ -85,14 +87,28 @@ class SchedulerOverlapTest extends TestCase
 
     private function silentOutput(): OutputInterface
     {
-        return new class implements OutputInterface {
-            public function write(string $message): void {}
-            public function writeln(string $message): void {}
-            public function info(string $message): void {}
-            public function success(string $message): void {}
-            public function error(string $message): void {}
-            public function warning(string $message): void {}
-            public function table(array $headers, array $rows): void {}
+        return new class () implements OutputInterface {
+            public function write(string $message): void
+            {
+            }
+            public function writeln(string $message): void
+            {
+            }
+            public function info(string $message): void
+            {
+            }
+            public function success(string $message): void
+            {
+            }
+            public function error(string $message): void
+            {
+            }
+            public function warning(string $message): void
+            {
+            }
+            public function table(array $headers, array $rows): void
+            {
+            }
         };
     }
 }

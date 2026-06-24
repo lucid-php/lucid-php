@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * Example 2: Middleware
- * 
+ *
  * Demonstrates:
  * - Global middleware
  * - Class-level middleware
@@ -17,10 +17,10 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Core\Attribute\Middleware;
 use Core\Attribute\Route;
 use Core\Attribute\RoutePrefix;
-use Core\Http\Request;
-use Core\Http\Response;
 use Core\Http\MiddlewareInterface;
+use Core\Http\Request;
 use Core\Http\RequestHandlerInterface;
+use Core\Http\Response;
 
 // Custom Middleware: Log all requests
 class LoggingMiddleware implements MiddlewareInterface
@@ -28,14 +28,14 @@ class LoggingMiddleware implements MiddlewareInterface
     public function process(Request $request, RequestHandlerInterface $handler): Response
     {
         $startTime = microtime(true);
-        
+
         echo "[LOG] {$request->method} {$request->uri} - Started\n";
-        
+
         $response = $handler->handle($request);
-        
+
         $duration = round((microtime(true) - $startTime) * 1000, 2);
         echo "[LOG] {$request->method} {$request->uri} - Completed in {$duration}ms\n";
-        
+
         return $response;
     }
 }
@@ -46,11 +46,11 @@ class ApiKeyMiddleware implements MiddlewareInterface
     public function process(Request $request, RequestHandlerInterface $handler): Response
     {
         $apiKey = $request->headers['X-API-Key'] ?? null;
-        
+
         if ($apiKey !== 'secret-api-key') {
             return Response::json(['error' => 'Invalid API key'], 401);
         }
-        
+
         return $handler->handle($request);
     }
 }
@@ -61,11 +61,11 @@ class AdminOnlyMiddleware implements MiddlewareInterface
     public function process(Request $request, RequestHandlerInterface $handler): Response
     {
         $isAdmin = $request->headers['X-User-Role'] ?? null === 'admin';
-        
+
         if (!$isAdmin) {
             return Response::json(['error' => 'Admin access required'], 403);
         }
-        
+
         return $handler->handle($request);
     }
 }
@@ -80,13 +80,13 @@ class SecureController
     {
         return Response::json(['data' => 'This is protected data']);
     }
-    
+
     #[Route('GET', '/profile')]
     public function getProfile(): Response
     {
         return Response::json(['user' => 'John Doe', 'email' => 'john@example.com']);
     }
-    
+
     // Method-level middleware - only this method requires admin
     #[Route('DELETE', '/users/{id}')]
     #[Middleware(AdminOnlyMiddleware::class)]

@@ -6,17 +6,17 @@ namespace Core\Log;
 
 /**
  * Logger Interface
- * 
+ *
  * Philosophy: Explicit logging - every log call is visible in code.
  * No auto-logging, no hidden telemetry, no magic.
- * 
+ *
  * PSR-3 compatible interface with typed parameters.
  */
 interface LoggerInterface
 {
     /**
      * Log a message at the specified level
-     * 
+     *
      * @param LogLevel $level Log level (typed enum)
      * @param string $message Log message (can contain {placeholders})
      * @param array<string, mixed> $context Additional context data

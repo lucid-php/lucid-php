@@ -12,19 +12,19 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Example Application Test
- * 
+ *
  * This demonstrates how developers should test their own App code.
- * 
+ *
  * Pattern:
  * 1. Setup: Initialize database and run migrations
  * 2. Test: Test repositories, services, entities directly
  * 3. Teardown: Clean up database
- * 
+ *
  * Why tests/App/ instead of tests/Unit/?
  * - tests/Unit/ is for framework Core tests
  * - tests/Feature/ is for full HTTP end-to-end tests
  * - tests/App/ is for YOUR application logic (repositories, services, entities)
- * 
+ *
  * No magic:
  * - Explicitly create Database connection
  * - Explicitly run migrations

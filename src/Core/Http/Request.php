@@ -18,6 +18,8 @@ class Request
         public private(set) array $files = [],
         public private(set) array $attributes = [],
         public private(set) array $cookies = [],
+        public private(set) string $rawBody = '',
+        public private(set) bool $jsonParseError = false,
     ) {
     }
 
@@ -48,7 +50,7 @@ class Request
 
     /**
      * Get uploaded file by field name.
-     * 
+     *
      * @return UploadedFile|array<UploadedFile>|null Single file, array of files, or null
      */
     public function getFile(string $name): UploadedFile|array|null
@@ -71,13 +73,23 @@ class Request
 
         // Parse raw body for JSON content
         $body = $_POST;
+        $rawBody = '';
+        $jsonParseError = false;
         if ($method === 'POST' || $method === 'PUT' || $method === 'PATCH') {
             $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
             if (str_contains($contentType, 'application/json')) {
-                $input = file_get_contents('php://input');
-                $decoded = json_decode($input, true);
-                if (is_array($decoded)) {
-                    $body = array_merge($body, $decoded);
+                $rawBody = (string) file_get_contents('php://input');
+                if ($rawBody !== '') {
+                    try {
+                        $decoded = json_decode($rawBody, true, flags: JSON_THROW_ON_ERROR);
+                    } catch (\JsonException) {
+                        $jsonParseError = true;
+                        $decoded = null;
+                    }
+
+                    if (is_array($decoded)) {
+                        $body = array_merge($body, $decoded);
+                    }
                 }
             }
         }
@@ -112,6 +124,8 @@ class Request
             server: $_SERVER,
             files: $files,
             cookies: $_COOKIE,
+            rawBody: $rawBody,
+            jsonParseError: $jsonParseError,
         );
     }
 }

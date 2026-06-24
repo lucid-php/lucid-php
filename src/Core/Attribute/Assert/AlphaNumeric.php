@@ -8,19 +8,19 @@ use Attribute;
 
 /**
  * AlphaNumeric Validation Rule
- * 
+ *
  * Validates that a string contains only alphanumeric characters.
- * 
+ *
  * Philosophy: Explicit Over Convenient
  * - Option to allow spaces
  * - Option to allow unicode
  * - Clear about what's allowed
- * 
+ *
  * Example:
- * 
+ *
  * #[AlphaNumeric]
  * public string $username
- * 
+ *
  * #[AlphaNumeric(allowSpaces: true)]
  * public string $displayName
  */
@@ -30,7 +30,8 @@ class AlphaNumeric implements ValidatorRuleInterface
     public function __construct(
         private readonly bool $allowSpaces = false,
         private readonly bool $unicode = false
-    ) {}
+    ) {
+    }
 
     public function validate(mixed $value): bool
     {

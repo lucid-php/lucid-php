@@ -4,24 +4,24 @@ declare(strict_types=1);
 
 namespace Core\Collection;
 
+use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use Traversable;
-use ArrayIterator;
 
 /**
  * Collection - Fluent Array Operations
- * 
+ *
  * Provides explicit, type-safe array manipulation with fluent API.
  * No global helpers - explicit instantiation required.
- * 
+ *
  * Philosophy Compliance:
  * - Zero Magic: Explicit `new Collection(...)` or `Collection::make(...)`
  * - Strict Typing: All methods typed with proper return types
  * - Traceable: Command+Click works on all methods
  * - Immutable: Most operations return new Collection instance
  * - No Hidden Behavior: All transformations are explicit method calls
- * 
+ *
  * Usage:
  *   $collection = new Collection([1, 2, 3, 4, 5]);
  *   $result = $collection
@@ -41,7 +41,7 @@ class Collection implements Countable, IteratorAggregate
 
     /**
      * Static factory for fluent instantiation
-     * 
+     *
      * @param array<int|string, mixed> $items
      */
     public static function make(array $items = []): self
@@ -51,7 +51,7 @@ class Collection implements Countable, IteratorAggregate
 
     /**
      * Filter items using callback
-     * 
+     *
      * @param callable(mixed, int|string): bool $callback
      */
     public function filter(callable $callback): self
@@ -61,20 +61,20 @@ class Collection implements Countable, IteratorAggregate
 
     /**
      * Transform each item using callback
-     * 
+     *
      * @param callable(mixed, int|string): mixed $callback
      */
     public function map(callable $callback): self
     {
         $keys = array_keys($this->items);
         $items = array_map($callback, $this->items, $keys);
-        
+
         return new self(array_combine($keys, $items));
     }
 
     /**
      * Reduce collection to single value
-     * 
+     *
      * @template TReduce
      * @param callable(TReduce, mixed): TReduce $callback
      * @param TReduce $initial
@@ -87,7 +87,7 @@ class Collection implements Countable, IteratorAggregate
 
     /**
      * Get first item (or first matching callback)
-     * 
+     *
      * @param callable(mixed, int|string): bool|null $callback
      */
     public function first(?callable $callback = null, mixed $default = null): mixed
@@ -107,7 +107,7 @@ class Collection implements Countable, IteratorAggregate
 
     /**
      * Get last item (or last matching callback)
-     * 
+     *
      * @param callable(mixed, int|string): bool|null $callback
      */
     public function last(?callable $callback = null, mixed $default = null): mixed
@@ -132,7 +132,7 @@ class Collection implements Countable, IteratorAggregate
     public function pluck(string $key): self
     {
         $results = [];
-        
+
         foreach ($this->items as $item) {
             if (is_array($item) && isset($item[$key])) {
                 $results[] = $item[$key];
@@ -140,13 +140,13 @@ class Collection implements Countable, IteratorAggregate
                 $results[] = $item->$key;
             }
         }
-        
+
         return new self($results);
     }
 
     /**
      * Group items by key or callback
-     * 
+     *
      * @param string|callable(mixed, int|string): mixed $groupBy
      */
     public function groupBy(string|callable $groupBy): self
@@ -154,7 +154,7 @@ class Collection implements Countable, IteratorAggregate
         $results = [];
 
         foreach ($this->items as $key => $item) {
-            $groupKey = is_callable($groupBy) 
+            $groupKey = is_callable($groupBy)
                 ? $groupBy($item, $key)
                 : (is_array($item) ? $item[$groupBy] : $item->$groupBy);
 
@@ -166,7 +166,7 @@ class Collection implements Countable, IteratorAggregate
 
     /**
      * Sort items using callback
-     * 
+     *
      * @param callable(mixed, mixed): int|null $callback
      */
     public function sort(?callable $callback = null): self
@@ -230,7 +230,7 @@ class Collection implements Countable, IteratorAggregate
     public function chunk(int $size): self
     {
         $chunks = [];
-        
+
         foreach (array_chunk($this->items, $size, true) as $chunk) {
             $chunks[] = $chunk;
         }
@@ -268,7 +268,7 @@ class Collection implements Countable, IteratorAggregate
 
     /**
      * Merge with another array or collection
-     * 
+     *
      * @param array<int|string, mixed>|self $items
      */
     public function merge(array|self $items): self
@@ -299,7 +299,7 @@ class Collection implements Countable, IteratorAggregate
 
     /**
      * Check if any item matches callback
-     * 
+     *
      * @param callable(mixed, int|string): bool $callback
      */
     public function some(callable $callback): bool
@@ -315,7 +315,7 @@ class Collection implements Countable, IteratorAggregate
 
     /**
      * Check if all items match callback
-     * 
+     *
      * @param callable(mixed, int|string): bool $callback
      */
     public function every(callable $callback): bool
@@ -331,7 +331,7 @@ class Collection implements Countable, IteratorAggregate
 
     /**
      * Execute callback for each item (side effects)
-     * 
+     *
      * @param callable(mixed, int|string): void $callback
      */
     public function each(callable $callback): self
@@ -345,7 +345,7 @@ class Collection implements Countable, IteratorAggregate
 
     /**
      * Tap into collection for debugging without breaking chain
-     * 
+     *
      * @param callable(self): void $callback
      */
     public function tap(callable $callback): self
@@ -404,7 +404,7 @@ class Collection implements Countable, IteratorAggregate
     public function avg(?string $key = null): int|float|null
     {
         $count = $this->count();
-        
+
         if ($count === 0) {
             return null;
         }
@@ -438,7 +438,7 @@ class Collection implements Countable, IteratorAggregate
 
     /**
      * Convert to plain array
-     * 
+     *
      * @return array<int|string, mixed>
      */
     public function toArray(): array

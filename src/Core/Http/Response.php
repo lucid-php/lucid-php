@@ -6,7 +6,7 @@ namespace Core\Http;
 
 /**
  * HTTP Response
- * 
+ *
  * Factory methods are marked with #[\NoDiscard] to ensure
  * the returned Response is used (typically returned or sent).
  * This prevents accidental non-use of critical return values.
@@ -61,7 +61,7 @@ class Response
     /**
      * Create an HTML response from a view template
      * Explicit view rendering with explicit data passing
-     * 
+     *
      * @param string $template Template path relative to views directory
      * @param array<string, mixed> $data Variables to pass to template
      * @param int $status HTTP status code
@@ -72,7 +72,7 @@ class Response
         $viewsPath = dirname(__DIR__, 3) . '/src/App/Views';
         $view = new \Core\View\View($viewsPath);
         $html = $view->render($template, $data);
-        
+
         return self::html($html, $status);
     }
 
@@ -142,10 +142,10 @@ class Response
 
     /**
      * Create a file download response.
-     * 
+     *
      * Explicit file serving - no magic MIME detection.
      * Caller must provide MIME type or use MimeTypeDetector.
-     * 
+     *
      * @param string $path Absolute path to file (validated by caller)
      * @param string $filename Download filename (defaults to basename)
      * @param string $mimeType MIME type (explicit, no auto-detection)
@@ -178,13 +178,13 @@ class Response
         // Encode filename to prevent header injection and properly handle special characters
         // Use RFC 5987 encoding for international characters
         $encodedFilename = rawurlencode($filename);
-        
+
         // Sanitize filename for ASCII compatibility - remove control characters and quotes
         // Keep printable ASCII (0x20-0x7E) including spaces for better user experience
         // Spaces are safe within quoted filename parameter per RFC 2616
         $safeFilename = preg_replace('/[^\x20-\x7E]/', '', $filename);
         $safeFilename = str_replace(['"', '\\', "\r", "\n"], '', $safeFilename); // Remove problematic chars
-        
+
         return new self(
             content: $content,
             status: 200,
@@ -198,7 +198,7 @@ class Response
 
     /**
      * Create a file download response (convenience for attachment).
-     * 
+     *
      * @param string $path Absolute path to file
      * @param string|null $filename Download filename
      * @param string $mimeType MIME type
@@ -214,10 +214,10 @@ class Response
 
     /**
      * Create a streamed response for large files.
-     * 
+     *
      * Returns StreamedResponse for efficient memory usage.
      * Use for files larger than available PHP memory.
-     * 
+     *
      * @param string $path Absolute path to file
      * @param string|null $filename Download filename
      * @param string $mimeType MIME type

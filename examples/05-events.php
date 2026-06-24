@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * Example 5: Event System
- * 
+ *
  * Demonstrates:
  * - Creating events
  * - Creating listeners
@@ -27,7 +27,8 @@ class UserRegisteredEvent
         public readonly string $email,
         public readonly string $name,
         public readonly \DateTimeImmutable $registeredAt
-    ) {}
+    ) {
+    }
 }
 
 class OrderPlacedEvent
@@ -37,7 +38,8 @@ class OrderPlacedEvent
         public readonly int $userId,
         public readonly float $total,
         public readonly array $items
-    ) {}
+    ) {
+    }
 }
 
 class PaymentProcessedEvent
@@ -47,7 +49,8 @@ class PaymentProcessedEvent
         public readonly string $paymentMethod,
         public readonly float $amount,
         public readonly bool $success
-    ) {}
+    ) {
+    }
 }
 
 // ===========================
@@ -89,7 +92,7 @@ class SendOrderConfirmationListener
     {
         echo "[Email] Sending order confirmation for order #{$event->orderId}\n";
         echo "        Total: \${$event->total}\n";
-        echo "        Items: " . count($event->items) . "\n\n";
+        echo '        Items: ' . count($event->items) . "\n\n";
     }
 }
 

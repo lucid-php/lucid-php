@@ -18,15 +18,14 @@ readonly class CreateUserDTO implements ValidatedDTO
     public function __construct(
         #[Required]
         public string $name,
-
         #[Required]
         #[Email]
         public string $email,
-
         #[Required]
         #[Length(min: 8)]
         public string $password
-    ) {}
+    ) {
+    }
 
     /**
      * PHP 8.5: Using clone-with syntax for immutable updates.

@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace App\Job;
 
-use Core\Schedule\CronExpression;
-use Core\Schedule\ScheduledJobInterface;
 use Core\Database\Database;
-use Core\Mail\MailerInterface;
-use Core\Mail\Mail;
 use Core\Log\Logger;
 use Core\Log\LogLevel;
+use Core\Mail\Mail;
+use Core\Mail\MailerInterface;
+use Core\Schedule\CronExpression;
+use Core\Schedule\ScheduledJobInterface;
 
 /**
  * Example: Database Cleanup Job
- * 
+ *
  * Demonstrates a scheduled job with multiple dependencies:
  * - Database for querying and cleanup
  * - Mailer for sending notifications
  * - Logger for tracking execution
- * 
+ *
  * Runs weekly on Sunday at 2 AM
  */
 class DatabaseCleanupJob implements ScheduledJobInterface
@@ -28,7 +28,8 @@ class DatabaseCleanupJob implements ScheduledJobInterface
         private readonly Database $db,
         private readonly MailerInterface $mailer,
         private readonly Logger $logger
-    ) {}
+    ) {
+    }
 
     public function schedule(): string
     {

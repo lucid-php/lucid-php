@@ -29,7 +29,8 @@ class RouteListCommand implements CommandInterface
     public function __construct(
         private readonly Container $container,
         private readonly Config $config
-    ) {}
+    ) {
+    }
 
     public function execute(OutputInterface $output): int
     {
@@ -51,7 +52,7 @@ class RouteListCommand implements CommandInterface
         }
 
         // Sort by path, then HTTP method, for a stable, scannable listing.
-        usort($routes, fn(array $a, array $b): int =>
+        usort($routes, fn (array $a, array $b): int =>
             [$a['path'], $a['method']] <=> [$b['path'], $b['method']]);
 
         $rows = [];
@@ -85,4 +86,3 @@ class RouteListCommand implements CommandInterface
         };
     }
 }
-

@@ -25,7 +25,8 @@ class DbStatusCommand implements CommandInterface
     public function __construct(
         private readonly Database $db,
         private readonly Migrator $migrator
-    ) {}
+    ) {
+    }
 
     public function execute(OutputInterface $output): int
     {
@@ -41,7 +42,7 @@ class DbStatusCommand implements CommandInterface
 
         try {
             $status = $this->migrator->status();
-            $applied = count(array_filter($status, fn(array $row): bool => $row['applied']));
+            $applied = count(array_filter($status, fn (array $row): bool => $row['applied']));
             $pending = count($status) - $applied;
 
             $output->writeln("Migrations: <comment>{$applied}</comment> applied, <comment>{$pending}</comment> pending");

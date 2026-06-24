@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Middleware;
 
 use App\Repository\TokenRepository;
-use Core\Http\UnauthorizedException;
 use Core\Http\MiddlewareInterface;
-use Core\Http\RequestHandlerInterface;
 use Core\Http\Request;
+use Core\Http\RequestHandlerInterface;
 use Core\Http\Response;
+use Core\Http\UnauthorizedException;
 
 class AuthMiddleware implements MiddlewareInterface
 {
@@ -20,7 +20,7 @@ class AuthMiddleware implements MiddlewareInterface
     public function process(Request $request, RequestHandlerInterface $handler): Response
     {
         $authorization = $request->server['HTTP_AUTHORIZATION'] ?? '';
-        
+
         if (!str_starts_with($authorization, 'Bearer ')) {
             throw new UnauthorizedException('Missing or Invalid Token');
         }

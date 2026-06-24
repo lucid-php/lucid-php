@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Core\Attribute\Assert\Pattern;
-use Core\Attribute\Assert\Url;
 use Core\Attribute\Assert\Alpha;
 use Core\Attribute\Assert\AlphaNumeric;
+use Core\Attribute\Assert\Pattern;
+use Core\Attribute\Assert\Url;
 use PHPUnit\Framework\TestCase;
 
 class StringValidationTest extends TestCase
@@ -30,7 +30,7 @@ class StringValidationTest extends TestCase
 
         $this->assertTrue($rule->validate('1234'));
         $this->assertFalse($rule->validate('123'));
-        
+
         $message = $rule->message('code');
         $this->assertSame('Must be a 4-digit code', $message);
     }

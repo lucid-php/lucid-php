@@ -17,9 +17,9 @@ class TokenRepositoryTest extends TestCase
     protected function setUp(): void
     {
         $this->db = new Database('sqlite::memory:');
-        
+
         // Create users and tokens tables
-        $this->db->execute("
+        $this->db->execute('
             CREATE TABLE users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -27,9 +27,9 @@ class TokenRepositoryTest extends TestCase
                 password TEXT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
-        ");
+        ');
 
-        $this->db->execute("
+        $this->db->execute('
             CREATE TABLE personal_access_tokens (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
@@ -37,11 +37,11 @@ class TokenRepositoryTest extends TestCase
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id)
             )
-        ");
+        ');
 
         // Insert test user
         $this->db->execute(
-            "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
+            'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
             ['John Doe', 'john@example.com', password_hash('password', PASSWORD_BCRYPT)]
         );
 

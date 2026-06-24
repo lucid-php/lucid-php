@@ -11,7 +11,7 @@ use ReflectionParameter;
 
 /**
  * Validator
- * 
+ *
  * The validateAndHydrate method is marked with #[\NoDiscard] to ensure
  * the returned DTO is used. This prevents accidentally calling validation
  * without capturing the validated result.
@@ -32,13 +32,13 @@ class Validator
     {
         $reflection = new ReflectionClass($class);
         $constructor = $reflection->getConstructor();
-        
+
         if (!$constructor) {
-             // DTOs without constructor-promoted properties cannot be validated
-             // This ensures explicit validation through constructor parameters
-             throw new ValidationException([
-                 '_class' => ['DTO must have constructor with promoted properties for validation']
-             ]);
+            // DTOs without constructor-promoted properties cannot be validated
+            // This ensures explicit validation through constructor parameters
+            throw new ValidationException([
+                '_class' => ['DTO must have constructor with promoted properties for validation'],
+            ]);
         }
 
         $args = [];
@@ -47,7 +47,7 @@ class Validator
         foreach ($constructor->getParameters() as $parameter) {
             $name = $parameter->getName();
             $value = $data[$name] ?? null; // Null if not present
-            
+
             // 1. Validate
             $parameterErrors = $this->validateParameter($parameter, $value);
             if (!empty($parameterErrors)) {
@@ -60,16 +60,16 @@ class Validator
             if ($value !== null) {
                 $args[] = $value;
             } else {
-                 // Handle optional/default if needed
-                 if ($parameter->isDefaultValueAvailable()) {
-                     $args[] = $parameter->getDefaultValue();
-                 } elseif ($parameter->allowsNull()) {
-                     $args[] = null;
-                 } else {
+                // Handle optional/default if needed
+                if ($parameter->isDefaultValueAvailable()) {
+                    $args[] = $parameter->getDefaultValue();
+                } elseif ($parameter->allowsNull()) {
+                    $args[] = null;
+                } else {
                     // Required parameter missing - should be caught by validation
                     // Add placeholder to maintain argument order
-                    $args[] = null; 
-                 }
+                    $args[] = null;
+                }
             }
         }
 

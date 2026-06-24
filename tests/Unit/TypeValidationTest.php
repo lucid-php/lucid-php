@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use Core\Attribute\Assert\Boolean;
 use Core\Attribute\Assert\In;
+use Core\Attribute\Assert\Integer;
+use Core\Attribute\Assert\Json;
 use Core\Attribute\Assert\NotIn;
 use Core\Attribute\Assert\Numeric;
-use Core\Attribute\Assert\Integer;
-use Core\Attribute\Assert\Boolean;
-use Core\Attribute\Assert\Json;
 use Core\Attribute\Assert\Uuid;
 use PHPUnit\Framework\TestCase;
 
@@ -119,7 +119,7 @@ class TypeValidationTest extends TestCase
 
         // Valid v4 UUID
         $this->assertTrue($rule->validate('550e8400-e29b-41d4-a716-446655440000'));
-        
+
         // Invalid: not v4 (this is a v1 UUID)
         $this->assertFalse($rule->validate('6ba7b810-9dad-11d1-80b4-00c04fd430c8'));
     }

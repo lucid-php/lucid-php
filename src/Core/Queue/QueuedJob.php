@@ -6,7 +6,7 @@ namespace Core\Queue;
 
 /**
  * Queued Job Container
- * 
+ *
  * Wraps a job with metadata for queue processing
  */
 readonly class QueuedJob
@@ -17,5 +17,6 @@ readonly class QueuedJob
         public string $queue,
         public int $attempts,
         public int $availableAt,
-    ) {}
+    ) {
+    }
 }

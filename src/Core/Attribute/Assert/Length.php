@@ -10,9 +10,10 @@ use Attribute;
 class Length implements ValidatorRuleInterface
 {
     public function __construct(
-        private int $min = 0, 
+        private int $min = 0,
         private int $max = PHP_INT_MAX
-    ) {}
+    ) {
+    }
 
     public function validate(mixed $value): bool
     {

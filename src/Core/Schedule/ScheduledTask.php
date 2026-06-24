@@ -8,7 +8,7 @@ use DateTimeImmutable;
 
 /**
  * ScheduledTask - Represents a single scheduled task
- * 
+ *
  * Immutable task definition with explicit cron expression
  */
 readonly class ScheduledTask
@@ -18,7 +18,8 @@ readonly class ScheduledTask
         private string $cronExpression,
         private \Closure $callback,
         private bool $withoutOverlapping = false
-    ) {}
+    ) {
+    }
 
     /**
      * Whether this task must not run concurrently with a still-running instance

@@ -24,7 +24,8 @@ class CacheClearCommand implements CommandInterface
 {
     public function __construct(
         private readonly Config $config
-    ) {}
+    ) {
+    }
 
     public function execute(OutputInterface $output): int
     {

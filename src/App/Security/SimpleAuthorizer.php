@@ -23,7 +23,8 @@ class SimpleAuthorizer implements AuthorizerInterface
 {
     public function __construct(
         private readonly Config $config
-    ) {}
+    ) {
+    }
 
     public function authorize(string $ability, Request $request): bool
     {

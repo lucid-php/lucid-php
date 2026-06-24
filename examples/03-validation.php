@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * Example 3: Validation with DTOs
- * 
+ *
  * Demonstrates:
  * - Attribute-based validation
  * - Data Transfer Objects (DTOs)
@@ -14,14 +14,13 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Core\Attribute\Route;
-use Core\Attribute\Assert\Required;
 use Core\Attribute\Assert\Email;
-use Core\Attribute\Assert\Length;
 use Core\Attribute\Assert\In;
-use Core\Attribute\Assert\Url;
+use Core\Attribute\Assert\Length;
 use Core\Attribute\Assert\Range;
-use Core\Http\Request;
+use Core\Attribute\Assert\Required;
+use Core\Attribute\Assert\Url;
+use Core\Attribute\Route;
 use Core\Http\Response;
 use Core\Http\ValidatedDTO;
 
@@ -32,25 +31,21 @@ class CreateUserDTO implements ValidatedDTO
         #[Required]
         #[Length(min: 3, max: 50)]
         public string $name,
-        
         #[Required]
         #[Email]
         public string $email,
-        
         #[Required]
         #[Length(min: 8)]
         public string $password,
-        
         #[Required]
         #[In(['user', 'admin', 'moderator'])]
         public string $role = 'user',
-        
         #[Url]
         public ?string $website = null,
-        
         #[Range(min: 18, max: 120)]
         public ?int $age = null
-    ) {}
+    ) {
+    }
 }
 
 class UpdateUserDTO implements ValidatedDTO
@@ -58,13 +53,12 @@ class UpdateUserDTO implements ValidatedDTO
     public function __construct(
         #[Length(min: 3, max: 50)]
         public ?string $name = null,
-        
         #[Email]
         public ?string $email = null,
-        
         #[Length(min: 8)]
         public ?string $password = null
-    ) {}
+    ) {
+    }
 }
 
 class CreatePostDTO implements ValidatedDTO
@@ -73,19 +67,16 @@ class CreatePostDTO implements ValidatedDTO
         #[Required]
         #[Length(min: 5, max: 200)]
         public string $title,
-        
         #[Required]
         #[Length(min: 10)]
         public string $content,
-        
         #[Required]
         #[In(['draft', 'published', 'archived'])]
         public string $status = 'draft',
-        
         public ?array $tags = null,
-        
         public ?bool $featured = false
-    ) {}
+    ) {
+    }
 }
 
 class UserController
@@ -102,27 +93,27 @@ class UserController
             'role' => $dto->role,
             'website' => $dto->website,
             'age' => $dto->age,
-            'created_at' => date('Y-m-d H:i:s')
+            'created_at' => date('Y-m-d H:i:s'),
         ];
-        
+
         return Response::json([
             'message' => 'User created successfully',
-            'user' => $user
+            'user' => $user,
         ], 201);
     }
-    
+
     #[Route('PUT', '/users/{id}')]
     public function updateUser(UpdateUserDTO $dto): Response
     {
         $updates = array_filter([
             'name' => $dto->name,
             'email' => $dto->email,
-            'password' => $dto->password ? '***hidden***' : null
-        ], fn($v) => $v !== null);
-        
+            'password' => $dto->password ? '***hidden***' : null,
+        ], fn ($v) => $v !== null);
+
         return Response::json([
             'message' => 'User updated successfully',
-            'updates' => $updates
+            'updates' => $updates,
         ]);
     }
 }

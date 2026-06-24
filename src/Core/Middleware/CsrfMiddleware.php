@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace Core\Middleware;
 
+use Core\Http\ForbiddenException;
 use Core\Http\MiddlewareInterface;
 use Core\Http\Request;
 use Core\Http\RequestHandlerInterface;
 use Core\Http\Response;
-use Core\Security\CsrfTokenManager;
 use Core\Security\Csrf;
-use Core\Http\ForbiddenException;
+use Core\Security\CsrfTokenManager;
 use ReflectionClass;
-use ReflectionMethod;
 
 /**
  * CSRF Protection Middleware
- * 
+ *
  * Validates CSRF tokens for routes marked with #[Csrf] attribute.
- * 
+ *
  * Philosophy: Explicit Over Convenient
  * - Only validates routes with explicit #[Csrf] attribute
  * - No automatic protection (reduces magic)
@@ -31,7 +30,8 @@ class CsrfMiddleware implements MiddlewareInterface
 
     public function __construct(
         private readonly CsrfTokenManager $csrfManager
-    ) {}
+    ) {
+    }
 
     public function process(Request $request, RequestHandlerInterface $handler): Response
     {
@@ -42,7 +42,7 @@ class CsrfMiddleware implements MiddlewareInterface
 
         // Check if route has #[Csrf] attribute
         $csrfAttribute = $this->getCsrfAttribute($request);
-        
+
         if ($csrfAttribute === null) {
             // No CSRF protection required
             return $handler->handle($request);
@@ -60,7 +60,7 @@ class CsrfMiddleware implements MiddlewareInterface
 
     /**
      * Get the #[Csrf] attribute from the route handler
-     * 
+     *
      * @return Csrf|null
      */
     private function getCsrfAttribute(Request $request): ?Csrf
@@ -75,9 +75,9 @@ class CsrfMiddleware implements MiddlewareInterface
         try {
             $reflection = new ReflectionClass($controller);
             $methodReflection = $reflection->getMethod($method);
-            
+
             $attributes = $methodReflection->getAttributes(Csrf::class);
-            
+
             if (empty($attributes)) {
                 return null;
             }
@@ -91,7 +91,7 @@ class CsrfMiddleware implements MiddlewareInterface
     /**
      * Extract CSRF token from request
      * Checks: body, header, query string (in that order)
-     * 
+     *
      * @return string|null
      */
     private function extractToken(Request $request, Csrf $csrf): ?string

@@ -10,7 +10,7 @@ use DateTimeZone;
 
 /**
  * Scheduler - Executes scheduled tasks based on cron-like expressions
- * 
+ *
  * No magic, no auto-discovery. Tasks are explicitly registered.
  */
 class Scheduler
@@ -22,7 +22,8 @@ class Scheduler
         private readonly OutputInterface $output,
         private readonly DateTimeZone $timezone,
         private readonly ?LockInterface $lock = null
-    ) {}
+    ) {
+    }
 
     /**
      * Register a task explicitly
@@ -34,7 +35,7 @@ class Scheduler
 
     /**
      * Run all tasks that are due at this moment
-     * 
+     *
      * @return array{ran: int, skipped: int, failed: int}
      */
     public function run(): array
@@ -87,7 +88,7 @@ class Scheduler
 
     /**
      * Get all registered tasks
-     * 
+     *
      * @return array<ScheduledTask>
      */
     public function getTasks(): array

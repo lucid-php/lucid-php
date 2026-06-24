@@ -17,9 +17,9 @@ class UserRepositoryTest extends TestCase
     protected function setUp(): void
     {
         $this->db = new Database('sqlite::memory:');
-        
+
         // Create users table
-        $this->db->execute("
+        $this->db->execute('
             CREATE TABLE users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -27,7 +27,7 @@ class UserRepositoryTest extends TestCase
                 password TEXT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
-        ");
+        ');
 
         $this->repository = new UserRepository($this->db);
     }

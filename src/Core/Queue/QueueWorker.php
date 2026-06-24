@@ -26,7 +26,8 @@ class QueueWorker
     public function __construct(
         private readonly QueueInterface $queue,
         private readonly Container $container
-    ) {}
+    ) {
+    }
 
     /**
      * Execute a job's handle() method, resolving its dependencies from the
@@ -37,7 +38,7 @@ class QueueWorker
     {
         if (!method_exists($job, 'handle')) {
             throw new \RuntimeException(
-                "Job class " . get_class($job) . " must implement a handle() method"
+                'Job class ' . get_class($job) . ' must implement a handle() method'
             );
         }
 

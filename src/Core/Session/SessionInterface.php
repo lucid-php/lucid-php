@@ -6,7 +6,7 @@ namespace Core\Session;
 
 /**
  * Session Management Interface
- * 
+ *
  * Philosophy: Explicit Over Convenient
  * - No magic __get() or array access
  * - Every method is typed and explicit
@@ -22,7 +22,7 @@ interface SessionInterface
 
     /**
      * Get a value from the session
-     * 
+     *
      * @template T
      * @param string $key
      * @param T $default
@@ -47,7 +47,7 @@ interface SessionInterface
 
     /**
      * Get all session data
-     * 
+     *
      * @return array<string, mixed>
      */
     public function all(): array;

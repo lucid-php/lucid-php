@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Core\Mail\Mail;
-use Core\Mail\LogMailer;
-use Core\Mail\ArrayMailer;
-use Core\Log\Logger;
 use Core\Log\Handler\StderrHandler;
+use Core\Log\Logger;
+use Core\Mail\ArrayMailer;
+use Core\Mail\LogMailer;
+use Core\Mail\Mail;
 use PHPUnit\Framework\TestCase;
 
 class MailTest extends TestCase
@@ -94,11 +94,11 @@ class MailTest extends TestCase
     {
         $mailer = new ArrayMailer();
         $mailer->send(Mail::create('user@example.com', 'Subject', 'Body'));
-        
+
         $this->assertSame(1, $mailer->count());
-        
+
         $mailer->clear();
-        
+
         $this->assertSame(0, $mailer->count());
         $this->assertEmpty($mailer->getSent());
     }

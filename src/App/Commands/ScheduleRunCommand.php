@@ -6,15 +6,15 @@ namespace App\Commands;
 
 use Core\Attribute\ConsoleCommand;
 use Core\Attribute\Option;
+use Core\Config\Config;
 use Core\Console\CommandInterface;
 use Core\Console\OutputInterface;
-use Core\Schedule\Scheduler;
-use Core\Schedule\ScheduledTask;
-use Core\Schedule\ScheduledJobInterface;
 use Core\Container;
-use Core\Config\Config;
-use DateTimeZone;
+use Core\Schedule\ScheduledJobInterface;
+use Core\Schedule\ScheduledTask;
+use Core\Schedule\Scheduler;
 use DateTimeImmutable;
+use DateTimeZone;
 
 #[ConsoleCommand(
     name: 'schedule:run',
@@ -25,7 +25,8 @@ class ScheduleRunCommand implements CommandInterface
     public function __construct(
         private readonly Container $container,
         private readonly Config $config
-    ) {}
+    ) {
+    }
 
     public function execute(
         OutputInterface $output,
@@ -56,7 +57,7 @@ class ScheduleRunCommand implements CommandInterface
             $task = new ScheduledTask(
                 description: $job->getDescription(),
                 cronExpression: $job->schedule(),
-                callback: fn() => $job->execute()
+                callback: fn () => $job->execute()
             );
 
             $scheduler->task($task);

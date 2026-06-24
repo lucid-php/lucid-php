@@ -6,9 +6,9 @@ namespace Tests\Unit;
 
 use App\Event\UserCreated;
 use App\Event\UserDeleted;
-use App\Listener\SendWelcomeEmail;
-use App\Listener\LogUserCreation;
 use App\Listener\CleanupUserData;
+use App\Listener\LogUserCreation;
+use App\Listener\SendWelcomeEmail;
 use Core\Container;
 use Core\Event\EventDispatcher;
 use PHPUnit\Framework\TestCase;
@@ -51,7 +51,7 @@ class EventDispatcherTest extends TestCase
     public function test_can_dispatch_event_to_listeners(): void
     {
         $this->dispatcher->listen(UserCreated::class, LogUserCreation::class);
-        
+
         $event = new UserCreated(
             userId: 123,
             name: 'John Doe',
@@ -60,7 +60,7 @@ class EventDispatcherTest extends TestCase
 
         // Should not throw exception
         $this->dispatcher->dispatch($event);
-        
+
         $this->assertTrue(true);
     }
 
@@ -74,16 +74,16 @@ class EventDispatcherTest extends TestCase
 
         // Should not throw exception
         $this->dispatcher->dispatch($event);
-        
+
         $this->assertTrue(true);
     }
 
     public function test_can_check_if_event_has_listeners(): void
     {
         $this->assertFalse($this->dispatcher->hasListeners(UserCreated::class));
-        
+
         $this->dispatcher->listen(UserCreated::class, SendWelcomeEmail::class);
-        
+
         $this->assertTrue($this->dispatcher->hasListeners(UserCreated::class));
     }
 
@@ -91,9 +91,9 @@ class EventDispatcherTest extends TestCase
     {
         $this->dispatcher->listen(UserCreated::class, SendWelcomeEmail::class);
         $this->assertTrue($this->dispatcher->hasListeners(UserCreated::class));
-        
+
         $this->dispatcher->forget(UserCreated::class);
-        
+
         $this->assertFalse($this->dispatcher->hasListeners(UserCreated::class));
     }
 
@@ -114,7 +114,7 @@ class EventDispatcherTest extends TestCase
     public function test_returns_empty_array_for_unregistered_event(): void
     {
         $listeners = $this->dispatcher->getListeners(UserCreated::class);
-        
+
         $this->assertIsArray($listeners);
         $this->assertEmpty($listeners);
     }

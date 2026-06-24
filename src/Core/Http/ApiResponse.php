@@ -6,10 +6,10 @@ namespace Core\Http;
 
 /**
  * Standardized API Response Structure
- * 
+ *
  * Provides explicit, typed API responses following the framework's
  * zero-magic philosophy. All responses have a consistent structure.
- * 
+ *
  * Structure:
  * {
  *   "success": bool,
@@ -28,7 +28,8 @@ readonly class ApiResponse
         public ?array $errors = null,
         public ?array $meta = null,
         public int $statusCode = 200
-    ) {}
+    ) {
+    }
 
     /**
      * Create a successful response
@@ -135,8 +136,8 @@ readonly class ApiResponse
                     'page' => $page,
                     'per_page' => $perPage,
                     'total_pages' => (int) ceil($total / $perPage),
-                    'has_more' => $page * $perPage < $total
-                ]
+                    'has_more' => $page * $perPage < $total,
+                ],
             ],
             statusCode: 200
         );

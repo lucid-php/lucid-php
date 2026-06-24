@@ -9,7 +9,7 @@ use Core\Mail\MailerInterface;
 
 /**
  * Send Welcome Email Job
- * 
+ *
  * Philosophy:
  * - Jobs are classes with explicit handle() method
  * - Dependencies injected via method parameters (resolved from container)
@@ -22,11 +22,12 @@ readonly class SendWelcomeEmailJob
         public int $userId,
         public string $name,
         public string $email,
-    ) {}
+    ) {
+    }
 
     /**
      * Execute the job
-     * 
+     *
      * Dependencies are automatically resolved from container
      */
     public function handle(MailerInterface $mailer): void
@@ -55,4 +56,3 @@ readonly class SendWelcomeEmailJob
         HTML;
     }
 }
-

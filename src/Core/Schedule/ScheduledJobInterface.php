@@ -6,7 +6,7 @@ namespace Core\Schedule;
 
 /**
  * ScheduledJobInterface - Contract for scheduled jobs
- * 
+ *
  * Implement this interface for any job that should be scheduled.
  * Each job defines its own schedule and execution logic.
  */
@@ -14,7 +14,7 @@ interface ScheduledJobInterface
 {
     /**
      * Define when this job should run
-     * 
+     *
      * Return a cron expression string
      * You can use CronExpression helper methods:
      * - CronExpression::daily()
@@ -26,14 +26,14 @@ interface ScheduledJobInterface
 
     /**
      * Execute the job
-     * 
+     *
      * This method will be called when the job is due to run.
      */
     public function execute(): void;
 
     /**
      * Get job description
-     * 
+     *
      * Used for logging and display purposes
      */
     public function getDescription(): string;

@@ -18,7 +18,7 @@ class CleanupUserData
     {
         // In real application, delete user files, sessions, tokens, etc.
         error_log(sprintf(
-            "🗑️  Cleaning up data for deleted user: %s",
+            '🗑️  Cleaning up data for deleted user: %s',
             $event->email
         ));
     }

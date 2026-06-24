@@ -7,9 +7,9 @@ return [
     |--------------------------------------------------------------------------
     | Queue Driver
     |--------------------------------------------------------------------------
-    | 
+    |
     | Supported: "sync", "database"
-    | 
+    |
     | sync: Executes jobs immediately (no queue, good for development/testing)
     | database: Stores jobs in database, requires queue worker to process
     */
@@ -26,7 +26,7 @@ return [
     |--------------------------------------------------------------------------
     | Queue Names
     |--------------------------------------------------------------------------
-    | 
+    |
     | Define your queue names here for organization
     */
     'queues' => [

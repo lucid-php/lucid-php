@@ -6,10 +6,10 @@ namespace Core\Session;
 
 /**
  * Flash Messages
- * 
+ *
  * One-time messages that survive a redirect and are then cleared.
  * Common use case: "User created successfully" after form submission.
- * 
+ *
  * Philosophy: Explicit Over Convenient
  * - No magic levels (use explicit success/error/info methods)
  * - Messages are typed arrays, not mixed
@@ -21,7 +21,8 @@ class FlashMessages
 
     public function __construct(
         private readonly SessionInterface $session
-    ) {}
+    ) {
+    }
 
     /**
      * Add a success message
@@ -58,14 +59,14 @@ class FlashMessages
     /**
      * Get all messages of a specific type
      * Messages are removed after retrieval
-     * 
+     *
      * @return string[]
      */
     public function get(string $type): array
     {
         $messages = $this->session->get(self::KEY, []);
         $result = $messages[$type] ?? [];
-        
+
         // Remove retrieved messages
         if (isset($messages[$type])) {
             unset($messages[$type]);
@@ -78,7 +79,7 @@ class FlashMessages
     /**
      * Get all messages (all types)
      * Messages are removed after retrieval
-     * 
+     *
      * @return array<string, string[]>
      */
     public function getAll(): array
@@ -112,11 +113,11 @@ class FlashMessages
     private function add(string $type, string $message): void
     {
         $messages = $this->session->get(self::KEY, []);
-        
+
         if (!isset($messages[$type])) {
             $messages[$type] = [];
         }
-        
+
         $messages[$type][] = $message;
         $this->session->set(self::KEY, $messages);
     }

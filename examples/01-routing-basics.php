@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * Example 1: Routing Basics
- * 
+ *
  * Demonstrates:
  * - Attribute-based routing
  * - HTTP methods (GET, POST, PUT, DELETE)
@@ -30,27 +30,27 @@ class PostController
             ['id' => 2, 'title' => 'Second Post', 'status' => 'draft'],
             ['id' => 3, 'title' => 'Third Post', 'status' => 'published'],
         ];
-        
+
         return Response::json($posts);
     }
-    
+
     #[Route('POST', '/')]
     public function create(Request $request): Response
     {
         $data = $request->body;
-        
+
         // Simulate creating a post
         $post = [
             'id' => 4,
             'title' => $data['title'] ?? 'Untitled',
             'content' => $data['content'] ?? '',
             'status' => 'draft',
-            'created_at' => date('Y-m-d H:i:s')
+            'created_at' => date('Y-m-d H:i:s'),
         ];
-        
+
         return Response::json($post, 201);
     }
-    
+
     #[Route('GET', '/{id}')]
     public function show(Request $request): Response
     {
@@ -60,27 +60,27 @@ class PostController
             'id' => 1,
             'title' => 'First Post',
             'content' => 'This is the content of the first post.',
-            'status' => 'published'
+            'status' => 'published',
         ];
-        
+
         return Response::json($post);
     }
-    
+
     #[Route('PUT', '/{id}')]
     public function update(Request $request): Response
     {
         $data = $request->body;
-        
+
         $post = [
             'id' => 1,
             'title' => $data['title'] ?? 'Updated Title',
             'content' => $data['content'] ?? 'Updated content',
-            'updated_at' => date('Y-m-d H:i:s')
+            'updated_at' => date('Y-m-d H:i:s'),
         ];
-        
+
         return Response::json($post);
     }
-    
+
     #[Route('DELETE', '/{id}')]
     public function delete(Request $request): Response
     {

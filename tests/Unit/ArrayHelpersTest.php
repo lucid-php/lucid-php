@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Test PHP 8.5 array_first() and array_last() Functions
- * 
+ *
  * These native functions provide clean array access with automatic null coalescing.
  */
 class ArrayHelpersTest extends TestCase
@@ -97,7 +97,7 @@ class ArrayHelpersTest extends TestCase
         $obj1 = (object)['id' => 1];
         $obj2 = (object)['id' => 2];
         $array = [$obj1, $obj2];
-        
+
         $this->assertSame($obj1, array_first($array));
     }
 
@@ -106,7 +106,7 @@ class ArrayHelpersTest extends TestCase
         $obj1 = (object)['id' => 1];
         $obj2 = (object)['id' => 2];
         $array = [$obj1, $obj2];
-        
+
         $this->assertSame($obj2, array_last($array));
     }
 }

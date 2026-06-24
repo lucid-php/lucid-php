@@ -6,16 +6,16 @@ namespace Core\RateLimit;
 
 /**
  * In-Memory Rate Limit Store
- * 
+ *
  * Simple in-memory storage using arrays.
  * NOT suitable for distributed systems (single-server only).
  * Resets on server restart.
- * 
+ *
  * Philosophy: Explicit, simple implementation.
  * - No external dependencies
  * - Clear, traceable logic
  * - Good enough for development and single-server production
- * 
+ *
  * For production with multiple servers, implement RedisRateLimitStore.
  */
 class InMemoryRateLimitStore implements RateLimitStore

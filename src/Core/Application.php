@@ -15,6 +15,7 @@ class Application
     public function __construct(?CacheInterface $cache = null)
     {
         $this->container = new Container();
+        $this->container->set(Container::class, $this->container);
         $this->router = new Router($this->container, $cache);
     }
 

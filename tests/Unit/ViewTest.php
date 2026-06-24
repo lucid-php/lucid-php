@@ -32,7 +32,7 @@ class ViewTest extends TestCase
         if (!is_dir($dir)) {
             return;
         }
-        
+
         $files = array_diff(scandir($dir), ['.', '..']);
         foreach ($files as $file) {
             $path = $dir . '/' . $file;
@@ -45,9 +45,9 @@ class ViewTest extends TestCase
     public function it_renders_simple_template(): void
     {
         file_put_contents($this->tempDir . '/test.php', '<h1>Hello</h1>');
-        
+
         $result = $this->view->render('test');
-        
+
         $this->assertSame('<h1>Hello</h1>', $result);
     }
 
@@ -55,9 +55,9 @@ class ViewTest extends TestCase
     public function it_passes_data_to_template(): void
     {
         file_put_contents($this->tempDir . '/greeting.php', '<h1>Hello <?= $name ?></h1>');
-        
+
         $result = $this->view->render('greeting', ['name' => 'World']);
-        
+
         $this->assertSame('<h1>Hello World</h1>', $result);
     }
 
@@ -65,9 +65,9 @@ class ViewTest extends TestCase
     public function it_escapes_html_with_escape_function(): void
     {
         file_put_contents($this->tempDir . '/escape.php', '<?= $escape($content) ?>');
-        
+
         $result = $this->view->render('escape', ['content' => '<script>alert("xss")</script>']);
-        
+
         $this->assertStringContainsString('&lt;script&gt;', $result);
         $this->assertStringNotContainsString('<script>', $result);
     }
@@ -76,9 +76,9 @@ class ViewTest extends TestCase
     public function it_adds_php_extension_automatically(): void
     {
         file_put_contents($this->tempDir . '/auto.php', 'content');
-        
+
         $result = $this->view->render('auto');
-        
+
         $this->assertSame('content', $result);
     }
 
@@ -87,9 +87,9 @@ class ViewTest extends TestCase
     {
         mkdir($this->tempDir . '/users');
         file_put_contents($this->tempDir . '/users/profile.php', 'profile');
-        
+
         $result = $this->view->render('users.profile');
-        
+
         $this->assertSame('profile', $result);
     }
 
@@ -98,7 +98,7 @@ class ViewTest extends TestCase
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('View template not found');
-        
+
         $this->view->render('nonexistent');
     }
 
@@ -106,10 +106,10 @@ class ViewTest extends TestCase
     public function it_handles_template_errors(): void
     {
         file_put_contents($this->tempDir . '/error.php', '<?php throw new Exception("Template error"); ?>');
-        
+
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Error rendering template');
-        
+
         $this->view->render('error');
     }
 }

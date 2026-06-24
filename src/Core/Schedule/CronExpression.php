@@ -9,7 +9,7 @@ use InvalidArgumentException;
 
 /**
  * CronExpression - Parse and evaluate cron expressions
- * 
+ *
  * Supports standard 5-part cron syntax:
  * * * * * *
  * | | | | |
@@ -18,7 +18,7 @@ use InvalidArgumentException;
  * | | +-------- Day of month (1-31)
  * | +---------- Hour (0-23)
  * +------------ Minute (0-59)
- * 
+ *
  * No magic. Simple, explicit cron parsing.
  */
 class CronExpression
@@ -68,7 +68,7 @@ class CronExpression
 
     /**
      * Parse cron expression into parts
-     * 
+     *
      * @return array<int, array<int>>
      */
     private static function parse(string $expression): array
@@ -92,14 +92,14 @@ class CronExpression
 
     /**
      * Parse a single cron part
-     * 
+     *
      * Supports:
      * - * (any)
      * - 5 (specific value)
      * - 1-5 (range)
      * - star/5 (step values)
      * - 1,3,5 (list)
-     * 
+     *
      * @return array<int>
      */
     private static function parsePart(string $part, int $min, int $max): array
@@ -155,7 +155,7 @@ class CronExpression
 
     /**
      * Check if a value matches a cron part
-     * 
+     *
      * @param array<int> $allowedValues
      */
     private static function matchesPart(array $allowedValues, int $value): bool
