@@ -218,6 +218,8 @@ final class ModuleBootContext
 - **$pipelines**: Define and configure pipelines
 - **$migrations**: Register migration paths
 
+Module migration paths are explicit contributions. They are not auto-scanned, and they are only used when runtime/CLI wiring passes those explicit paths into `Core\Database\Migrator`.
+
 ## Best Practices
 
 ### Module Naming

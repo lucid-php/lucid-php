@@ -29,6 +29,27 @@ CLI:
 - `php bin/migrate up`
 - `php bin/migrate down`
 
+### Multiple Explicit Migration Paths
+
+Core migrations always run from `database/migrations`. You can add extra explicit paths in `config/database.php`:
+
+```php
+'migrations' => [
+    'paths' => [
+        'database/migrations/module-catalog',
+        '/absolute/path/to/other/migrations',
+    ],
+],
+```
+
+There is no auto-discovery. Only paths listed explicitly are used.
+
+### Migration Identifiers with Multiple Paths
+
+- Default/core path keeps the historical identifier format: `filename.up.sql`.
+- Additional paths are namespaced as `<path-hash>::filename.up.sql` to prevent collisions.
+- Ordering is deterministic by migration identifier.
+
 ## Seeding
 
 Files: `database/seeds/YourSeeder.php` (extend `Core\Database\Seeder`).

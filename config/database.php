@@ -35,4 +35,18 @@ return [
         'password' => 'password',
         'charset' => 'utf8mb4',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Explicit Additional Migration Paths
+    |--------------------------------------------------------------------------
+    | Core migrations always run from database/migrations. Add extra explicit
+    | paths here when needed (for example, module-provided migrations).
+    | No auto-discovery or directory scanning is performed.
+    */
+    'migrations' => [
+        'paths' => [
+            // 'database/migrations/module-catalog',
+        ],
+    ],
 ];

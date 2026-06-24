@@ -46,8 +46,19 @@ try {
 }
 
 // 3. Run Migrations
-$migrationsPath = __DIR__ . '/../database/migrations';
-$migrator = new Migrator($db, $migrationsPath);
+$defaultPath = __DIR__ . '/../database/migrations';
+$configuredPaths = [];
+foreach ($config->getArray('database.migrations.paths', []) as $path) {
+    if (!is_string($path)) {
+        throw new \RuntimeException('database.migrations.paths must contain only string paths.');
+    }
+
+    $configuredPaths[] = str_starts_with($path, '/')
+        ? $path
+        : __DIR__ . '/../' . ltrim($path, '/');
+}
+
+$migrator = new Migrator($db, [$defaultPath, ...$configuredPaths]);
 
 $command = $argv[1] ?? 'up';
 

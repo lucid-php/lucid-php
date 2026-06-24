@@ -64,9 +64,24 @@ $container->set(Database::class, function () use ($config) {
 
 // Register migrator dependency
 $container->set(Migrator::class, function (Container $c) {
+    $config = $c->get(Config::class);
+    $defaultPath = __DIR__ . '/database/migrations';
+    $configuredPaths = [];
+    foreach ($config->getArray('database.migrations.paths', []) as $path) {
+        if (!is_string($path)) {
+            throw new \RuntimeException('database.migrations.paths must contain only string paths.');
+        }
+
+        $configuredPaths[] = str_starts_with($path, '/')
+            ? $path
+            : __DIR__ . '/' . ltrim($path, '/');
+    }
+
+    $migrationPaths = [$defaultPath, ...$configuredPaths];
+
     return new Migrator(
         db: $c->get(Database::class),
-        migrationsPath: __DIR__ . '/database/migrations'
+        migrationsPath: $migrationPaths
     );
 });
 

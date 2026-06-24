@@ -6,10 +6,25 @@ namespace Core\Database;
 
 class Migrator
 {
+    /**
+     * @var list<string>
+     */
+    private array $migrationPaths;
+
     public function __construct(
         private Database $db,
-        private string $migrationsPath
+        string|array $migrationsPath
     ) {
+        $paths = is_string($migrationsPath) ? [$migrationsPath] : array_values($migrationsPath);
+
+        if ($paths === []) {
+            throw new \InvalidArgumentException('At least one migration path must be provided.');
+        }
+
+        $this->migrationPaths = array_values(array_unique(array_map(
+            static fn (string $path): string => rtrim($path, '/'),
+            $paths
+        )));
     }
 
     /**
@@ -22,7 +37,8 @@ class Migrator
         $this->ensureMigrationsTable();
 
         $applied = $this->getAppliedMigrations();
-        $files = $this->getMigrationFiles();
+        $manifest = $this->getMigrationManifest();
+        $files = array_column($manifest, 'id');
 
         $toApply = array_values(array_diff($files, $applied));
 
@@ -32,8 +48,14 @@ class Migrator
 
         $batch = $this->nextBatch();
 
-        foreach ($toApply as $file) {
-            $this->apply($file, $batch);
+        foreach ($toApply as $migrationId) {
+            $entry = $this->findManifestEntry($manifest, $migrationId);
+
+            if ($entry === null) {
+                throw new \RuntimeException("Migration entry not found for identifier: {$migrationId}");
+            }
+
+            $this->apply($entry, $batch);
         }
 
         return $toApply;
@@ -57,8 +79,10 @@ class Migrator
 
         $toRevert = array_reverse(array_slice($applied, -max(1, $steps)));
 
-        foreach ($toRevert as $file) {
-            $this->revert($file);
+        $manifestById = $this->manifestById($this->getMigrationManifest());
+
+        foreach ($toRevert as $migrationId) {
+            $this->revert($migrationId, $manifestById[$migrationId] ?? null);
         }
 
         return $toRevert;
@@ -80,11 +104,13 @@ class Migrator
         }
 
         $status = [];
-        foreach ($this->getMigrationFiles() as $file) {
+        foreach ($this->getMigrationManifest() as $entry) {
+            $migrationId = $entry['id'];
+
             $status[] = [
-                'migration' => $file,
-                'applied' => isset($batchByFile[$file]),
-                'batch' => $batchByFile[$file] ?? null,
+                'migration' => $migrationId,
+                'applied' => isset($batchByFile[$migrationId]),
+                'batch' => $batchByFile[$migrationId] ?? null,
             ];
         }
 
@@ -130,23 +156,6 @@ class Migrator
     }
 
     /**
-     * @return array<int, string> Migration .up.sql filenames, sorted.
-     */
-    private function getMigrationFiles(): array
-    {
-        $files = scandir($this->migrationsPath);
-
-        if ($files === false) {
-            throw DatabaseException::migrationsPathUnreadable($this->migrationsPath);
-        }
-
-        $filtered = array_values(array_filter($files, fn ($f) => str_ends_with($f, '.up.sql')));
-        sort($filtered); // deterministic ordering by filename (001_, 002_, ...)
-
-        return $filtered;
-    }
-
-    /**
      * The batch number for the next migrate() run (one greater than the max).
      */
     private function nextBatch(): int
@@ -155,9 +164,12 @@ class Migrator
         return ((int) ($rows[0]['max_batch'] ?? 0)) + 1;
     }
 
-    private function apply(string $file, int $batch): void
+    /**
+     * @param array{id: string, up_path: string, down_path: string} $entry
+     */
+    private function apply(array $entry, int $batch): void
     {
-        $content = $this->readSql($this->migrationsPath . '/' . $file);
+        $content = $this->readSql($entry['up_path']);
 
         // Split content by semicolons to handle multiple statements
         // This is needed for MySQL/MariaDB which don't support multi-query in PDO::exec by default
@@ -165,26 +177,109 @@ class Migrator
 
         $this->db->execute(
             'INSERT INTO migrations (migration, batch) VALUES (:migration, :batch)',
-            ['migration' => $file, 'batch' => $batch]
+            ['migration' => $entry['id'], 'batch' => $batch]
         );
     }
 
-    private function revert(string $file): void
+    /**
+     * @param array{id: string, up_path: string, down_path: string}|null $entry
+     */
+    private function revert(string $migrationId, ?array $entry): void
     {
-        // Convert 'xxxx.up.sql' to 'xxxx.down.sql'
-        $downFile = str_replace('.up.sql', '.down.sql', $file);
-        $fullPath = $this->migrationsPath . '/' . $downFile;
-
-        // If a down file exists, run it; either way remove the record so the
-        // migration is considered rolled back.
-        if (file_exists($fullPath)) {
-            $this->executeMultipleStatements($this->readSql($fullPath));
+        // If migration metadata is still present and has a .down.sql file, run it.
+        if ($entry !== null && file_exists($entry['down_path'])) {
+            $this->executeMultipleStatements($this->readSql($entry['down_path']));
         }
 
         $this->db->execute(
             'DELETE FROM migrations WHERE migration = :migration',
-            ['migration' => $file]
+            ['migration' => $migrationId]
         );
+    }
+
+    /**
+     * @return list<array{id: string, up_path: string, down_path: string}>
+     */
+    private function getMigrationManifest(): array
+    {
+        $entries = [];
+        $seenIds = [];
+
+        foreach ($this->migrationPaths as $index => $path) {
+            $files = scandir($path);
+
+            if ($files === false) {
+                throw DatabaseException::migrationsPathUnreadable($path);
+            }
+
+            $upFiles = array_values(array_filter($files, static fn (string $file): bool => str_ends_with($file, '.up.sql')));
+            sort($upFiles);
+
+            foreach ($upFiles as $upFile) {
+                $id = $this->buildMigrationIdentifier($index, $path, $upFile);
+
+                if (isset($seenIds[$id])) {
+                    throw new \RuntimeException("Duplicate migration identifier generated: {$id}");
+                }
+
+                $seenIds[$id] = true;
+
+                $entries[] = [
+                    'id' => $id,
+                    'up_path' => $path . '/' . $upFile,
+                    'down_path' => $path . '/' . str_replace('.up.sql', '.down.sql', $upFile),
+                ];
+            }
+        }
+
+        usort(
+            $entries,
+            static fn (array $a, array $b): int => $a['id'] <=> $b['id']
+        );
+
+        return $entries;
+    }
+
+    private function buildMigrationIdentifier(int $index, string $path, string $filename): string
+    {
+        if ($index === 0) {
+            return $filename;
+        }
+
+        $canonicalPath = realpath($path) ?: $path;
+        $pathHash = substr(sha1($canonicalPath), 0, 12);
+
+        return $pathHash . '::' . $filename;
+    }
+
+    /**
+     * @param list<array{id: string, up_path: string, down_path: string}> $manifest
+     * @return array{id: string, up_path: string, down_path: string}|null
+     */
+    private function findManifestEntry(array $manifest, string $migrationId): ?array
+    {
+        foreach ($manifest as $entry) {
+            if ($entry['id'] === $migrationId) {
+                return $entry;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param list<array{id: string, up_path: string, down_path: string}> $manifest
+     * @return array<string, array{id: string, up_path: string, down_path: string}>
+     */
+    private function manifestById(array $manifest): array
+    {
+        $indexed = [];
+
+        foreach ($manifest as $entry) {
+            $indexed[$entry['id']] = $entry;
+        }
+
+        return $indexed;
     }
 
     private function readSql(string $path): string
