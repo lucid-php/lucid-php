@@ -6,22 +6,22 @@ namespace Core\Cache;
 
 /**
  * In-Memory Array Cache Implementation
- * 
+ *
  * Stores cached values in PHP memory (not persistent).
  * Perfect for testing and temporary caching within a request lifecycle.
- * 
+ *
  * Features:
  * - Lightning fast (no I/O)
  * - No disk space usage
  * - Automatic cleanup on script end
  * - Perfect for unit tests
  * - Request introspection methods
- * 
+ *
  * Use Cases:
  * - Unit testing without filesystem
  * - Temporary caching within single request
  * - Development and debugging
- * 
+ *
  * Philosophy Compliance:
  * - Zero Magic: Simple array operations, explicit
  * - Strict Typing: All parameters and returns typed
@@ -151,7 +151,7 @@ class ArrayCache implements CacheInterface
 
     /**
      * Get all stored keys (useful for testing)
-     * 
+     *
      * @return array<string>
      */
     public function getAllKeys(): array
@@ -162,7 +162,7 @@ class ArrayCache implements CacheInterface
     /**
      * Get all keys that have been set (even expired ones)
      * Useful for testing cache behavior
-     * 
+     *
      * @return array<string>
      */
     public function getSetKeys(): array

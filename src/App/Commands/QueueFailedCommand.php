@@ -24,7 +24,8 @@ class QueueFailedCommand implements CommandInterface
 {
     public function __construct(
         private readonly Database $db
-    ) {}
+    ) {
+    }
 
     public function execute(OutputInterface $output): int
     {
@@ -42,7 +43,7 @@ class QueueFailedCommand implements CommandInterface
         foreach ($failed as $job) {
             $when = date('Y-m-d H:i:s', (int) $job['failed_at']);
             $output->writeln("  <comment>{$job['id']}</comment>  [{$job['queue']}]  attempts={$job['attempts']}  {$when}");
-            $output->writeln("    <dim>" . str_replace("\n", ' ', substr((string) $job['exception'], 0, 200)) . "</dim>");
+            $output->writeln('    <dim>' . str_replace("\n", ' ', substr((string) $job['exception'], 0, 200)) . '</dim>');
         }
 
         $output->writeln('');

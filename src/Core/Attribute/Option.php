@@ -14,5 +14,6 @@ readonly class Option
         public string $shortcut = '',
         public string $description = '',
         public mixed $default = null
-    ) {}
+    ) {
+    }
 }

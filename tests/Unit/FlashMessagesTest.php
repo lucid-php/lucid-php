@@ -20,7 +20,7 @@ class FlashMessagesTest extends TestCase
             'use_cookies' => false,
         ]);
         $this->session->start();
-        
+
         $this->flash = new FlashMessages($this->session);
     }
 
@@ -34,9 +34,9 @@ class FlashMessagesTest extends TestCase
     public function testAddSuccessMessage(): void
     {
         $this->flash->success('Operation successful');
-        
+
         $messages = $this->flash->get('success');
-        
+
         $this->assertCount(1, $messages);
         $this->assertSame('Operation successful', $messages[0]);
     }
@@ -44,9 +44,9 @@ class FlashMessagesTest extends TestCase
     public function testAddErrorMessage(): void
     {
         $this->flash->error('Something went wrong');
-        
+
         $messages = $this->flash->get('error');
-        
+
         $this->assertCount(1, $messages);
         $this->assertSame('Something went wrong', $messages[0]);
     }
@@ -54,9 +54,9 @@ class FlashMessagesTest extends TestCase
     public function testAddInfoMessage(): void
     {
         $this->flash->info('Please note this');
-        
+
         $messages = $this->flash->get('info');
-        
+
         $this->assertCount(1, $messages);
         $this->assertSame('Please note this', $messages[0]);
     }
@@ -64,9 +64,9 @@ class FlashMessagesTest extends TestCase
     public function testAddWarningMessage(): void
     {
         $this->flash->warning('Be careful');
-        
+
         $messages = $this->flash->get('warning');
-        
+
         $this->assertCount(1, $messages);
         $this->assertSame('Be careful', $messages[0]);
     }
@@ -76,9 +76,9 @@ class FlashMessagesTest extends TestCase
         $this->flash->success('First');
         $this->flash->success('Second');
         $this->flash->success('Third');
-        
+
         $messages = $this->flash->get('success');
-        
+
         $this->assertCount(3, $messages);
         $this->assertSame(['First', 'Second', 'Third'], $messages);
     }
@@ -86,11 +86,11 @@ class FlashMessagesTest extends TestCase
     public function testMessagesAreRemovedAfterRetrieval(): void
     {
         $this->flash->success('Message');
-        
+
         // First retrieval
         $messages = $this->flash->get('success');
         $this->assertCount(1, $messages);
-        
+
         // Second retrieval should be empty
         $messages = $this->flash->get('success');
         $this->assertEmpty($messages);
@@ -101,9 +101,9 @@ class FlashMessagesTest extends TestCase
         $this->flash->success('Success message');
         $this->flash->error('Error message');
         $this->flash->info('Info message');
-        
+
         $all = $this->flash->getAll();
-        
+
         $this->assertArrayHasKey('success', $all);
         $this->assertArrayHasKey('error', $all);
         $this->assertArrayHasKey('info', $all);
@@ -115,11 +115,11 @@ class FlashMessagesTest extends TestCase
     public function testGetAllRemovesMessages(): void
     {
         $this->flash->success('Message');
-        
+
         // First retrieval
         $all = $this->flash->getAll();
         $this->assertNotEmpty($all);
-        
+
         // Second retrieval should be empty
         $all = $this->flash->getAll();
         $this->assertEmpty($all);
@@ -128,7 +128,7 @@ class FlashMessagesTest extends TestCase
     public function testHasReturnsTrueWhenMessagesExist(): void
     {
         $this->flash->success('Message');
-        
+
         $this->assertTrue($this->flash->has('success'));
         $this->assertFalse($this->flash->has('error'));
     }
@@ -136,16 +136,16 @@ class FlashMessagesTest extends TestCase
     public function testHasAnyReturnsTrueWhenAnyMessagesExist(): void
     {
         $this->assertFalse($this->flash->hasAny());
-        
+
         $this->flash->info('Message');
-        
+
         $this->assertTrue($this->flash->hasAny());
     }
 
     public function testGetNonExistentTypeReturnsEmptyArray(): void
     {
         $messages = $this->flash->get('nonexistent');
-        
+
         $this->assertIsArray($messages);
         $this->assertEmpty($messages);
     }
@@ -153,9 +153,9 @@ class FlashMessagesTest extends TestCase
     public function testFlashMessagesSurviveSessionRegenerate(): void
     {
         $this->flash->success('Important message');
-        
+
         $this->session->regenerate();
-        
+
         $messages = $this->flash->get('success');
         $this->assertCount(1, $messages);
         $this->assertSame('Important message', $messages[0]);

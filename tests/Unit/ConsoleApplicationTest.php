@@ -29,9 +29,9 @@ class ConsoleApplicationTest extends TestCase
     public function testRegisterCommandsWithAttribute(): void
     {
         $this->console->registerCommands([TestCommand::class]);
-        
+
         $commands = $this->console->getCommandNames();
-        
+
         $this->assertContains('test:command', $commands);
     }
 
@@ -39,7 +39,7 @@ class ConsoleApplicationTest extends TestCase
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('must have #[ConsoleCommand] attribute');
-        
+
         $this->console->registerCommands([CommandWithoutAttribute::class]);
     }
 
@@ -47,52 +47,52 @@ class ConsoleApplicationTest extends TestCase
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('must have execute() method');
-        
+
         $this->console->registerCommands([CommandWithoutExecute::class]);
     }
 
     public function testRunUnknownCommandReturnsError(): void
     {
         $exitCode = $this->console->run(['console', 'unknown:command']);
-        
+
         $this->assertEquals(1, $exitCode);
     }
 
     public function testRunWithNoArgumentsShowsHelp(): void
     {
         $this->console->registerCommands([TestCommand::class]);
-        
+
         $exitCode = $this->console->run(['console']);
-        
+
         $this->assertEquals(0, $exitCode);
     }
 
     public function testRunWithHelpFlagShowsHelp(): void
     {
         $this->console->registerCommands([TestCommand::class]);
-        
+
         $exitCode = $this->console->run(['console', '--help']);
-        
+
         $this->assertEquals(0, $exitCode);
     }
 
     public function testRunExecutesCommand(): void
     {
-        $this->container->set(TestCommand::class, fn() => new TestCommand());
+        $this->container->set(TestCommand::class, fn () => new TestCommand());
         $this->console->registerCommands([TestCommand::class]);
-        
+
         $exitCode = $this->console->run(['console', 'test:command']);
-        
+
         $this->assertEquals(0, $exitCode);
     }
 
     public function testRunHandlesCommandException(): void
     {
-        $this->container->set(FailingCommand::class, fn() => new FailingCommand());
+        $this->container->set(FailingCommand::class, fn () => new FailingCommand());
         $this->console->registerCommands([FailingCommand::class]);
-        
+
         $exitCode = $this->console->run(['console', 'test:failing']);
-        
+
         $this->assertEquals(1, $exitCode);
     }
 
@@ -101,9 +101,9 @@ class ConsoleApplicationTest extends TestCase
         $this->console->registerCommands([
             TestCommand::class,
         ]);
-        
+
         $names = $this->console->getCommandNames();
-        
+
         $this->assertCount(1, $names);
         $this->assertContains('test:command', $names);
     }

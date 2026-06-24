@@ -17,7 +17,7 @@ class LogUserCreation
     public function handle(UserCreated $event): void
     {
         error_log(sprintf(
-            "✓ User created: ID=%d, Name=%s, Email=%s",
+            '✓ User created: ID=%d, Name=%s, Email=%s',
             $event->userId,
             $event->name,
             $event->email

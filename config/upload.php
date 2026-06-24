@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * File Upload Configuration
- * 
+ *
  * Explicit upload settings - no hidden defaults.
  * All paths must be absolute.
  */

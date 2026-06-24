@@ -9,7 +9,8 @@ class Migrator
     public function __construct(
         private Database $db,
         private string $migrationsPath
-    ) {}
+    ) {
+    }
 
     /**
      * Apply all pending migrations as one new batch.
@@ -72,7 +73,7 @@ class Migrator
     {
         $this->ensureMigrationsTable();
 
-        $rows = $this->db->query("SELECT migration, batch FROM migrations ORDER BY id ASC");
+        $rows = $this->db->query('SELECT migration, batch FROM migrations ORDER BY id ASC');
         $batchByFile = [];
         foreach ($rows as $row) {
             $batchByFile[$row['migration']] = (int) $row['batch'];
@@ -93,7 +94,7 @@ class Migrator
     private function ensureMigrationsTable(): void
     {
         $driver = $this->db->getDriverName();
-        
+
         $idColumn = match ($driver) {
             'sqlite' => 'id INTEGER PRIMARY KEY AUTOINCREMENT',
             'mysql' => 'id INT AUTO_INCREMENT PRIMARY KEY',
@@ -113,7 +114,7 @@ class Migrator
         // existed. ALTER ... ADD COLUMN is portable (SQLite + MySQL); it errors
         // only when the column is already present, which we can safely ignore.
         try {
-            $this->db->execute("ALTER TABLE migrations ADD COLUMN batch INT NOT NULL DEFAULT 1");
+            $this->db->execute('ALTER TABLE migrations ADD COLUMN batch INT NOT NULL DEFAULT 1');
         } catch (\Throwable) {
             // Column already exists — nothing to do.
         }
@@ -124,7 +125,7 @@ class Migrator
      */
     private function getAppliedMigrations(): array
     {
-        $rows = $this->db->query("SELECT migration FROM migrations ORDER BY id ASC");
+        $rows = $this->db->query('SELECT migration FROM migrations ORDER BY id ASC');
         return array_column($rows, 'migration');
     }
 
@@ -139,7 +140,7 @@ class Migrator
             throw DatabaseException::migrationsPathUnreadable($this->migrationsPath);
         }
 
-        $filtered = array_values(array_filter($files, fn($f) => str_ends_with($f, '.up.sql')));
+        $filtered = array_values(array_filter($files, fn ($f) => str_ends_with($f, '.up.sql')));
         sort($filtered); // deterministic ordering by filename (001_, 002_, ...)
 
         return $filtered;
@@ -150,7 +151,7 @@ class Migrator
      */
     private function nextBatch(): int
     {
-        $rows = $this->db->query("SELECT MAX(batch) AS max_batch FROM migrations");
+        $rows = $this->db->query('SELECT MAX(batch) AS max_batch FROM migrations');
         return ((int) ($rows[0]['max_batch'] ?? 0)) + 1;
     }
 
@@ -163,7 +164,7 @@ class Migrator
         $this->executeMultipleStatements($content);
 
         $this->db->execute(
-            "INSERT INTO migrations (migration, batch) VALUES (:migration, :batch)",
+            'INSERT INTO migrations (migration, batch) VALUES (:migration, :batch)',
             ['migration' => $file, 'batch' => $batch]
         );
     }
@@ -181,7 +182,7 @@ class Migrator
         }
 
         $this->db->execute(
-            "DELETE FROM migrations WHERE migration = :migration",
+            'DELETE FROM migrations WHERE migration = :migration',
             ['migration' => $file]
         );
     }
@@ -203,14 +204,14 @@ class Migrator
         // leading "-- comment" line swallow the statement that follows it.
         $lines = array_filter(
             explode("\n", $sql),
-            fn($line) => !str_starts_with(trim($line), '--')
+            fn ($line) => !str_starts_with(trim($line), '--')
         );
         $cleaned = implode("\n", $lines);
 
         // Split into individual statements and run each non-empty one.
         $statements = array_filter(
             array_map('trim', explode(';', $cleaned)),
-            fn($stmt) => $stmt !== ''
+            fn ($stmt) => $stmt !== ''
         );
 
         foreach ($statements as $statement) {

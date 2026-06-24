@@ -18,7 +18,7 @@ class ResponseFileTest extends TestCase
     {
         $this->testDir = sys_get_temp_dir() . '/framework_response_test_' . uniqid();
         mkdir($this->testDir, 0755, true);
-        
+
         $this->testFile = $this->testDir . '/test.txt';
         file_put_contents($this->testFile, 'Test content');
     }

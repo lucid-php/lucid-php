@@ -8,19 +8,19 @@ use Attribute;
 
 /**
  * Url Validation Rule
- * 
+ *
  * Validates that a string is a valid URL.
- * 
+ *
  * Philosophy: Explicit Over Convenient
  * - Uses PHP's FILTER_VALIDATE_URL
  * - No custom URL parsing magic
  * - Can optionally require specific schemes
- * 
+ *
  * Example:
- * 
+ *
  * #[Url]
  * public string $website
- * 
+ *
  * #[Url(schemes: ['https'])]
  * public string $secureUrl
  */
@@ -32,7 +32,8 @@ class Url implements ValidatorRuleInterface
      */
     public function __construct(
         private readonly array $schemes = []
-    ) {}
+    ) {
+    }
 
     public function validate(mixed $value): bool
     {
@@ -48,7 +49,7 @@ class Url implements ValidatorRuleInterface
         if (!empty($this->schemes)) {
             $parsed = parse_url($value);
             $scheme = $parsed['scheme'] ?? '';
-            
+
             return in_array($scheme, $this->schemes, true);
         }
 

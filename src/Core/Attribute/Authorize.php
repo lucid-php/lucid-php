@@ -18,5 +18,6 @@ readonly class Authorize
 {
     public function __construct(
         public string $ability
-    ) {}
+    ) {
+    }
 }

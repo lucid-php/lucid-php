@@ -20,7 +20,8 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
 {
     public function __construct(
         private readonly SecurityHeadersConfig $config
-    ) {}
+    ) {
+    }
 
     public function process(Request $request, RequestHandlerInterface $handler): Response
     {

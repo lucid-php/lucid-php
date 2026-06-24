@@ -10,7 +10,7 @@ use Core\Queue\QueueInterface;
 
 /**
  * Sends welcome email when user is created
- * 
+ *
  * Philosophy:
  * - Dispatches job to queue instead of blocking
  * - Queue resolved from container
@@ -20,7 +20,8 @@ class SendWelcomeEmail
 {
     public function __construct(
         private readonly QueueInterface $queue
-    ) {}
+    ) {
+    }
 
     /**
      * Handle the UserCreated event by queuing email job

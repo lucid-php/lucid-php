@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\DTO;
 
-use Core\Http\ValidatedDTO;
-use Core\Attribute\Assert\Required;
 use Core\Attribute\Assert\Email;
+use Core\Attribute\Assert\Required;
+use Core\Http\ValidatedDTO;
 
 /**
  * PHP 8.5: Readonly class with clone-with wither methods.
@@ -17,10 +17,10 @@ readonly class LoginDTO implements ValidatedDTO
         #[Required]
         #[Email]
         public string $email,
-
         #[Required]
         public string $password,
-    ) {}
+    ) {
+    }
 
     /**
      * PHP 8.5: Clone-with syntax for immutable updates.

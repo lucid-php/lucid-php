@@ -9,7 +9,7 @@ use Core\Http\UploadedFile;
 
 /**
  * Validates uploaded file MIME type against whitelist.
- * 
+ *
  * Uses actual MIME type detection (finfo), not client-provided type.
  * Explicit whitelist - no pattern matching or wildcards.
  */

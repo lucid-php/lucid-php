@@ -19,19 +19,22 @@ class ExceptionMiddlewareTest extends TestCase
     {
         $handler = new ExceptionHandler(debug: false);
         $middleware = new ExceptionMiddleware($handler);
-        
+
         $request = new Request('GET', '/test', [], [], []);
         $expectedResponse = Response::json(['success' => true]);
-        
-        $requestHandler = new class($expectedResponse) implements RequestHandlerInterface {
-            public function __construct(private Response $response) {}
-            public function handle(Request $request): Response {
+
+        $requestHandler = new class ($expectedResponse) implements RequestHandlerInterface {
+            public function __construct(private Response $response)
+            {
+            }
+            public function handle(Request $request): Response
+            {
                 return $this->response;
             }
         };
-        
+
         $response = $middleware->process($request, $requestHandler);
-        
+
         $this->assertSame($expectedResponse, $response);
     }
 
@@ -39,20 +42,21 @@ class ExceptionMiddlewareTest extends TestCase
     {
         $handler = new ExceptionHandler(debug: false);
         $middleware = new ExceptionMiddleware($handler);
-        
+
         $request = new Request('GET', '/test', [], [], []);
-        
-        $requestHandler = new class implements RequestHandlerInterface {
-            public function handle(Request $request): Response {
+
+        $requestHandler = new class () implements RequestHandlerInterface {
+            public function handle(Request $request): Response
+            {
                 throw new NotFoundException('Resource not found');
             }
         };
-        
+
         $response = $middleware->process($request, $requestHandler);
-        
+
         $this->assertInstanceOf(Response::class, $response);
         $this->assertSame(404, $response->status);
-        
+
         $data = json_decode($response->content, true);
         $this->assertSame('Not Found', $data['error']);
         $this->assertSame('Resource not found', $data['message']);
@@ -62,19 +66,20 @@ class ExceptionMiddlewareTest extends TestCase
     {
         $handler = new ExceptionHandler(debug: false);
         $middleware = new ExceptionMiddleware($handler);
-        
+
         $request = new Request('GET', '/test', [], [], []);
-        
-        $requestHandler = new class implements RequestHandlerInterface {
-            public function handle(Request $request): Response {
+
+        $requestHandler = new class () implements RequestHandlerInterface {
+            public function handle(Request $request): Response
+            {
                 throw new Exception('Something broke');
             }
         };
-        
+
         $response = $middleware->process($request, $requestHandler);
-        
+
         $this->assertSame(500, $response->status);
-        
+
         $data = json_decode($response->content, true);
         $this->assertSame('Internal Server Error', $data['error']);
     }
@@ -83,17 +88,18 @@ class ExceptionMiddlewareTest extends TestCase
     {
         $handler = new ExceptionHandler(debug: true);
         $middleware = new ExceptionMiddleware($handler);
-        
+
         $request = new Request('GET', '/test', [], [], []);
-        
-        $requestHandler = new class implements RequestHandlerInterface {
-            public function handle(Request $request): Response {
+
+        $requestHandler = new class () implements RequestHandlerInterface {
+            public function handle(Request $request): Response
+            {
                 throw new Exception('Debug exception');
             }
         };
-        
+
         $response = $middleware->process($request, $requestHandler);
-        
+
         $data = json_decode($response->content, true);
         $this->assertArrayHasKey('exception', $data);
         $this->assertArrayHasKey('file', $data);

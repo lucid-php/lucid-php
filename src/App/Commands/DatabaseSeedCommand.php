@@ -19,7 +19,8 @@ class DatabaseSeedCommand implements CommandInterface
 {
     public function __construct(
         private readonly UserRepository $users
-    ) {}
+    ) {
+    }
 
     public function execute(
         OutputInterface $output,

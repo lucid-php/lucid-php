@@ -20,5 +20,6 @@ readonly class Retry
     public function __construct(
         public int $times = 1,
         public int $backoff = 0,
-    ) {}
+    ) {
+    }
 }

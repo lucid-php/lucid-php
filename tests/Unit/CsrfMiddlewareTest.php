@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Core\Middleware\CsrfMiddleware;
-use Core\Security\CsrfTokenManager;
-use Core\Security\Csrf;
-use Core\Session\Session;
-use Core\Http\Request;
-use Core\Http\Response;
-use Core\Http\RequestHandlerInterface;
 use Core\Http\ForbiddenException;
+use Core\Http\Request;
+use Core\Http\RequestHandlerInterface;
+use Core\Http\Response;
+use Core\Middleware\CsrfMiddleware;
+use Core\Security\Csrf;
+use Core\Security\CsrfTokenManager;
+use Core\Session\Session;
 use PHPUnit\Framework\TestCase;
 
 class CsrfMiddlewareTest extends TestCase
@@ -27,7 +27,7 @@ class CsrfMiddlewareTest extends TestCase
             'use_cookies' => false,
         ]);
         $this->session->start();
-        
+
         $this->csrfManager = new CsrfTokenManager($this->session);
         $this->middleware = new CsrfMiddleware($this->csrfManager);
     }
@@ -50,9 +50,9 @@ class CsrfMiddlewareTest extends TestCase
         );
 
         $handler = $this->createMockHandler(new Response('OK', 200));
-        
+
         $response = $this->middleware->process($request, $handler);
-        
+
         $this->assertSame(200, $response->status);
     }
 
@@ -67,9 +67,9 @@ class CsrfMiddlewareTest extends TestCase
         );
 
         $handler = $this->createMockHandler(new Response('OK', 200));
-        
+
         $response = $this->middleware->process($request, $handler);
-        
+
         $this->assertSame(200, $response->status);
     }
 
@@ -84,9 +84,9 @@ class CsrfMiddlewareTest extends TestCase
         );
 
         $handler = $this->createMockHandler(new Response('OK', 200));
-        
+
         $response = $this->middleware->process($request, $handler);
-        
+
         $this->assertSame(200, $response->status);
     }
 
@@ -102,16 +102,16 @@ class CsrfMiddlewareTest extends TestCase
         // No controller/method attributes = no CSRF check
 
         $handler = $this->createMockHandler(new Response('OK', 200));
-        
+
         $response = $this->middleware->process($request, $handler);
-        
+
         $this->assertSame(200, $response->status);
     }
 
     public function testValidatesTokenInRequestBody(): void
     {
         $token = $this->csrfManager->generateToken();
-        
+
         $request = new Request(
             method: 'POST',
             uri: '/test',
@@ -124,16 +124,16 @@ class CsrfMiddlewareTest extends TestCase
             ->withAttribute('_method', 'create');
 
         $handler = $this->createMockHandler(new Response('OK', 200));
-        
+
         $response = $this->middleware->process($request, $handler);
-        
+
         $this->assertSame(200, $response->status);
     }
 
     public function testValidatesTokenInHeader(): void
     {
         $token = $this->csrfManager->generateToken();
-        
+
         $request = new Request(
             method: 'POST',
             uri: '/test',
@@ -146,16 +146,16 @@ class CsrfMiddlewareTest extends TestCase
             ->withAttribute('_method', 'create');
 
         $handler = $this->createMockHandler(new Response('OK', 200));
-        
+
         $response = $this->middleware->process($request, $handler);
-        
+
         $this->assertSame(200, $response->status);
     }
 
     public function testValidatesTokenInQueryString(): void
     {
         $token = $this->csrfManager->generateToken();
-        
+
         $request = new Request(
             method: 'POST',
             uri: '/test',
@@ -168,16 +168,16 @@ class CsrfMiddlewareTest extends TestCase
             ->withAttribute('_method', 'create');
 
         $handler = $this->createMockHandler(new Response('OK', 200));
-        
+
         $response = $this->middleware->process($request, $handler);
-        
+
         $this->assertSame(200, $response->status);
     }
 
     public function testThrowsExceptionForInvalidToken(): void
     {
         $this->csrfManager->generateToken();
-        
+
         $request = new Request(
             method: 'POST',
             uri: '/test',
@@ -190,10 +190,10 @@ class CsrfMiddlewareTest extends TestCase
             ->withAttribute('_method', 'create');
 
         $handler = $this->createMockHandler(new Response('OK', 200));
-        
+
         $this->expectException(ForbiddenException::class);
         $this->expectExceptionMessage('Invalid or missing CSRF token');
-        
+
         $this->middleware->process($request, $handler);
     }
 
@@ -211,17 +211,17 @@ class CsrfMiddlewareTest extends TestCase
             ->withAttribute('_method', 'create');
 
         $handler = $this->createMockHandler(new Response('OK', 200));
-        
+
         $this->expectException(ForbiddenException::class);
         $this->expectExceptionMessage('Invalid or missing CSRF token');
-        
+
         $this->middleware->process($request, $handler);
     }
 
     public function testCustomFieldName(): void
     {
         $token = $this->csrfManager->generateToken();
-        
+
         $request = new Request(
             method: 'POST',
             uri: '/test',
@@ -234,16 +234,18 @@ class CsrfMiddlewareTest extends TestCase
             ->withAttribute('_method', 'create');
 
         $handler = $this->createMockHandler(new Response('OK', 200));
-        
+
         $response = $this->middleware->process($request, $handler);
-        
+
         $this->assertSame(200, $response->status);
     }
 
     private function createMockHandler(Response $response): RequestHandlerInterface
     {
-        return new class($response) implements RequestHandlerInterface {
-            public function __construct(private Response $response) {}
+        return new class ($response) implements RequestHandlerInterface {
+            public function __construct(private Response $response)
+            {
+            }
 
             public function handle(Request $request): Response
             {

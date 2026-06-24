@@ -8,19 +8,19 @@ use Attribute;
 
 /**
  * Alpha Validation Rule
- * 
+ *
  * Validates that a string contains only alphabetic characters.
- * 
+ *
  * Philosophy: Explicit Over Convenient
  * - Option to allow spaces
  * - Option to allow unicode letters
  * - No hidden character sets
- * 
+ *
  * Example:
- * 
+ *
  * #[Alpha]
  * public string $firstName
- * 
+ *
  * #[Alpha(allowSpaces: true)]
  * public string $fullName
  */
@@ -30,7 +30,8 @@ class Alpha implements ValidatorRuleInterface
     public function __construct(
         private readonly bool $allowSpaces = false,
         private readonly bool $unicode = false
-    ) {}
+    ) {
+    }
 
     public function validate(mixed $value): bool
     {

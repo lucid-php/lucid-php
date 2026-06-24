@@ -8,19 +8,19 @@ use Attribute;
 
 /**
  * Pattern Validation Rule
- * 
+ *
  * Validates that a string matches a regular expression pattern.
- * 
+ *
  * Philosophy: Explicit Over Convenient
  * - No predefined patterns (write the regex explicitly)
  * - No magic pattern names
  * - Full control over validation logic
- * 
+ *
  * Example:
- * 
+ *
  * #[Pattern('/^[A-Z][a-z]+$/')]
  * public string $firstName
- * 
+ *
  * #[Pattern('/^\d{4}-\d{2}-\d{2}$/')]
  * public string $date
  */
@@ -30,7 +30,8 @@ class Pattern implements ValidatorRuleInterface
     public function __construct(
         private readonly string $pattern,
         private readonly string $customMessage = ''
-    ) {}
+    ) {
+    }
 
     public function validate(mixed $value): bool
     {

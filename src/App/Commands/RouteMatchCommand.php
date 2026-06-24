@@ -28,7 +28,8 @@ class RouteMatchCommand implements CommandInterface
     public function __construct(
         private readonly Container $container,
         private readonly Config $config
-    ) {}
+    ) {
+    }
 
     public function execute(
         OutputInterface $output,
@@ -44,7 +45,7 @@ class RouteMatchCommand implements CommandInterface
         $matched = $router->match(strtoupper($method), $path);
 
         if ($matched === null) {
-            $output->warning("No route matches " . strtoupper($method) . " {$path}");
+            $output->warning('No route matches ' . strtoupper($method) . " {$path}");
             return 1;
         }
 

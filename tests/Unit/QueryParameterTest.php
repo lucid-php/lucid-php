@@ -151,7 +151,7 @@ class QueryParamTestController
     {
         return Response::json([
             'page' => $page,
-            'type' => gettype($page)
+            'type' => gettype($page),
         ]);
     }
 
@@ -160,7 +160,7 @@ class QueryParamTestController
     {
         return Response::json([
             'status' => $status,
-            'limit' => $limit
+            'limit' => $limit,
         ]);
     }
 
@@ -169,7 +169,7 @@ class QueryParamTestController
     {
         return Response::json([
             'enabled' => $enabled,
-            'type' => gettype($enabled)
+            'type' => gettype($enabled),
         ]);
     }
 
@@ -178,7 +178,7 @@ class QueryParamTestController
     {
         return Response::json([
             'min' => $min,
-            'type' => gettype($min)
+            'type' => gettype($min),
         ]);
     }
 
@@ -187,7 +187,7 @@ class QueryParamTestController
     {
         return Response::json([
             'id' => $id,
-            'sort' => $sort
+            'sort' => $sort,
         ]);
     }
 
@@ -196,7 +196,7 @@ class QueryParamTestController
     {
         return Response::json([
             'page' => $page,
-            'uri' => $request->uri
+            'uri' => $request->uri,
         ]);
     }
 

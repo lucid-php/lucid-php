@@ -18,7 +18,8 @@ class MigrateRollbackCommand implements CommandInterface
 {
     public function __construct(
         private readonly Migrator $migrator
-    ) {}
+    ) {
+    }
 
     public function execute(
         OutputInterface $output,

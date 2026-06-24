@@ -8,7 +8,7 @@ use Exception;
 
 /**
  * Cache Exception
- * 
+ *
  * Thrown when cache operations fail.
  * Provides static factory methods for common error scenarios.
  */

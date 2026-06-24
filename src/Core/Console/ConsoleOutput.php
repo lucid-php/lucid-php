@@ -144,7 +144,7 @@ class ConsoleOutput implements OutputInterface
 
         // Calculate column widths from VISIBLE length, so colored cells
         // (which contain tags) still line up.
-        $widths = array_map(fn(string $h): int => $this->visibleLength($h), $headers);
+        $widths = array_map(fn (string $h): int => $this->visibleLength($h), $headers);
         foreach ($rows as $row) {
             foreach ($row as $i => $cell) {
                 $widths[$i] = max($widths[$i], $this->visibleLength((string) $cell));

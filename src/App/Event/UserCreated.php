@@ -6,7 +6,7 @@ namespace App\Event;
 
 /**
  * Event dispatched when a new user is created
- * 
+ *
  * Philosophy:
  * - Events are simple data containers
  * - Readonly for immutability
@@ -19,5 +19,6 @@ readonly class UserCreated
         public int $userId,
         public string $name,
         public string $email,
-    ) {}
+    ) {
+    }
 }

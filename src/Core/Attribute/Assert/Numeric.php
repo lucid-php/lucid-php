@@ -8,16 +8,16 @@ use Attribute;
 
 /**
  * Numeric Validation Rule
- * 
+ *
  * Validates that a value is numeric (int, float, or numeric string).
- * 
+ *
  * Philosophy: Explicit Over Convenient
  * - Uses PHP's is_numeric() for standard behavior
  * - Accepts integers, floats, and numeric strings
  * - No automatic type casting
- * 
+ *
  * Example:
- * 
+ *
  * #[Numeric]
  * public string|int $amount
  */

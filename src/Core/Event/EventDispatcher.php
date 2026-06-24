@@ -8,7 +8,7 @@ use Core\Container;
 
 /**
  * Explicit Event Dispatcher
- * 
+ *
  * Philosophy:
  * - No magic event discovery
  * - Explicit listener registration
@@ -23,18 +23,19 @@ class EventDispatcher
 
     public function __construct(
         private readonly Container $container
-    ) {}
+    ) {
+    }
 
     /**
      * Register one or more listeners for an event
-     * 
+     *
      * @param string $eventClass Fully qualified event class name
      * @param string|array<string> $listenerClasses Listener class name(s)
      */
     public function listen(string $eventClass, string|array $listenerClasses): void
     {
         $listeners = is_array($listenerClasses) ? $listenerClasses : [$listenerClasses];
-        
+
         foreach ($listeners as $listener) {
             $this->listeners[$eventClass][] = $listener;
         }
@@ -42,20 +43,20 @@ class EventDispatcher
 
     /**
      * Dispatch an event to all registered listeners
-     * 
+     *
      * @param object $event The event instance to dispatch
      */
     public function dispatch(object $event): void
     {
         $eventClass = $event::class;
-        
+
         if (!isset($this->listeners[$eventClass])) {
             return;
         }
 
         foreach ($this->listeners[$eventClass] as $listenerClass) {
             $listener = $this->container->get($listenerClass);
-            
+
             // Call handle() method on listener
             $listener->handle($event);
         }
@@ -63,7 +64,7 @@ class EventDispatcher
 
     /**
      * Get all registered listeners for an event
-     * 
+     *
      * @param string $eventClass
      * @return array<string>
      */

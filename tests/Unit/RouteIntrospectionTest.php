@@ -21,11 +21,11 @@ class RouteIntrospectionTest extends TestCase
         $routes = $router->getRoutes();
         $this->assertCount(2, $routes);
 
-        $paths = array_map(fn(array $r): string => $r['method'] . ' ' . $r['path'], $routes);
+        $paths = array_map(fn (array $r): string => $r['method'] . ' ' . $r['path'], $routes);
         sort($paths);
         $this->assertSame(['GET /things', 'GET /things/{id}'], $paths);
 
-        $show = array_values(array_filter($routes, fn(array $r): bool => $r['path'] === '/things/{id}'))[0];
+        $show = array_values(array_filter($routes, fn (array $r): bool => $r['path'] === '/things/{id}'))[0];
         $this->assertSame(IntrospectionController::class, $show['controller']);
         $this->assertSame('show', $show['action']);
     }

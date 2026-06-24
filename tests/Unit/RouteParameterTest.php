@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Core\Container;
-use Core\Router;
 use Core\Attribute\Route;
+use Core\Container;
 use Core\Http\Request;
 use Core\Http\Response;
+use Core\Router;
 use PHPUnit\Framework\TestCase;
 
 class RouteParameterTest extends TestCase
@@ -104,7 +104,7 @@ class RouteParamTestController
     {
         return Response::json([
             'id' => $id,
-            'type' => gettype($id)
+            'type' => gettype($id),
         ]);
     }
 
@@ -113,7 +113,7 @@ class RouteParamTestController
     {
         return Response::json([
             'id' => $id,
-            'type' => gettype($id)
+            'type' => gettype($id),
         ]);
     }
 
@@ -122,7 +122,7 @@ class RouteParamTestController
     {
         return Response::json([
             'userId' => $userId,
-            'slug' => $slug
+            'slug' => $slug,
         ]);
     }
 
@@ -137,7 +137,7 @@ class RouteParamTestController
     {
         return Response::json([
             'id' => $id,
-            'uri' => $request->uri
+            'uri' => $request->uri,
         ]);
     }
 }

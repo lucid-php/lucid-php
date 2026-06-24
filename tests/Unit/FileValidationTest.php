@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Core\Attribute\Assert\FileRequired;
-use Core\Attribute\Assert\FileMaxSize;
 use Core\Attribute\Assert\FileExtension;
+use Core\Attribute\Assert\FileMaxSize;
 use Core\Attribute\Assert\FileMimeType;
+use Core\Attribute\Assert\FileRequired;
 use Core\Http\UploadedFile;
 use PHPUnit\Framework\TestCase;
 
 class FileValidationTest extends TestCase
 {
     // FileRequired Tests
-    
+
     public function testFileRequiredPassesForValidUpload(): void
     {
         $rule = new FileRequired();
         $file = new UploadedFile('test.jpg', '/tmp/php123', 1024, UPLOAD_ERR_OK);
-        
+
         $this->assertTrue($rule->validate($file));
     }
 
@@ -27,14 +27,14 @@ class FileValidationTest extends TestCase
     {
         $rule = new FileRequired();
         $file = new UploadedFile('test.jpg', '', 0, UPLOAD_ERR_NO_FILE);
-        
+
         $this->assertFalse($rule->validate($file));
     }
 
     public function testFileRequiredFailsForNonUploadedFile(): void
     {
         $rule = new FileRequired();
-        
+
         $this->assertFalse($rule->validate(null));
         $this->assertFalse($rule->validate('string'));
         $this->assertFalse($rule->validate(123));
@@ -52,7 +52,7 @@ class FileValidationTest extends TestCase
     {
         $rule = new FileMaxSize(maxBytes: 2048);
         $file = new UploadedFile('test.jpg', '/tmp/php123', 1024, UPLOAD_ERR_OK);
-        
+
         $this->assertTrue($rule->validate($file));
     }
 
@@ -60,7 +60,7 @@ class FileValidationTest extends TestCase
     {
         $rule = new FileMaxSize(maxBytes: 1024);
         $file = new UploadedFile('test.jpg', '/tmp/php123', 1024, UPLOAD_ERR_OK);
-        
+
         $this->assertTrue($rule->validate($file));
     }
 
@@ -68,7 +68,7 @@ class FileValidationTest extends TestCase
     {
         $rule = new FileMaxSize(maxBytes: 1024);
         $file = new UploadedFile('test.jpg', '/tmp/php123', 2048, UPLOAD_ERR_OK);
-        
+
         $this->assertFalse($rule->validate($file));
     }
 
@@ -76,7 +76,7 @@ class FileValidationTest extends TestCase
     {
         $rule = new FileMaxSize(maxBytes: 1024);
         $file = new UploadedFile('test.jpg', '', 0, UPLOAD_ERR_NO_FILE);
-        
+
         $this->assertFalse($rule->validate($file));
     }
 
@@ -92,7 +92,7 @@ class FileValidationTest extends TestCase
     {
         $rule = new FileExtension(allowed: ['jpg', 'png']);
         $file = new UploadedFile('test.jpg', '/tmp/php123', 1024, UPLOAD_ERR_OK);
-        
+
         $this->assertTrue($rule->validate($file));
     }
 
@@ -100,7 +100,7 @@ class FileValidationTest extends TestCase
     {
         $rule = new FileExtension(allowed: ['jpg', 'png']);
         $file = new UploadedFile('test.JPG', '/tmp/php123', 1024, UPLOAD_ERR_OK);
-        
+
         $this->assertTrue($rule->validate($file));
     }
 
@@ -108,7 +108,7 @@ class FileValidationTest extends TestCase
     {
         $rule = new FileExtension(allowed: ['jpg', 'png']);
         $file = new UploadedFile('test.pdf', '/tmp/php123', 1024, UPLOAD_ERR_OK);
-        
+
         $this->assertFalse($rule->validate($file));
     }
 
@@ -116,7 +116,7 @@ class FileValidationTest extends TestCase
     {
         $rule = new FileExtension(allowed: ['jpg', 'png']);
         $file = new UploadedFile('test.jpg', '', 0, UPLOAD_ERR_NO_FILE);
-        
+
         $this->assertFalse($rule->validate($file));
     }
 
@@ -127,11 +127,11 @@ class FileValidationTest extends TestCase
     }
 
     // FileMimeType Tests
-    
+
     public function testFileMimeTypeFailsForNonUploadedFile(): void
     {
         $rule = new FileMimeType(allowed: ['image/jpeg']);
-        
+
         $this->assertFalse($rule->validate(null));
         $this->assertFalse($rule->validate('string'));
     }
@@ -140,7 +140,7 @@ class FileValidationTest extends TestCase
     {
         $rule = new FileMimeType(allowed: ['image/jpeg']);
         $file = new UploadedFile('test.jpg', '', 0, UPLOAD_ERR_NO_FILE);
-        
+
         $this->assertFalse($rule->validate($file));
     }
 

@@ -68,17 +68,35 @@ class CapturingOutput implements OutputInterface
 {
     public string $text = '';
 
-    public function write(string $message): void { $this->text .= $this->strip($message); }
-    public function writeln(string $message): void { $this->text .= $this->strip($message) . "\n"; }
-    public function success(string $message): void { $this->text .= $this->strip($message) . "\n"; }
-    public function error(string $message): void { $this->text .= $this->strip($message) . "\n"; }
-    public function warning(string $message): void { $this->text .= $this->strip($message) . "\n"; }
-    public function info(string $message): void { $this->text .= $this->strip($message) . "\n"; }
+    public function write(string $message): void
+    {
+        $this->text .= $this->strip($message);
+    }
+    public function writeln(string $message): void
+    {
+        $this->text .= $this->strip($message) . "\n";
+    }
+    public function success(string $message): void
+    {
+        $this->text .= $this->strip($message) . "\n";
+    }
+    public function error(string $message): void
+    {
+        $this->text .= $this->strip($message) . "\n";
+    }
+    public function warning(string $message): void
+    {
+        $this->text .= $this->strip($message) . "\n";
+    }
+    public function info(string $message): void
+    {
+        $this->text .= $this->strip($message) . "\n";
+    }
     public function table(array $headers, array $rows): void
     {
         $this->text .= implode(' | ', $headers) . "\n";
         foreach ($rows as $row) {
-            $this->text .= implode(' | ', array_map(fn($c): string => (string) $c, $row)) . "\n";
+            $this->text .= implode(' | ', array_map(fn ($c): string => (string) $c, $row)) . "\n";
         }
     }
 

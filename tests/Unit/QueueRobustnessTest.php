@@ -55,7 +55,7 @@ class QueueRobustnessTest extends TestCase
         $this->assertSame(0, $this->jobCount('jobs'), 'job removed from live queue');
         $this->assertSame(1, $this->jobCount('failed_jobs'), 'job preserved in failed_jobs (not lost)');
 
-        $failed = $this->db->query("SELECT * FROM failed_jobs LIMIT 1")[0];
+        $failed = $this->db->query('SELECT * FROM failed_jobs LIMIT 1')[0];
         $this->assertStringContainsString('boom', $failed['exception']);
     }
 
@@ -69,12 +69,12 @@ class QueueRobustnessTest extends TestCase
         $this->assertSame(0, $this->jobCount('failed_jobs'), 'not failed after first attempt');
         $this->assertSame(1, $this->jobCount('jobs'), 'still in queue for retry');
 
-        $row = $this->db->query("SELECT * FROM jobs LIMIT 1")[0];
+        $row = $this->db->query('SELECT * FROM jobs LIMIT 1')[0];
         $this->assertSame(1, (int) $row['attempts'], 'attempts incremented on release');
         $this->assertNull($row['reserved_at'], 'released job is unreserved');
 
         // Make the retry immediately available, then attempt 2 (final) -> failed.
-        $this->db->execute("UPDATE jobs SET available_at = ?", [time()]);
+        $this->db->execute('UPDATE jobs SET available_at = ?', [time()]);
         $job2 = $this->queue->pop();
         $this->assertNotNull($job2);
         $this->assertSame(1, $job2->attempts);

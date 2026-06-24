@@ -21,11 +21,12 @@ class ConsoleApplication
     public function __construct(
         private readonly Container $container,
         private readonly OutputInterface $output
-    ) {}
+    ) {
+    }
 
     /**
      * Register commands explicitly (no auto-discovery)
-     * 
+     *
      * @param array<class-string> $commandClasses
      */
     public function registerCommands(array $commandClasses): void
@@ -41,7 +42,7 @@ class ConsoleApplication
             }
 
             $commandAttr = $attributes[0]->newInstance();
-            
+
             // Find execute method
             if (!$reflection->hasMethod('execute')) {
                 throw new RuntimeException(
@@ -52,7 +53,7 @@ class ConsoleApplication
             $this->commands[$commandAttr->name] = [
                 'class' => $commandClass,
                 'method' => 'execute',
-                'description' => $commandAttr->description
+                'description' => $commandAttr->description,
             ];
         }
     }
@@ -106,12 +107,12 @@ class ConsoleApplication
         $reflection = new ReflectionClass($class);
         $methodRef = $reflection->getMethod($method);
         $parameters = $methodRef->getParameters();
-        
+
         $args = [];
         $parsedOptions = $this->parseOptions($argv);
         $positionalArgs = $parsedOptions['args'];
         $options = $parsedOptions['options'];
-        
+
         $argIndex = 0;
 
         foreach ($parameters as $parameter) {
@@ -125,7 +126,7 @@ class ConsoleApplication
             $argAttrs = $parameter->getAttributes(Argument::class);
             if (!empty($argAttrs)) {
                 $argAttr = $argAttrs[0]->newInstance();
-                
+
                 if (isset($positionalArgs[$argIndex])) {
                     $args[] = $this->castValue($positionalArgs[$argIndex], $parameter);
                     $argIndex++;
@@ -148,7 +149,7 @@ class ConsoleApplication
             if (!empty($optAttrs)) {
                 $optAttr = $optAttrs[0]->newInstance();
                 $optionName = $optAttr->name;
-                
+
                 if (isset($options[$optionName])) {
                     $args[] = $this->castValue($options[$optionName], $parameter);
                 } elseif (isset($options[$optAttr->shortcut]) && $optAttr->shortcut !== '') {
@@ -181,7 +182,7 @@ class ConsoleApplication
             // Long option: --option=value or --option value
             if (str_starts_with($arg, '--')) {
                 $option = substr($arg, 2);
-                
+
                 if (str_contains($option, '=')) {
                     [$name, $value] = explode('=', $option, 2);
                     $options[$name] = $value;
@@ -198,7 +199,7 @@ class ConsoleApplication
             // Short option: -o value or -o=value
             elseif (str_starts_with($arg, '-')) {
                 $option = substr($arg, 1);
-                
+
                 if (str_contains($option, '=')) {
                     [$name, $value] = explode('=', $option, 2);
                     $options[$name] = $value;
@@ -227,7 +228,7 @@ class ConsoleApplication
     private function castValue(mixed $value, ReflectionParameter $parameter): mixed
     {
         $type = $parameter->getType();
-        
+
         if (!$type instanceof ReflectionNamedType) {
             return $value;
         }
@@ -276,7 +277,7 @@ class ConsoleApplication
 
     /**
      * Get all registered command names
-     * 
+     *
      * @return array<string>
      */
     public function getCommandNames(): array

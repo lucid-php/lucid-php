@@ -9,7 +9,7 @@ use Core\Log\LogHandlerInterface;
 
 /**
  * File Log Handler
- * 
+ *
  * Philosophy: Explicit file path, explicit format.
  * No auto-rotation, no magic - just write to file.
  */
@@ -32,8 +32,8 @@ class FileHandler implements LogHandlerInterface
 
     public function handle(LogEntry $entry): void
     {
-        $line = $this->json 
-            ? $entry->toJson() 
+        $line = $this->json
+            ? $entry->toJson()
             : $entry->toString();
 
         // Append to file with newline

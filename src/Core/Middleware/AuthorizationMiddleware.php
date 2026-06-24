@@ -25,7 +25,8 @@ class AuthorizationMiddleware implements MiddlewareInterface
 {
     public function __construct(
         private readonly AuthorizerInterface $authorizer
-    ) {}
+    ) {
+    }
 
     public function process(Request $request, RequestHandlerInterface $handler): Response
     {

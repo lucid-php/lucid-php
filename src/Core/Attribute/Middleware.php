@@ -11,5 +11,6 @@ class Middleware
 {
     public function __construct(
         public private(set) string $middlewareClass
-    ) {}
+    ) {
+    }
 }

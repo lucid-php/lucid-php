@@ -6,7 +6,7 @@ namespace Core\Log;
 
 /**
  * Log Entry Value Object
- * 
+ *
  * Philosophy: Immutable value object with all log data.
  * No magic properties, everything explicit.
  */
@@ -23,7 +23,8 @@ final readonly class LogEntry
         public string $message,
         public array $context,
         public \DateTimeImmutable $timestamp
-    ) {}
+    ) {
+    }
 
     /**
      * Format as JSON for structured logging
@@ -45,7 +46,7 @@ final readonly class LogEntry
     {
         $timestamp = $this->timestamp->format('Y-m-d H:i:s.u');
         $level = strtoupper($this->level->value);
-        
+
         $contextString = '';
         if (!empty($this->context)) {
             $contextString = ' ' . json_encode($this->context, JSON_UNESCAPED_SLASHES);

@@ -8,16 +8,16 @@ use Attribute;
 
 /**
  * Json Validation Rule
- * 
+ *
  * Validates that a string is valid JSON.
- * 
+ *
  * Philosophy: Explicit Over Convenient
  * - Uses PHP's json_validate() (PHP 8.3+)
  * - No automatic parsing or decoding
  * - Just validates the syntax
- * 
+ *
  * Example:
- * 
+ *
  * #[Json]
  * public string $metadata
  */

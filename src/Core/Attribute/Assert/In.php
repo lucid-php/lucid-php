@@ -8,19 +8,19 @@ use Attribute;
 
 /**
  * In Validation Rule
- * 
+ *
  * Validates that a value is in an allowed list (whitelist).
- * 
+ *
  * Philosophy: Explicit Over Convenient
  * - Explicitly list all allowed values
  * - Uses strict comparison (===)
  * - No type coercion
- * 
+ *
  * Example:
- * 
+ *
  * #[In(['draft', 'published', 'archived'])]
  * public string $status
- * 
+ *
  * #[In([1, 2, 3, 5, 10])]
  * public int $priority
  */
@@ -32,7 +32,8 @@ class In implements ValidatorRuleInterface
      */
     public function __construct(
         private readonly array $allowed
-    ) {}
+    ) {
+    }
 
     public function validate(mixed $value): bool
     {
@@ -42,10 +43,10 @@ class In implements ValidatorRuleInterface
     public function message(string $field): string
     {
         $options = implode(', ', array_map(
-            fn($v) => is_string($v) ? "'{$v}'" : (string)$v,
+            fn ($v) => is_string($v) ? "'{$v}'" : (string)$v,
             $this->allowed
         ));
-        
+
         return "The field [{$field}] must be one of: {$options}.";
     }
 }

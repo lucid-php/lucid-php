@@ -65,7 +65,7 @@ class ResponseTest extends TestCase
         $response = Response::json(['data' => 'test'])
             ->withHeaders([
                 'X-Custom-1' => 'value1',
-                'X-Custom-2' => 'value2'
+                'X-Custom-2' => 'value2',
             ]);
 
         $this->assertSame('value1', $response->headers['X-Custom-1']);

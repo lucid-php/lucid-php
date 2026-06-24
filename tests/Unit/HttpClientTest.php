@@ -151,7 +151,7 @@ class HttpClientTest extends TestCase
     public function test_mock_client_returns_queued_responses(): void
     {
         $client = new MockHttpClient();
-        
+
         $client->queueResponse(new HttpResponse(200, '{"id":1}'));
         $client->queueResponse(new HttpResponse(201, '{"id":2}'));
 
@@ -171,7 +171,7 @@ class HttpClientTest extends TestCase
         $client->post('https://api.example.com/users', ['name' => 'John']);
 
         $this->assertSame(2, $client->count());
-        
+
         $requests = $client->getRequests();
         $this->assertSame('GET', $requests[0]->method);
         $this->assertSame('POST', $requests[1]->method);
@@ -199,7 +199,7 @@ class HttpClientTest extends TestCase
         $client->post('https://api.example.com/webhook', ['event' => 'user.created']);
 
         $wasSent = $client->assertSent(function (HttpRequest $request) {
-            return $request->method === 'POST' 
+            return $request->method === 'POST'
                 && str_contains($request->url, 'webhook')
                 && $request->body['event'] === 'user.created';
         });

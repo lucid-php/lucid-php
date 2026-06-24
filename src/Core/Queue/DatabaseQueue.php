@@ -27,7 +27,8 @@ class DatabaseQueue implements QueueInterface
     public function __construct(
         private readonly Database $db,
         private readonly array $allowedJobClasses = [],
-    ) {}
+    ) {
+    }
 
     public function push(object $job, string $queue = 'default', int $delaySeconds = 0): void
     {
@@ -35,8 +36,8 @@ class DatabaseQueue implements QueueInterface
         $now = time();
 
         $this->db->execute(
-            "INSERT INTO jobs (id, queue, payload, attempts, available_at, created_at)
-             VALUES (?, ?, ?, ?, ?, ?)",
+            'INSERT INTO jobs (id, queue, payload, attempts, available_at, created_at)
+             VALUES (?, ?, ?, ?, ?, ?)',
             [
                 $id,
                 $queue,
@@ -58,7 +59,7 @@ class DatabaseQueue implements QueueInterface
         // MySQL (MySQL forbids referencing the UPDATE target directly in a
         // subquery, so it is wrapped one level deeper).
         $this->db->execute(
-            "UPDATE jobs
+            'UPDATE jobs
              SET reserved_at = ?, reservation_token = ?
              WHERE id = (
                  SELECT id FROM (
@@ -67,13 +68,13 @@ class DatabaseQueue implements QueueInterface
                      ORDER BY created_at ASC
                      LIMIT 1
                  ) AS next_job
-             )",
+             )',
             [$now, $token, $queue, $now]
         );
 
         // Fetch the row we (and only we) just claimed via the unique token.
         $rows = $this->db->query(
-            "SELECT * FROM jobs WHERE reservation_token = ? LIMIT 1",
+            'SELECT * FROM jobs WHERE reservation_token = ? LIMIT 1',
             [$token]
         );
 
@@ -87,7 +88,7 @@ class DatabaseQueue implements QueueInterface
         try {
             $job = unserialize($row['payload'], ['allowed_classes' => $this->allowedJobClasses]);
         } catch (\Throwable $e) {
-            throw new \RuntimeException("Failed to unserialize job: " . $e->getMessage());
+            throw new \RuntimeException('Failed to unserialize job: ' . $e->getMessage());
         }
 
         return new QueuedJob(
@@ -101,16 +102,16 @@ class DatabaseQueue implements QueueInterface
 
     public function delete(QueuedJob $job): void
     {
-        $this->db->execute("DELETE FROM jobs WHERE id = ?", [$job->id]);
+        $this->db->execute('DELETE FROM jobs WHERE id = ?', [$job->id]);
     }
 
     public function release(QueuedJob $job, int $delaySeconds = 0): void
     {
         $this->db->execute(
-            "UPDATE jobs
+            'UPDATE jobs
              SET reserved_at = NULL, reservation_token = NULL,
                  available_at = ?, attempts = attempts + 1
-             WHERE id = ?",
+             WHERE id = ?',
             [time() + max(0, $delaySeconds), $job->id]
         );
     }
@@ -121,8 +122,8 @@ class DatabaseQueue implements QueueInterface
         // failed job is never lost and never left half-processed.
         $this->db->transaction(function () use ($job, $exception): void {
             $this->db->execute(
-                "INSERT INTO failed_jobs (id, queue, payload, attempts, exception, failed_at)
-                 VALUES (?, ?, ?, ?, ?, ?)",
+                'INSERT INTO failed_jobs (id, queue, payload, attempts, exception, failed_at)
+                 VALUES (?, ?, ?, ?, ?, ?)',
                 [
                     $job->id,
                     $job->queue,
@@ -133,7 +134,7 @@ class DatabaseQueue implements QueueInterface
                 ]
             );
 
-            $this->db->execute("DELETE FROM jobs WHERE id = ?", [$job->id]);
+            $this->db->execute('DELETE FROM jobs WHERE id = ?', [$job->id]);
         });
     }
 
@@ -145,8 +146,8 @@ class DatabaseQueue implements QueueInterface
     public function failedJobs(): array
     {
         return $this->db->query(
-            "SELECT id, queue, attempts, exception, failed_at
-             FROM failed_jobs ORDER BY failed_at DESC"
+            'SELECT id, queue, attempts, exception, failed_at
+             FROM failed_jobs ORDER BY failed_at DESC'
         );
     }
 
@@ -156,7 +157,7 @@ class DatabaseQueue implements QueueInterface
      */
     public function retryFailed(string $id): bool
     {
-        $rows = $this->db->query("SELECT * FROM failed_jobs WHERE id = ? LIMIT 1", [$id]);
+        $rows = $this->db->query('SELECT * FROM failed_jobs WHERE id = ? LIMIT 1', [$id]);
 
         if (empty($rows)) {
             return false;
@@ -167,11 +168,11 @@ class DatabaseQueue implements QueueInterface
 
         $this->db->transaction(function () use ($row, $now): void {
             $this->db->execute(
-                "INSERT INTO jobs (id, queue, payload, attempts, available_at, created_at)
-                 VALUES (?, ?, ?, ?, ?, ?)",
+                'INSERT INTO jobs (id, queue, payload, attempts, available_at, created_at)
+                 VALUES (?, ?, ?, ?, ?, ?)',
                 [$row['id'], $row['queue'], $row['payload'], 0, $now, $now]
             );
-            $this->db->execute("DELETE FROM failed_jobs WHERE id = ?", [$row['id']]);
+            $this->db->execute('DELETE FROM failed_jobs WHERE id = ?', [$row['id']]);
         });
 
         return true;
@@ -182,7 +183,7 @@ class DatabaseQueue implements QueueInterface
      */
     public function retryAllFailed(): int
     {
-        $rows = $this->db->query("SELECT id FROM failed_jobs");
+        $rows = $this->db->query('SELECT id FROM failed_jobs');
         $count = 0;
 
         foreach ($rows as $row) {
@@ -197,7 +198,7 @@ class DatabaseQueue implements QueueInterface
     public function size(string $queue = 'default'): int
     {
         $rows = $this->db->query(
-            "SELECT COUNT(*) as count FROM jobs WHERE queue = ? AND reserved_at IS NULL",
+            'SELECT COUNT(*) as count FROM jobs WHERE queue = ? AND reserved_at IS NULL',
             [$queue]
         );
 
@@ -206,6 +207,6 @@ class DatabaseQueue implements QueueInterface
 
     public function clear(string $queue = 'default'): void
     {
-        $this->db->execute("DELETE FROM jobs WHERE queue = ?", [$queue]);
+        $this->db->execute('DELETE FROM jobs WHERE queue = ?', [$queue]);
     }
 }

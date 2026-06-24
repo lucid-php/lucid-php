@@ -13,7 +13,7 @@ class HomeController
     #[Route('GET', '/')]
     public function index(): string
     {
-        return "Welcome to the Strict Framework! running on PHP " . PHP_VERSION;
+        return 'Welcome to the Strict Framework! running on PHP ' . PHP_VERSION;
     }
 
     #[Route('GET', '/api/ping')]

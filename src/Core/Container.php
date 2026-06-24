@@ -10,7 +10,7 @@ use ReflectionNamedType;
 
 /**
  * Dependency Injection Container
- * 
+ *
  * The get() method is marked with #[\NoDiscard] to ensure the resolved
  * instance is used. This prevents accidentally resolving dependencies
  * without capturing the result.

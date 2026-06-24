@@ -6,5 +6,7 @@ namespace Core\Database;
 
 abstract class AbstractRepository
 {
-    public function __construct(protected final Database $db) {}
+    public function __construct(final protected Database $db)
+    {
+    }
 }

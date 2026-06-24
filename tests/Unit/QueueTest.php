@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use App\Job\SendWelcomeEmailJob;
 use App\Job\ProcessOrderJob;
+use App\Job\SendWelcomeEmailJob;
 use Core\Container;
 use Core\Database\Database;
-use Core\Queue\DatabaseQueue;
-use Core\Queue\SyncQueue;
-use Core\Queue\QueueWorker;
+use Core\Log\Handler\StderrHandler;
 use Core\Log\Logger;
 use Core\Log\LogLevel;
-use Core\Log\Handler\StderrHandler;
-use Core\Mail\MailerInterface;
 use Core\Mail\ArrayMailer;
+use Core\Mail\MailerInterface;
+use Core\Queue\DatabaseQueue;
+use Core\Queue\QueueWorker;
+use Core\Queue\SyncQueue;
 use PHPUnit\Framework\TestCase;
 
 class QueueTest extends TestCase
@@ -27,7 +27,7 @@ class QueueTest extends TestCase
     {
         // Setup in-memory database
         $this->db = new Database('sqlite::memory:', null, null);
-        
+
         // Create jobs table (mirrors database/migrations/005)
         $this->db->execute("
             CREATE TABLE jobs (
@@ -43,9 +43,9 @@ class QueueTest extends TestCase
         ");
 
         // Create index
-        $this->db->execute("
+        $this->db->execute('
             CREATE INDEX idx_jobs_queue_available ON jobs(queue, available_at)
-        ");
+        ');
 
         // Failed jobs table (mirrors database/migrations/006)
         $this->db->execute("
@@ -62,14 +62,14 @@ class QueueTest extends TestCase
         // Setup container
         $this->container = new Container();
         $this->container->set(Database::class, $this->db);
-        
+
         // Setup logger for jobs
         $logger = new Logger(
             minimumLevel: LogLevel::DEBUG,
             handlers: [new StderrHandler(json: false)]
         );
         $this->container->set(Logger::class, $logger);
-        
+
         // Setup mailer for jobs
         $mailer = new ArrayMailer();
         $this->container->set(MailerInterface::class, $mailer);
@@ -78,7 +78,7 @@ class QueueTest extends TestCase
     public function test_database_queue_can_push_and_pop_jobs(): void
     {
         $queue = new DatabaseQueue($this->db, [SendWelcomeEmailJob::class, ProcessOrderJob::class]);
-        
+
         $job = new SendWelcomeEmailJob(
             userId: 123,
             name: 'John Doe',

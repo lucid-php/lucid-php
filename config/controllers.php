@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Controllers\HomeController;
 use App\Controllers\ApiController;
 use App\Controllers\AuthController;
+use App\Controllers\HomeController;
+use Core\GraphQL\GraphQLController;
 
 /**
  * HTTP Controllers
@@ -19,5 +20,6 @@ return [
         HomeController::class,
         ApiController::class,
         AuthController::class,
+        GraphQLController::class,
     ],
 ];

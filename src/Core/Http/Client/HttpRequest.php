@@ -21,7 +21,7 @@ readonly class HttpRequest
 
         if (!in_array($scheme, ['http', 'https'], true)) {
             throw new \InvalidArgumentException(
-                "Unsupported URL scheme for HTTP request: " . ($scheme ?? 'none') . ". Only http and https are allowed."
+                'Unsupported URL scheme for HTTP request: ' . ($scheme ?? 'none') . '. Only http and https are allowed.'
             );
         }
     }

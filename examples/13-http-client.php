@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * Example 13: HTTP Client
- * 
+ *
  * Demonstrates:
  * - Making HTTP requests (GET, POST, PUT, DELETE)
  * - Request/Response objects
@@ -17,7 +17,6 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Core\Http\Client\HttpRequest;
 use Core\Http\Client\HttpResponse;
-use Core\Http\Client\CurlHttpClient;
 use Core\Http\Client\MockHttpClient;
 
 echo "HTTP Client Examples:\n";
@@ -49,7 +48,7 @@ echo "=== Example 2: POST Request with JSON ===\n\n";
 $data = [
     'name' => 'John Doe',
     'email' => 'john@example.com',
-    'age' => 30
+    'age' => 30,
 ];
 
 $request = HttpRequest::post(
@@ -60,8 +59,8 @@ $request = HttpRequest::post(
 echo "Request:\n";
 echo "  Method: {$request->method}\n";
 echo "  URL: {$request->url}\n";
-echo "  Content-Type: " . ($request->headers['Content-Type'] ?? 'none') . "\n";
-echo "  Body: " . $request->body . "\n\n";
+echo '  Content-Type: ' . ($request->headers['Content-Type'] ?? 'none') . "\n";
+echo '  Body: ' . $request->body . "\n\n";
 
 // ===========================
 // Example 3: Authentication
@@ -81,7 +80,7 @@ $request = HttpRequest::get('https://api.example.com/admin')
     ->withBasicAuth('username', 'password');
 
 echo "Basic Authentication:\n";
-echo "  Authorization: Basic " . base64_encode('username:password') . "\n\n";
+echo '  Authorization: Basic ' . base64_encode('username:password') . "\n\n";
 
 // ===========================
 // Example 4: Custom Headers
@@ -110,7 +109,7 @@ $params = http_build_query([
     'page' => 2,
     'limit' => 10,
     'sort' => 'created_at',
-    'order' => 'desc'
+    'order' => 'desc',
 ]);
 
 $request = HttpRequest::get('https://api.example.com/users?' . $params);
@@ -143,7 +142,7 @@ $response1 = $mock->send($request1);
 echo "First request:\n";
 echo "  Status: {$response1->statusCode}\n";
 echo "  Body: {$response1->body}\n";
-echo "  Data: " . json_encode($response1->json()) . "\n\n";
+echo '  Data: ' . json_encode($response1->json()) . "\n\n";
 
 $request2 = HttpRequest::get('https://api.example.com/users/999');
 $response2 = $mock->send($request2);
@@ -153,7 +152,7 @@ echo "  Status: {$response2->statusCode}\n";
 echo "  Body: {$response2->body}\n\n";
 
 // Inspect requests
-echo "Total requests made: " . $mock->count() . "\n";
+echo 'Total requests made: ' . $mock->count() . "\n";
 $lastRequest = $mock->getLastRequest();
 if ($lastRequest) {
     echo "Last request URL: {$lastRequest->url}\n";
@@ -174,7 +173,7 @@ $mock->queueResponse(new HttpResponse(
             ['id' => 1, 'name' => 'Alice'],
             ['id' => 2, 'name' => 'Bob'],
         ],
-        'total' => 2
+        'total' => 2,
     ]),
     ['Content-Type' => 'application/json']
 ));
@@ -184,8 +183,8 @@ $response = $mock->send($request);
 
 echo "Response:\n";
 echo "  Status: {$response->statusCode}\n";
-echo "  Is success: " . ($response->isSuccessful() ? 'yes' : 'no') . "\n";
-echo "  Content-Type: " . ($response->headers['Content-Type'] ?? 'none') . "\n\n";
+echo '  Is success: ' . ($response->isSuccessful() ? 'yes' : 'no') . "\n";
+echo '  Content-Type: ' . ($response->headers['Content-Type'] ?? 'none') . "\n\n";
 
 $data = $response->json();
 echo "Parsed JSON:\n";
@@ -206,7 +205,7 @@ use Core\Http\Client\HttpClientInterface;
 class ApiClient
 {
     private string $baseUrl;
-    
+
     public function __construct(
         private HttpClientInterface $client,
         string $baseUrl,
@@ -214,35 +213,35 @@ class ApiClient
     ) {
         $this->baseUrl = rtrim($baseUrl, '/');
     }
-    
+
     public function getUser(int $id): array
     {
         $request = HttpRequest::get("{$this->baseUrl}/users/{$id}");
-        
+
         if ($this->apiToken) {
             $request = $request->withBearerToken($this->apiToken);
         }
-        
+
         $response = $this->client->send($request);
-        
+
         if (!$response->isSuccessful()) {
             throw new \Exception("API error: {$response->statusCode}");
         }
-        
+
         return $response->json();
     }
-    
+
     public function createUser(array $data): array
     {
         $request = HttpRequest::post("{$this->baseUrl}/users", json_encode($data))
             ->asJson();
-        
+
         if ($this->apiToken) {
             $request = $request->withBearerToken($this->apiToken);
         }
-        
+
         $response = $this->client->send($request);
-        
+
         return $response->json();
     }
 }
@@ -259,7 +258,7 @@ $user = $api->getUser(1);
 
 echo "API Client usage:\n";
 echo "  Fetched user: {$user['name']} ({$user['email']})\n";
-echo "  Request was authenticated: " . ($mock->getLastRequest()->headers['Authorization'] ?? 'no') . "\n\n";
+echo '  Request was authenticated: ' . ($mock->getLastRequest()->headers['Authorization'] ?? 'no') . "\n\n";
 
 // ===========================
 // Example 9: Error Handling
@@ -276,11 +275,11 @@ $mock->queueResponse(new HttpResponse(
 try {
     $request = HttpRequest::get('https://api.example.com/data');
     $response = $mock->send($request);
-    
+
     if (!$response->isSuccessful()) {
         echo "Error response:\n";
         echo "  Status: {$response->statusCode}\n";
-        echo "  Message: " . ($response->json()['error'] ?? 'Unknown error') . "\n\n";
+        echo '  Message: ' . ($response->json()['error'] ?? 'Unknown error') . "\n\n";
     }
 } catch (\Exception $e) {
     echo "Exception: {$e->getMessage()}\n\n";
@@ -309,10 +308,10 @@ $wasSent = $mock->assertSent(function ($req) {
         && json_decode($req->body, true)['event'] === 'user.created';
 });
 
-echo "Assertion result: " . ($wasSent ? 'PASSED' : 'FAILED') . "\n";
-echo "  Method was POST: " . ($mock->getLastRequest()->method === 'POST' ? '✓' : '✗') . "\n";
-echo "  URL contains /webhook: " . (str_contains($mock->getLastRequest()->url, '/webhook') ? '✓' : '✗') . "\n";
-echo "  Body contains event: " . (str_contains($mock->getLastRequest()->body, 'user.created') ? '✓' : '✗') . "\n\n";
+echo 'Assertion result: ' . ($wasSent ? 'PASSED' : 'FAILED') . "\n";
+echo '  Method was POST: ' . ($mock->getLastRequest()->method === 'POST' ? '✓' : '✗') . "\n";
+echo '  URL contains /webhook: ' . (str_contains($mock->getLastRequest()->url, '/webhook') ? '✓' : '✗') . "\n";
+echo '  Body contains event: ' . (str_contains($mock->getLastRequest()->body, 'user.created') ? '✓' : '✗') . "\n\n";
 
 // ===========================
 // Configuration

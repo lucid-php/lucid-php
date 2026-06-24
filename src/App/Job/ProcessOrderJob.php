@@ -6,7 +6,7 @@ namespace App\Job;
 
 /**
  * Process Order Job
- * 
+ *
  * Example job showing:
  * - Multiple constructor parameters (job data)
  * - No dependencies needed in handle()
@@ -19,7 +19,8 @@ readonly class ProcessOrderJob
         public float $total,
         /** @var array<int, array{productId: int, quantity: int}> */
         public array $items,
-    ) {}
+    ) {
+    }
 
     /**
      * Execute the job
@@ -28,7 +29,7 @@ readonly class ProcessOrderJob
     {
         // Process order (update inventory, send notifications, etc.)
         error_log(sprintf(
-            "🛒 [QUEUED] Processing order #%d (Total: $%.2f, Items: %d)",
+            '🛒 [QUEUED] Processing order #%d (Total: $%.2f, Items: %d)',
             $this->orderId,
             $this->total,
             count($this->items)

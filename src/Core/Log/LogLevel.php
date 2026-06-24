@@ -6,7 +6,7 @@ namespace Core\Log;
 
 /**
  * Log Level Enum
- * 
+ *
  * Philosophy: Explicit log levels, no magic strings.
  * PSR-3 compatible levels as typed enum.
  */

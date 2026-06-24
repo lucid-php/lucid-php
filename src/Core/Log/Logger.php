@@ -6,7 +6,7 @@ namespace Core\Log;
 
 /**
  * Logger Implementation
- * 
+ *
  * Philosophy: Explicit, traceable logging with typed context.
  * - No magic context enrichment
  * - No auto-discovery of log destinations
@@ -17,7 +17,7 @@ class Logger implements LoggerInterface
 {
     /** @var array<LogHandlerInterface> */
     private array $handlers = [];
-    
+
     private readonly LogLevel $minimumLevel;
 
     /**
@@ -111,7 +111,7 @@ class Logger implements LoggerInterface
     private function interpolate(string $message, array $context): string
     {
         $replacements = [];
-        
+
         foreach ($context as $key => $value) {
             // Only replace scalar values
             if (is_scalar($value) || (is_object($value) && method_exists($value, '__toString'))) {

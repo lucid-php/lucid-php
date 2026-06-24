@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * PHP 8.5 Feature Test: Clone-With Syntax
- * 
+ *
  * Tests the clone-with pattern in readonly classes.
  * This demonstrates how PHP 8.5's clone-with reduces boilerplate
  * in immutable value objects.
@@ -33,7 +33,7 @@ class CloneWithTest extends TestCase
         $this->assertSame('Jane Doe', $updated->name);
         $this->assertSame('john@example.com', $updated->email);
         $this->assertSame('secure123', $updated->password);
-        
+
         // Original unchanged
         $this->assertSame('John Doe', $original->name);
     }
@@ -90,7 +90,7 @@ class CloneWithTest extends TestCase
         $this->assertSame('Jane Doe', $updated->name);
         $this->assertSame('jane@example.com', $updated->email);
         $this->assertSame('newsecure456', $updated->password);
-        
+
         // Original completely unchanged
         $this->assertSame('John Doe', $original->name);
         $this->assertSame('john@example.com', $original->email);
@@ -124,7 +124,7 @@ class CloneWithTest extends TestCase
 
         // This should not compile or throw error in PHP 8.5
         // $dto->name = 'Jane Doe'; // Error: Cannot modify readonly property
-        
+
         // Instead, must use withers
         $updated = $dto->withName('Jane Doe');
         $this->assertSame('Jane Doe', $updated->name);

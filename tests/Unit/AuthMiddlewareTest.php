@@ -7,10 +7,10 @@ namespace Tests\Unit;
 use App\Entity\User;
 use App\Middleware\AuthMiddleware;
 use App\Repository\TokenRepository;
-use Core\Http\UnauthorizedException;
 use Core\Http\Request;
-use Core\Http\Response;
 use Core\Http\RequestHandlerInterface;
+use Core\Http\Response;
+use Core\Http\UnauthorizedException;
 use PHPUnit\Framework\TestCase;
 
 class AuthMiddlewareTest extends TestCase
@@ -19,7 +19,7 @@ class AuthMiddlewareTest extends TestCase
     {
         $tokenRepo = $this->createStub(TokenRepository::class);
         $middleware = new AuthMiddleware($tokenRepo);
-        
+
         $request = new Request('GET', '/', server: []);
         $handler = $this->createMock(RequestHandlerInterface::class);
         $handler->expects($this->never())->method('handle');
@@ -34,9 +34,9 @@ class AuthMiddlewareTest extends TestCase
     {
         $tokenRepo = $this->createStub(TokenRepository::class);
         $tokenRepo->method('findUserByToken')->willReturn(null);
-        
+
         $middleware = new AuthMiddleware($tokenRepo);
-        
+
         $request = new Request('GET', '/', server: ['HTTP_AUTHORIZATION' => 'Bearer invalid-token']);
         $handler = $this->createMock(RequestHandlerInterface::class);
         $handler->expects($this->never())->method('handle');
@@ -50,14 +50,14 @@ class AuthMiddlewareTest extends TestCase
     public function testAuthenticatedWhenValidToken(): void
     {
         $user = new User(1, 'John Doe', 'john@example.com', 'hashed');
-        
+
         $tokenRepo = $this->createStub(TokenRepository::class);
         $tokenRepo->method('findUserByToken')->willReturn($user);
-        
+
         $middleware = new AuthMiddleware($tokenRepo);
-        
+
         $request = new Request('GET', '/', server: ['HTTP_AUTHORIZATION' => 'Bearer valid-token']);
-        
+
         $handler = $this->createMock(RequestHandlerInterface::class);
         $handler->expects($this->once())
             ->method('handle')

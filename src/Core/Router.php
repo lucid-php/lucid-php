@@ -6,18 +6,15 @@ namespace Core;
 
 use Core\Attribute\Cache;
 use Core\Attribute\Middleware;
+use Core\Attribute\QueryParam;
 use Core\Attribute\Route;
 use Core\Attribute\RoutePrefix;
-use Core\Attribute\QueryParam;
 use Core\Cache\CacheInterface;
 use Core\Http\ApiResponse;
-use Core\Http\HttpException;
+use Core\Http\MiddlewareStack;
 use Core\Http\Request;
 use Core\Http\Response;
-use Core\Http\MiddlewareInterface;
-use Core\Http\MiddlewareStack;
 use Core\Http\ValidatedDTO;
-use Core\Validation\ValidationException;
 use Core\Validation\Validator;
 use ReflectionClass;
 use ReflectionNamedType;
@@ -75,13 +72,13 @@ class Router
 
                     // Store both the original pattern and the regex pattern
                     $pattern = $this->convertToRegex($fullPath);
-                    
+
                     $this->routes[$route->method][] = [
                         'path' => $fullPath,
                         'pattern' => $pattern,
                         'controller' => $controller,
                         'method' => $method->getName(),
-                        'middlewares' => [...$this->globalMiddlewares, ...$classMiddlewares, ...$methodMiddlewares]
+                        'middlewares' => [...$this->globalMiddlewares, ...$classMiddlewares, ...$methodMiddlewares],
                     ];
                 }
             }
@@ -147,7 +144,7 @@ class Router
         $matched = $this->match($request->method, $uri);
 
         if ($matched === null) {
-            return new Response("404 Not Found", 404);
+            return new Response('404 Not Found', 404);
         }
 
         $handlerConfig = $matched['route'];
@@ -166,7 +163,7 @@ class Router
 
         // Instantiate middlewares
         $middlewares = array_map(
-            fn($class) => $this->container->get($class),
+            fn ($class) => $this->container->get($class),
             $middlewareClasses
         );
 
@@ -174,7 +171,7 @@ class Router
         // Exception handling is now done by ExceptionMiddleware - no try/catch here
         $coreAction = function (Request $req) use ($controllerClass, $methodName) {
             $controllerInstance = $this->container->get($controllerClass);
-            
+
             $args = $this->resolveMethodDependencies($controllerClass, $methodName, $req);
             $response = $controllerInstance->$methodName(...$args);
 
@@ -220,7 +217,7 @@ class Router
 
         $cached = $cache->get($key);
         if (is_array($cached) && isset($cached['content'], $cached['status'], $cached['headers'])) {
-            return fn(Request $req): Response => new Response($cached['content'], $cached['status'], $cached['headers']);
+            return fn (Request $req): Response => new Response($cached['content'], $cached['status'], $cached['headers']);
         }
 
         return function (Request $req) use ($coreAction, $cache, $key, $cacheAttr): Response {
@@ -279,7 +276,7 @@ class Router
 
         return 'route_cache:' . md5($request->method . ' ' . $request->uri . '?' . http_build_query($query));
     }
-    
+
     private function resolveMethodDependencies(string $controller, string $method, Request $request): array
     {
         $reflection = new ReflectionClass($controller);
@@ -290,20 +287,20 @@ class Router
         foreach ($methodRef->getParameters() as $parameter) {
             $paramName = $parameter->getName();
             $type = $parameter->getType();
-            
+
             // Check if parameter has #[QueryParam] attribute
             $queryParamAttrs = $parameter->getAttributes(QueryParam::class);
             $isQueryParam = !empty($queryParamAttrs);
-            
+
             // 1. Query parameters (marked with #[QueryParam] attribute)
             if ($isQueryParam) {
                 $value = $request->getQueryParam($paramName);
-                
+
                 // Use default value if not provided
                 if ($value === null && $parameter->isDefaultValueAvailable()) {
                     $value = $parameter->getDefaultValue();
                 }
-                
+
                 // Cast to appropriate type if type hint exists
                 if ($value !== null && $type instanceof ReflectionNamedType) {
                     $typeName = $type->getName();
@@ -317,15 +314,15 @@ class Router
                         $value = (string) $value;
                     }
                 }
-                
+
                 $args[] = $value;
                 continue;
             }
-            
+
             // 2. Route parameters (string or int types from URI)
             if (array_key_exists($paramName, $routeParams)) {
                 $value = $routeParams[$paramName];
-                
+
                 // Cast to appropriate type if type hint exists
                 if ($type instanceof ReflectionNamedType) {
                     $typeName = $type->getName();
@@ -335,13 +332,13 @@ class Router
                         $value = (string) $value;
                     }
                 }
-                
+
                 $args[] = $value;
                 continue;
             }
-            
+
             if (!$type instanceof ReflectionNamedType) {
-                 continue;
+                continue;
             }
             $typeName = $type->getName();
 
@@ -356,19 +353,19 @@ class Router
                 $args[] = $this->validator->validateAndHydrate($typeName, $request->body);
                 continue;
             }
-            
+
             // 5. Use default value if parameter has one
             if ($parameter->isDefaultValueAvailable()) {
                 $args[] = $parameter->getDefaultValue();
                 continue;
             }
-            
+
             throw new \Exception("Cannot resolve parameter [{$parameter->getName()}] in [$controller::$method].");
         }
 
         return $args;
     }
-    
+
     /**
      * Convert route path with {param} placeholders to regex pattern
      * Example: /users/{id}/posts/{slug} becomes /^\/users\/(?<id>[^\/]+)\/posts\/(?<slug>[^\/]+)$/
@@ -377,7 +374,7 @@ class Router
     {
         // First escape the path for use in regex
         $escaped = preg_quote($path, '#');
-        
+
         // Then replace the escaped placeholders with capture groups
         // Note: preg_quote escapes { and } to \{ and \}, so we need to match those literal
         // backslashes in our pattern. Each backslash in the pattern needs to be escaped:
@@ -385,7 +382,7 @@ class Router
         // - \\{ matches the escaped brace
         // Result: \\\\\\{ matches the pattern \{ (which is what preg_quote produces)
         $pattern = preg_replace('/\\\\\\{([a-zA-Z_][a-zA-Z0-9_]*)\\\\\\}/', '(?<$1>[^/]+)', $escaped);
-        
+
         return '#^' . $pattern . '$#';
     }
 }

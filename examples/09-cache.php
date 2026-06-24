@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * Example 9: Cache System
- * 
+ *
  * Demonstrates:
  * - Storing and retrieving cached data
  * - Cache drivers (File, Array)
@@ -15,8 +15,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Core\Cache\FileCache;
 use Core\Cache\ArrayCache;
+use Core\Cache\FileCache;
 
 echo "Cache System Examples:\n";
 echo "=====================\n\n";
@@ -33,7 +33,7 @@ $cache = new FileCache(__DIR__ . '/../storage/cache');
 $cache->set('user:123', [
     'id' => 123,
     'name' => 'John Doe',
-    'email' => 'john@example.com'
+    'email' => 'john@example.com',
 ], 3600); // Expires in 1 hour
 
 echo "✓ Stored user in cache\n";
@@ -60,10 +60,10 @@ echo "=== Example 2: Cache with Default Values ===\n\n";
 // Get with default if not found
 $settings = $cache->get('app:settings', [
     'theme' => 'light',
-    'language' => 'en'
+    'language' => 'en',
 ]);
 
-echo "Settings: " . json_encode($settings, JSON_PRETTY_PRINT) . "\n\n";
+echo 'Settings: ' . json_encode($settings, JSON_PRETTY_PRINT) . "\n\n";
 
 // ===========================
 // Example 3: Remember Pattern
@@ -72,10 +72,10 @@ echo "Settings: " . json_encode($settings, JSON_PRETTY_PRINT) . "\n\n";
 echo "=== Example 3: Remember Pattern ===\n\n";
 
 // Fetch from cache or execute callback
-$products = $cache->remember('products:all', function() {
+$products = $cache->remember('products:all', function () {
     echo "  [DB] Fetching products from database...\n";
     sleep(2); // Simulate slow query
-    
+
     return [
         ['id' => 1, 'name' => 'Product 1', 'price' => 99.99],
         ['id' => 2, 'name' => 'Product 2', 'price' => 149.99],
@@ -84,10 +84,10 @@ $products = $cache->remember('products:all', function() {
 }, 600);
 
 echo "✓ First call: Fetched from database\n";
-echo "  Products: " . count($products) . "\n\n";
+echo '  Products: ' . count($products) . "\n\n";
 
 // Second call - will use cache
-$products = $cache->remember('products:all', function() {
+$products = $cache->remember('products:all', function () {
     echo "  This won't execute!\n";
     return [];
 }, 600);
@@ -111,7 +111,7 @@ echo "✓ Stored 3 users\n";
 
 // Get multiple values
 $users = $cache->getMultiple(['user:100', 'user:101', 'user:102']);
-echo "✓ Retrieved " . count($users) . " users\n\n";
+echo '✓ Retrieved ' . count($users) . " users\n\n";
 
 // ===========================
 // Example 5: Clear Cache
@@ -134,7 +134,7 @@ echo "=== Example 6: Array Cache (In-Memory) ===\n\n";
 $arrayCache = new ArrayCache();
 
 $arrayCache->set('test', 'value', 60);
-echo "✓ Stored in memory: " . $arrayCache->get('test') . "\n";
+echo '✓ Stored in memory: ' . $arrayCache->get('test') . "\n";
 echo "  Perfect for unit tests!\n\n";
 
 // ===========================
@@ -146,11 +146,13 @@ echo "=== Example 7: Real-World Use Cases ===\n\n";
 // Use case 1: Cache database query results
 class PostRepository
 {
-    public function __construct(private FileCache $cache) {}
-    
+    public function __construct(private FileCache $cache)
+    {
+    }
+
     public function findAll(): array
     {
-        return $this->cache->remember('posts:all', function() {
+        return $this->cache->remember('posts:all', function () {
             // This would be a database query
             return [
                 ['id' => 1, 'title' => 'First Post'],
@@ -158,15 +160,15 @@ class PostRepository
             ];
         }, 600);
     }
-    
+
     public function find(int $id): ?array
     {
-        return $this->cache->remember("post:{$id}", function() use ($id) {
+        return $this->cache->remember("post:{$id}", function () use ($id) {
             // Database query to find post
             return ['id' => $id, 'title' => 'Post Title'];
         }, 600);
     }
-    
+
     public function clearCache(): void
     {
         $this->cache->clear();
@@ -181,21 +183,23 @@ echo "  ✓ Fetched posts (cached for 10 minutes)\n\n";
 // Use case 2: Cache API responses
 class WeatherService
 {
-    public function __construct(private FileCache $cache) {}
-    
+    public function __construct(private FileCache $cache)
+    {
+    }
+
     public function getWeather(string $city): array
     {
         $cacheKey = "weather:{$city}";
-        
-        return $this->cache->remember($cacheKey, function() use ($city) {
+
+        return $this->cache->remember($cacheKey, function () use ($city) {
             echo "  [API] Calling external weather API for {$city}...\n";
             sleep(1); // Simulate API call
-            
+
             return [
                 'city' => $city,
                 'temperature' => 22,
                 'condition' => 'Sunny',
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('Y-m-d H:i:s'),
             ];
         }, 1800);
     }
@@ -210,20 +214,22 @@ echo "  (Cached for 30 minutes)\n\n";
 // Use case 3: Rate limiting
 class RateLimiter
 {
-    public function __construct(private FileCache $cache) {}
-    
+    public function __construct(private FileCache $cache)
+    {
+    }
+
     public function attempt(string $key, int $maxAttempts, int $decaySeconds): bool
     {
         $attempts = (int) $this->cache->get($key, 0);
-        
+
         if ($attempts >= $maxAttempts) {
             return false; // Rate limit exceeded
         }
-        
+
         $this->cache->set($key, $attempts + 1, $decaySeconds);
         return true;
     }
-    
+
     public function remaining(string $key, int $maxAttempts): int
     {
         $attempts = (int) $this->cache->get($key, 0);
@@ -234,8 +240,8 @@ class RateLimiter
 echo "RateLimiter:\n";
 $limiter = new RateLimiter($cache);
 $allowed = $limiter->attempt('api:user:123', 10, 60);
-echo "  ✓ API call allowed: " . ($allowed ? 'Yes' : 'No') . "\n";
-echo "  ✓ Remaining calls: " . $limiter->remaining('api:user:123', 10) . "\n\n";
+echo '  ✓ API call allowed: ' . ($allowed ? 'Yes' : 'No') . "\n";
+echo '  ✓ Remaining calls: ' . $limiter->remaining('api:user:123', 10) . "\n\n";
 
 // ===========================
 // Configuration

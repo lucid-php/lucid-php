@@ -6,10 +6,10 @@ namespace Tests\Unit;
 
 use Core\Attribute\RateLimit;
 use Core\Config\Config;
-use Core\Http\TooManyRequestsException;
 use Core\Http\Request;
 use Core\Http\RequestHandlerInterface;
 use Core\Http\Response;
+use Core\Http\TooManyRequestsException;
 use Core\Middleware\RateLimitMiddleware;
 use Core\RateLimit\InMemoryRateLimitStore;
 use PHPUnit\Framework\TestCase;
@@ -207,9 +207,11 @@ class RateLimitMiddlewareTest extends TestCase
         string $uri = '/api/users'
     ): Request {
         // Create a mock controller class with RateLimit attribute
-        $controller = new class {
+        $controller = new class () {
             #[RateLimit(requests: 5, window: 60)]
-            public function testMethod(): void {}
+            public function testMethod(): void
+            {
+            }
         };
 
         // Override the attribute for this specific test
@@ -233,8 +235,10 @@ class RateLimitMiddlewareTest extends TestCase
 
     private function createMockHandler(Response $response): RequestHandlerInterface
     {
-        return new class($response) implements RequestHandlerInterface {
-            public function __construct(private Response $response) {}
+        return new class ($response) implements RequestHandlerInterface {
+            public function __construct(private Response $response)
+            {
+            }
 
             public function handle(Request $request): Response
             {
@@ -248,7 +252,9 @@ class RateLimitMiddlewareTest extends TestCase
         $tempDir = sys_get_temp_dir() . '/test_ratelimit_' . uniqid();
         mkdir($tempDir);
 
-        file_put_contents($tempDir . '/ratelimit.php', <<<'PHP'
+        file_put_contents(
+            $tempDir . '/ratelimit.php',
+            <<<'PHP'
 <?php
 return [
     'enabled' => false,

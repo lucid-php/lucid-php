@@ -5,8 +5,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Core\Database\Database;
 use Core\Config\Config;
+use Core\Database\Database;
 
 // 1. Load Config
 $config = new Config(__DIR__ . '/../config');
@@ -30,7 +30,7 @@ if ($dbConnection === 'sqlite') {
     $dbname = $config->get('database.mysql.database', 'framework');
     $username = $config->get('database.mysql.username');
     $password = $config->get('database.mysql.password');
-    
+
     $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
 }
 
@@ -52,10 +52,11 @@ if ($seederName) {
 
 echo "Done.\n";
 
-function runSeeder(Database $db, string $class) {
+function runSeeder(Database $db, string $class)
+{
     // Basic namespace correction if user just types "UserSeeder"
     if (!class_exists($class)) {
-        $namespaced = "Database\\Seeds\\" . $class;
+        $namespaced = 'Database\\Seeds\\' . $class;
         if (class_exists($namespaced)) {
             $class = $namespaced;
         } else {

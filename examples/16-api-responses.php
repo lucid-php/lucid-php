@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * Example 16: Standardized API Responses
- * 
+ *
  * Demonstrates:
  * - ApiResponse class for consistent API structure
  * - Success, error, and paginated responses
@@ -66,7 +66,7 @@ echo "4. Validation Error Response:\n";
 $validationResponse = ApiResponse::validationError(
     errors: [
         'email' => ['Email is required', 'Email must be valid'],
-        'password' => ['Password must be at least 8 characters']
+        'password' => ['Password must be at least 8 characters'],
     ]
 );
 

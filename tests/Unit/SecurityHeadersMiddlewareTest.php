@@ -56,8 +56,10 @@ class SecurityHeadersMiddlewareTest extends TestCase
 
     private function handler(Response $response): RequestHandlerInterface
     {
-        return new class($response) implements RequestHandlerInterface {
-            public function __construct(private Response $response) {}
+        return new class ($response) implements RequestHandlerInterface {
+            public function __construct(private Response $response)
+            {
+            }
 
             public function handle(Request $request): Response
             {

@@ -4,25 +4,24 @@ declare(strict_types=1);
 
 /**
  * Example 12: Console Commands
- * 
+ *
  * Demonstrates:
  * - Creating console commands
  * - Command arguments and options
  * - Output formatting
  * - Console application setup
- * 
+ *
  * Note: This example shows command structure.
  * Run actual commands with: php console <command>
  */
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Core\Console\ConsoleApplication;
+use Core\Attribute\Argument;
+use Core\Attribute\ConsoleCommand;
+use Core\Attribute\Option;
 use Core\Console\CommandInterface;
 use Core\Console\OutputInterface;
-use Core\Attribute\ConsoleCommand;
-use Core\Attribute\Argument;
-use Core\Attribute\Option;
 
 echo "Console Commands Examples:\n";
 echo "==========================\n\n";
@@ -45,8 +44,8 @@ class GreetCommand implements CommandInterface
         string $name = 'World'
     ): int {
         $output->writeln("Hello, $name!");
-        $output->success("Greeting completed");
-        
+        $output->success('Greeting completed');
+
         return 0; // Success
     }
 }
@@ -77,15 +76,15 @@ class CreateUserCommand implements CommandInterface
         #[Argument('email', 'User email address')]
         string $email
     ): int {
-        $output->writeln("Creating user...");
+        $output->writeln('Creating user...');
         $output->writeln("  Name: $name");
         $output->writeln("  Email: $email");
-        
+
         // Simulate user creation
         sleep(1);
-        
-        $output->success("User created successfully!");
-        
+
+        $output->success('User created successfully!');
+
         return 0;
     }
 }
@@ -121,16 +120,16 @@ class DatabaseSeedCommand implements CommandInterface
             $output->writeln('Use --force to confirm');
             return 1;
         }
-        
+
         $output->writeln("Seeding database with $count records...");
-        
+
         for ($i = 1; $i <= $count; $i++) {
             echo "  [$i/$count] Creating record $i\n";
             usleep(50000); // 0.05 seconds
         }
-        
+
         $output->success("Database seeded with $count records");
-        
+
         return 0;
     }
 }
@@ -156,24 +155,24 @@ class StatusCommand implements CommandInterface
 {
     public function execute(OutputInterface $output): int
     {
-        $output->writeln("System Status Report");
+        $output->writeln('System Status Report');
         $output->writeln("===================\n");
-        
+
         // Success message
-        $output->success("✓ Database: Connected");
-        
+        $output->success('✓ Database: Connected');
+
         // Info message
-        $output->info("ℹ Cache: 1,234 items");
-        
+        $output->info('ℹ Cache: 1,234 items');
+
         // Warning message
-        $output->warning("⚠ Disk Space: 85% used");
-        
+        $output->warning('⚠ Disk Space: 85% used');
+
         // Error message
-        $output->error("✗ Queue Worker: Not running");
-        
+        $output->error('✗ Queue Worker: Not running');
+
         // Plain text
         $output->writeln("\nUse 'php console help' for more commands");
-        
+
         return 0;
     }
 }
@@ -204,21 +203,21 @@ class MigrateCommand implements CommandInterface
             '002_create_posts_table',
             '003_add_user_roles',
         ];
-        
+
         $output->writeln("Running migrations...\n");
-        
+
         foreach ($migrations as $migration) {
             $output->write("  Migrating: $migration");
-            
+
             // Simulate migration
             sleep(1);
-            
-            $output->success(" ✓");
+
+            $output->success(' ✓');
         }
-        
-        $output->writeln("");
-        $output->success("All migrations completed successfully");
-        
+
+        $output->writeln('');
+        $output->success('All migrations completed successfully');
+
         return 0;
     }
 }
@@ -242,26 +241,26 @@ class CacheClearCommand implements CommandInterface
     public function execute(OutputInterface $output): int
     {
         $cacheDir = __DIR__ . '/../storage/cache';
-        
+
         if (!is_dir($cacheDir)) {
             $output->warning('Cache directory does not exist');
             return 0;
         }
-        
-        $output->writeln("Clearing cache...");
-        
+
+        $output->writeln('Clearing cache...');
+
         $files = glob($cacheDir . '/*');
         $count = 0;
-        
+
         foreach ($files as $file) {
             if (is_file($file)) {
                 unlink($file);
                 $count++;
             }
         }
-        
+
         $output->success("Cleared $count cache files");
-        
+
         return 0;
     }
 }

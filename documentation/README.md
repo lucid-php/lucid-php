@@ -97,7 +97,7 @@ Complete documentation for Lucid-PHP - a strict, explicit, zero-magic PHP 8.5+ f
     - Output Formatting
     - Built-in Commands
 
-### Testing & Development
+### Extensibility & Advanced Features
 
 13. **[Testing](13-testing.md)**
     - Test Structure
@@ -105,6 +105,37 @@ Complete documentation for Lucid-PHP - a strict, explicit, zero-magic PHP 8.5+ f
     - Feature Tests
     - Testing Patterns
     - Running Tests
+
+14. **[Modules](14-modules.md)**
+    - Module Interface
+    - Dependency Validation
+    - Module Lifecycle (register/boot)
+    - Module Boot Context
+    - Explicit Module Registration
+    - Module Best Practices
+
+15. **[GraphQL](15-graphql.md)**
+    - Type Definitions
+    - Query Resolvers
+    - Mutation Resolvers
+    - GraphQL Endpoint
+    - Separation of Concerns
+    - Testing GraphQL
+
+16. **[Pipelines](16-pipelines.md)**
+    - Pipeline Steps
+    - Pipeline Registry
+    - Pipeline Definition
+    - Extending Pipelines (addBefore/addAfter)
+    - Workflows vs. Events
+    - Pipeline Testing
+
+17. **[Service Contracts](17-service-contracts.md)**
+    - Service Interfaces
+    - Command/Result DTOs
+    - Dependency Injection
+    - Repository Pattern
+    - Testing Services
 
 ---
 
@@ -211,6 +242,10 @@ Request → Router → Middleware Stack → Controller → Repository → Databa
 | Queue | Background jobs | [10-queue.md](10-queue.md) |
 | Scheduler | Cron-like tasks | [11-scheduler.md](11-scheduler.md) |
 | Console | CLI commands | [12-console.md](12-console.md) |
+| ModuleSystem | Application composition | [14-modules.md](14-modules.md) |
+| GraphQL | GraphQL endpoint | [15-graphql.md](15-graphql.md) |
+| Pipelines | Ordered workflows | [16-pipelines.md](16-pipelines.md) |
+| Services | Domain logic contracts | [17-service-contracts.md](17-service-contracts.md) |
 
 ---
 

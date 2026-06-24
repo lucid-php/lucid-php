@@ -6,25 +6,24 @@ namespace Core\Middleware;
 
 use Core\Attribute\RateLimit;
 use Core\Config\Config;
-use Core\Http\TooManyRequestsException;
 use Core\Http\MiddlewareInterface;
 use Core\Http\Request;
 use Core\Http\RequestHandlerInterface;
 use Core\Http\Response;
+use Core\Http\TooManyRequestsException;
 use Core\RateLimit\RateLimitStore;
 use ReflectionClass;
-use ReflectionMethod;
 
 /**
  * Rate Limit Middleware
- * 
+ *
  * Enforces rate limits declared via #[RateLimit] attribute.
- * 
+ *
  * Philosophy: Explicit over convenient.
  * - Rate limits are declared on routes, not in distant config files
  * - No magic - if there's no attribute, there's no rate limiting
  * - Clear error responses with standard headers
- * 
+ *
  * Implementation:
  * - Reads #[RateLimit] attribute from controller method
  * - Uses client IP as identifier

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Core\Log\Logger;
 use Core\Log\LogEntry;
+use Core\Log\Logger;
 use Core\Log\LogHandlerInterface;
 use Core\Log\LogLevel;
 use PHPUnit\Framework\TestCase;
@@ -14,10 +14,11 @@ class LoggerTest extends TestCase
 {
     public function testLogsMessage(): void
     {
-        $handler = new class implements LogHandlerInterface {
+        $handler = new class () implements LogHandlerInterface {
             public ?LogEntry $lastEntry = null;
-            
-            public function handle(LogEntry $entry): void {
+
+            public function handle(LogEntry $entry): void
+            {
                 $this->lastEntry = $entry;
             }
         };
@@ -32,10 +33,11 @@ class LoggerTest extends TestCase
 
     public function testInterpolatesContext(): void
     {
-        $handler = new class implements LogHandlerInterface {
+        $handler = new class () implements LogHandlerInterface {
             public ?LogEntry $lastEntry = null;
-            
-            public function handle(LogEntry $entry): void {
+
+            public function handle(LogEntry $entry): void
+            {
                 $this->lastEntry = $entry;
             }
         };
@@ -43,7 +45,7 @@ class LoggerTest extends TestCase
         $logger = new Logger(LogLevel::DEBUG, [$handler]);
         $logger->info('User {user_id} logged in from {ip}', [
             'user_id' => 42,
-            'ip' => '192.168.1.1'
+            'ip' => '192.168.1.1',
         ]);
 
         $this->assertSame('User 42 logged in from 192.168.1.1', $handler->lastEntry->message);
@@ -52,16 +54,17 @@ class LoggerTest extends TestCase
 
     public function testRespectsMinimumLevel(): void
     {
-        $handler = new class implements LogHandlerInterface {
+        $handler = new class () implements LogHandlerInterface {
             public int $callCount = 0;
-            
-            public function handle(LogEntry $entry): void {
+
+            public function handle(LogEntry $entry): void
+            {
                 $this->callCount++;
             }
         };
 
         $logger = new Logger(LogLevel::WARNING, [$handler]);
-        
+
         $logger->debug('Debug message');  // Should not log
         $logger->info('Info message');    // Should not log
         $logger->warning('Warning message'); // Should log
@@ -72,16 +75,18 @@ class LoggerTest extends TestCase
 
     public function testMultipleHandlers(): void
     {
-        $handler1 = new class implements LogHandlerInterface {
+        $handler1 = new class () implements LogHandlerInterface {
             public int $callCount = 0;
-            public function handle(LogEntry $entry): void {
+            public function handle(LogEntry $entry): void
+            {
                 $this->callCount++;
             }
         };
 
-        $handler2 = new class implements LogHandlerInterface {
+        $handler2 = new class () implements LogHandlerInterface {
             public int $callCount = 0;
-            public function handle(LogEntry $entry): void {
+            public function handle(LogEntry $entry): void
+            {
                 $this->callCount++;
             }
         };
@@ -95,9 +100,10 @@ class LoggerTest extends TestCase
 
     public function testAddHandler(): void
     {
-        $handler = new class implements LogHandlerInterface {
+        $handler = new class () implements LogHandlerInterface {
             public int $callCount = 0;
-            public function handle(LogEntry $entry): void {
+            public function handle(LogEntry $entry): void
+            {
                 $this->callCount++;
             }
         };
@@ -111,16 +117,17 @@ class LoggerTest extends TestCase
 
     public function testAllLogLevels(): void
     {
-        $handler = new class implements LogHandlerInterface {
+        $handler = new class () implements LogHandlerInterface {
             public array $levels = [];
-            
-            public function handle(LogEntry $entry): void {
+
+            public function handle(LogEntry $entry): void
+            {
                 $this->levels[] = $entry->level;
             }
         };
 
         $logger = new Logger(LogLevel::DEBUG, [$handler]);
-        
+
         $logger->emergency('emergency');
         $logger->alert('alert');
         $logger->critical('critical');
@@ -137,10 +144,11 @@ class LoggerTest extends TestCase
 
     public function testContextPreserved(): void
     {
-        $handler = new class implements LogHandlerInterface {
+        $handler = new class () implements LogHandlerInterface {
             public ?LogEntry $lastEntry = null;
-            
-            public function handle(LogEntry $entry): void {
+
+            public function handle(LogEntry $entry): void
+            {
                 $this->lastEntry = $entry;
             }
         };
@@ -149,9 +157,9 @@ class LoggerTest extends TestCase
         $context = [
             'user_id' => 42,
             'action' => 'login',
-            'metadata' => ['browser' => 'Chrome']
+            'metadata' => ['browser' => 'Chrome'],
         ];
-        
+
         $logger->info('User action', $context);
 
         $this->assertSame($context, $handler->lastEntry->context);

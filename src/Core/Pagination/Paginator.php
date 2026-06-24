@@ -6,21 +6,21 @@ namespace Core\Pagination;
 
 /**
  * Explicit pagination calculator.
- * 
+ *
  * No magic - just math. Takes total count, page number, and items per page,
  * then calculates offset and generates metadata.
- * 
+ *
  * Philosophy-compliant because:
  * - Not a global helper function
  * - Explicit instantiation (new Paginator(...))
  * - No hidden behavior - just calculations
  * - Returns plain arrays/values
- * 
+ *
  * Usage:
  *   $paginator = new Paginator(total: 100, page: 2, perPage: 20);
  *   $offset = $paginator->getOffset();  // 20
  *   $users = $repo->findAll($paginator->getPerPage(), $paginator->getOffset());
- *   
+ *
  *   return Response::json([
  *       'data' => $users,
  *       'pagination' => $paginator->getMetadata()
@@ -50,12 +50,12 @@ class Paginator
         $this->total = $total;
         $this->perPage = $perPage;
         $this->lastPage = (int) ceil($total / $perPage) ?: 1;
-        
+
         // Clamp page to valid range
         if ($page > $this->lastPage) {
             $page = $this->lastPage;
         }
-        
+
         $this->currentPage = $page;
         $this->offset = ($page - 1) * $perPage;
     }
@@ -151,7 +151,7 @@ class Paginator
 
     /**
      * Get all metadata as an array
-     * 
+     *
      * Returns standard pagination metadata structure suitable for JSON APIs
      */
     public function getMetadata(): array

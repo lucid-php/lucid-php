@@ -30,11 +30,11 @@ class ConsoleArgumentsTest extends TestCase
     public function testCommandWithSingleArgument(): void
     {
         $command = new ArgumentCommand();
-        $this->container->set(ArgumentCommand::class, fn() => $command);
+        $this->container->set(ArgumentCommand::class, fn () => $command);
         $this->console->registerCommands([ArgumentCommand::class]);
-        
+
         $exitCode = $this->console->run(['console', 'test:args', 'value1']);
-        
+
         $this->assertEquals(0, $exitCode);
         $this->assertEquals('value1', $command->receivedArg);
     }
@@ -42,11 +42,11 @@ class ConsoleArgumentsTest extends TestCase
     public function testCommandWithMultipleArguments(): void
     {
         $command = new MultipleArgumentsCommand();
-        $this->container->set(MultipleArgumentsCommand::class, fn() => $command);
+        $this->container->set(MultipleArgumentsCommand::class, fn () => $command);
         $this->console->registerCommands([MultipleArgumentsCommand::class]);
-        
+
         $exitCode = $this->console->run(['console', 'test:multi-args', 'first', 'second']);
-        
+
         $this->assertEquals(0, $exitCode);
         $this->assertEquals('first', $command->arg1);
         $this->assertEquals('second', $command->arg2);
@@ -55,11 +55,11 @@ class ConsoleArgumentsTest extends TestCase
     public function testCommandWithOption(): void
     {
         $command = new OptionCommand();
-        $this->container->set(OptionCommand::class, fn() => $command);
+        $this->container->set(OptionCommand::class, fn () => $command);
         $this->console->registerCommands([OptionCommand::class]);
-        
+
         $exitCode = $this->console->run(['console', 'test:option', '--name=John']);
-        
+
         $this->assertEquals(0, $exitCode);
         $this->assertEquals('John', $command->receivedOption);
     }
@@ -67,11 +67,11 @@ class ConsoleArgumentsTest extends TestCase
     public function testCommandWithShortOption(): void
     {
         $command = new OptionCommand();
-        $this->container->set(OptionCommand::class, fn() => $command);
+        $this->container->set(OptionCommand::class, fn () => $command);
         $this->console->registerCommands([OptionCommand::class]);
-        
+
         $exitCode = $this->console->run(['console', 'test:option', '-n', 'Jane']);
-        
+
         $this->assertEquals(0, $exitCode);
         $this->assertEquals('Jane', $command->receivedOption);
     }
@@ -79,11 +79,11 @@ class ConsoleArgumentsTest extends TestCase
     public function testCommandWithDefaultOption(): void
     {
         $command = new OptionCommand();
-        $this->container->set(OptionCommand::class, fn() => $command);
+        $this->container->set(OptionCommand::class, fn () => $command);
         $this->console->registerCommands([OptionCommand::class]);
-        
+
         $exitCode = $this->console->run(['console', 'test:option']);
-        
+
         $this->assertEquals(0, $exitCode);
         $this->assertEquals('default', $command->receivedOption);
     }
@@ -91,11 +91,11 @@ class ConsoleArgumentsTest extends TestCase
     public function testCommandWithIntArgument(): void
     {
         $command = new TypedArgumentCommand();
-        $this->container->set(TypedArgumentCommand::class, fn() => $command);
+        $this->container->set(TypedArgumentCommand::class, fn () => $command);
         $this->console->registerCommands([TypedArgumentCommand::class]);
-        
+
         $exitCode = $this->console->run(['console', 'test:typed', '42']);
-        
+
         $this->assertEquals(0, $exitCode);
         $this->assertSame(42, $command->receivedInt);
     }
@@ -103,11 +103,11 @@ class ConsoleArgumentsTest extends TestCase
     public function testCommandWithBoolOption(): void
     {
         $command = new BoolOptionCommand();
-        $this->container->set(BoolOptionCommand::class, fn() => $command);
+        $this->container->set(BoolOptionCommand::class, fn () => $command);
         $this->console->registerCommands([BoolOptionCommand::class]);
-        
+
         $exitCode = $this->console->run(['console', 'test:bool', '--force']);
-        
+
         $this->assertEquals(0, $exitCode);
         $this->assertTrue($command->receivedBool);
     }
@@ -115,11 +115,11 @@ class ConsoleArgumentsTest extends TestCase
     public function testCommandWithMixedArgumentsAndOptions(): void
     {
         $command = new MixedCommand();
-        $this->container->set(MixedCommand::class, fn() => $command);
+        $this->container->set(MixedCommand::class, fn () => $command);
         $this->console->registerCommands([MixedCommand::class]);
-        
+
         $exitCode = $this->console->run(['console', 'test:mixed', 'arg-value', '--opt=option-value']);
-        
+
         $this->assertEquals(0, $exitCode);
         $this->assertEquals('arg-value', $command->receivedArg);
         $this->assertEquals('option-value', $command->receivedOpt);

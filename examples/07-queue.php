@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * Example 7: Queue System
- * 
+ *
  * Demonstrates:
  * - Creating job classes
  * - Dispatching jobs
@@ -15,11 +15,11 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Core\Queue\SyncQueue;
-use Core\Queue\DatabaseQueue;
-use Core\Queue\QueueInterface;
 use Core\Container;
 use Core\Database\Database;
+use Core\Queue\DatabaseQueue;
+use Core\Queue\QueueInterface;
+use Core\Queue\SyncQueue;
 
 // ===========================
 // Example Job Classes
@@ -31,8 +31,9 @@ class SendNotificationJob
     public function __construct(
         private string $userId,
         private string $message
-    ) {}
-    
+    ) {
+    }
+
     public function handle(): void
     {
         echo "[Job] Sending notification to user #{$this->userId}\n";
@@ -48,17 +49,18 @@ class ProcessImageJob
     public function __construct(
         private string $imagePath,
         private array $sizes = ['thumbnail', 'medium', 'large']
-    ) {}
-    
+    ) {
+    }
+
     public function handle(): void
     {
         echo "[Job] Processing image: {$this->imagePath}\n";
-        
+
         foreach ($this->sizes as $size) {
             echo "      Creating {$size} version...\n";
             sleep(1); // Simulate processing
         }
-        
+
         echo "      ✓ Image processed!\n\n";
     }
 }
@@ -70,20 +72,21 @@ class GenerateReportJob
         private string $reportType,
         private \DateTimeImmutable $startDate,
         private \DateTimeImmutable $endDate
-    ) {}
-    
+    ) {
+    }
+
     public function handle(): void
     {
         echo "[Job] Generating {$this->reportType} report\n";
         echo "      Period: {$this->startDate->format('Y-m-d')} to {$this->endDate->format('Y-m-d')}\n";
-        
+
         // Simulate report generation
         echo "      Fetching data from database...\n";
         sleep(2);
-        
+
         echo "      Generating PDF...\n";
         sleep(1);
-        
+
         echo "      ✓ Report generated!\n\n";
     }
 }
@@ -94,21 +97,22 @@ class ImportUsersJob
     public function __construct(
         private string $filePath,
         private int $batchSize = 100
-    ) {}
-    
+    ) {
+    }
+
     public function handle(): void
     {
         echo "[Job] Importing users from: {$this->filePath}\n";
         echo "      Batch size: {$this->batchSize}\n";
-        
+
         // Simulate file reading
         if (!file_exists($this->filePath)) {
             throw new \Exception("File not found: {$this->filePath}");
         }
-        
+
         echo "      Processing batches...\n";
         sleep(2);
-        
+
         echo "      ✓ Import completed!\n\n";
     }
 }
@@ -171,29 +175,31 @@ echo "=== Example 3: Job Chain ===\n\n";
 
 class OrderProcessingChain
 {
-    public function __construct(private QueueInterface $queue) {}
-    
+    public function __construct(private QueueInterface $queue)
+    {
+    }
+
     public function processOrder(int $orderId): void
     {
         echo "Processing order #{$orderId}...\n\n";
-        
+
         // Push multiple jobs
         $this->queue->push(new SendNotificationJob(
             userId: '123',
             message: 'Your order is being processed'
         ));
-        
+
         $this->queue->push(new GenerateReportJob(
             reportType: 'invoice',
             startDate: new \DateTimeImmutable(),
             endDate: new \DateTimeImmutable()
         ));
-        
+
         $this->queue->push(new SendNotificationJob(
             userId: '123',
             message: 'Your order is complete!'
         ));
-        
+
         echo "All jobs pushed!\n\n";
     }
 }

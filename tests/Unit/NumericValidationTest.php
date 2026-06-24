@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Core\Attribute\Assert\Min;
 use Core\Attribute\Assert\Max;
+use Core\Attribute\Assert\Min;
 use Core\Attribute\Assert\Range;
 use PHPUnit\Framework\TestCase;
 

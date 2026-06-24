@@ -72,7 +72,7 @@ class HttpExceptionTest extends TestCase
 
     public function test_http_exception_can_have_custom_headers(): void
     {
-        $exception = new class('Test', 500, ['X-Custom' => 'value']) extends HttpException {};
+        $exception = new class ('Test', 500, ['X-Custom' => 'value']) extends HttpException {};
 
         $this->assertEquals(['X-Custom' => 'value'], $exception->headers);
     }

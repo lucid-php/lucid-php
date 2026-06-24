@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\DTO\LoginDTO;
-use App\Repository\UserRepository;
 use App\Repository\TokenRepository;
+use App\Repository\UserRepository;
 use Core\Attribute\RateLimit;
 use Core\Attribute\Route;
 use Core\Attribute\RoutePrefix;
-use Core\Http\UnauthorizedException;
 use Core\Http\Response;
+use Core\Http\UnauthorizedException;
 
 #[RoutePrefix('/auth')]
 class AuthController
@@ -19,7 +19,8 @@ class AuthController
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly TokenRepository $tokenRepository
-    ) {}
+    ) {
+    }
 
     // Very strict rate limit for login attempts (security)
     #[Route('POST', '/login')]
@@ -36,7 +37,7 @@ class AuthController
 
         return Response::json([
             'message' => 'Login successful',
-            'token' => $token
+            'token' => $token,
         ]);
     }
 }

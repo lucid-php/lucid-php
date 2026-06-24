@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Commands;
 
 use Core\Attribute\ConsoleCommand;
+use Core\Config\Config;
 use Core\Console\CommandInterface;
 use Core\Console\OutputInterface;
-use Core\Schedule\ScheduledJobInterface;
 use Core\Container;
-use Core\Config\Config;
-use DateTimeZone;
+use Core\Schedule\ScheduledJobInterface;
 use DateTimeImmutable;
+use DateTimeZone;
 
 #[ConsoleCommand(
     name: 'schedule:list',
@@ -22,7 +22,8 @@ class ScheduleListCommand implements CommandInterface
     public function __construct(
         private readonly Container $container,
         private readonly Config $config
-    ) {}
+    ) {
+    }
 
     public function execute(OutputInterface $output): int
     {
@@ -59,7 +60,7 @@ class ScheduleListCommand implements CommandInterface
                 $minutesUntil = floor(($timeUntil % 3600) / 60);
 
                 $output->writeln(($i + 1) . ". {$description}");
-                $output->writeln("   Class:     <comment>" . $jobClass . "</comment>");
+                $output->writeln('   Class:     <comment>' . $jobClass . '</comment>');
                 $output->writeln("   Schedule:  <comment>{$cronExpression}</comment>");
                 $output->writeln("   Next run:  <comment>{$nextRun->format('Y-m-d H:i:s T')}</comment>");
                 $output->writeln("   In:        <comment>{$hoursUntil}h {$minutesUntil}m</comment>");

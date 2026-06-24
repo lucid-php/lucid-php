@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * Example 10: Collections
- * 
+ *
  * Demonstrates:
  * - Array manipulation with fluent interface
  * - Filtering and mapping
@@ -37,10 +37,10 @@ echo "=== Example 1: Basic Operations ===\n\n";
 
 $collection = new Collection($users);
 
-echo "Count: " . $collection->count() . "\n";
-echo "First: " . $collection->first()['name'] . "\n";
-echo "Last: " . $collection->last()['name'] . "\n";
-echo "Is empty: " . ($collection->isEmpty() ? 'Yes' : 'No') . "\n\n";
+echo 'Count: ' . $collection->count() . "\n";
+echo 'First: ' . $collection->first()['name'] . "\n";
+echo 'Last: ' . $collection->last()['name'] . "\n";
+echo 'Is empty: ' . ($collection->isEmpty() ? 'Yes' : 'No') . "\n\n";
 
 // ===========================
 // Example 2: Filtering
@@ -49,7 +49,7 @@ echo "Is empty: " . ($collection->isEmpty() ? 'Yes' : 'No') . "\n\n";
 echo "=== Example 2: Filtering ===\n\n";
 
 // Filter by age
-$youngUsers = $collection->filter(fn($user) => $user['age'] < 30);
+$youngUsers = $collection->filter(fn ($user) => $user['age'] < 30);
 echo "Users under 30:\n";
 foreach ($youngUsers->toArray() as $user) {
     echo "  - {$user['name']} (age {$user['age']})\n";
@@ -57,7 +57,7 @@ foreach ($youngUsers->toArray() as $user) {
 echo "\n";
 
 // Filter engineers
-$engineers = $collection->filter(fn($user) => $user['department'] === 'Engineering');
+$engineers = $collection->filter(fn ($user) => $user['department'] === 'Engineering');
 echo "Engineers:\n";
 foreach ($engineers->toArray() as $user) {
     echo "  - {$user['name']}\n";
@@ -71,8 +71,8 @@ echo "\n";
 echo "=== Example 3: Mapping/Transforming ===\n\n";
 
 // Extract just names
-$names = $collection->map(fn($user) => $user['name']);
-echo "All names: " . implode(', ', $names->toArray()) . "\n\n";
+$names = $collection->map(fn ($user) => $user['name']);
+echo 'All names: ' . implode(', ', $names->toArray()) . "\n\n";
 
 // Extract emails
 $emails = $collection->pluck('email');
@@ -83,7 +83,7 @@ foreach ($emails->toArray() as $email) {
 echo "\n";
 
 // Transform to summary
-$summaries = $collection->map(function($user) {
+$summaries = $collection->map(function ($user) {
     return "{$user['name']} ({$user['department']}) - \${$user['salary']}";
 });
 
@@ -100,7 +100,7 @@ echo "\n";
 echo "=== Example 4: Sorting ===\n\n";
 
 // Sort by age using custom callback
-$sortedByAge = $collection->sort(fn($a, $b) => $a['age'] <=> $b['age']);
+$sortedByAge = $collection->sort(fn ($a, $b) => $a['age'] <=> $b['age']);
 echo "Sorted by age:\n";
 foreach ($sortedByAge->toArray() as $user) {
     echo "  - {$user['name']}: {$user['age']} years old\n";
@@ -108,7 +108,7 @@ foreach ($sortedByAge->toArray() as $user) {
 echo "\n";
 
 // Sort by salary (descending)
-$sortedBySalary = $collection->sort(fn($a, $b) => $b['salary'] <=> $a['salary']);
+$sortedBySalary = $collection->sort(fn ($a, $b) => $b['salary'] <=> $a['salary']);
 echo "Sorted by salary (high to low):\n";
 foreach ($sortedBySalary->toArray() as $user) {
     echo "  - {$user['name']}: \${$user['salary']}\n";
@@ -145,8 +145,8 @@ $maxAge = $ages->max();
 $minAge = $ages->min();
 
 echo "Statistics:\n";
-echo "  Total Salary: \$" . number_format($totalSalary, 2) . "\n";
-echo "  Average Salary: \$" . number_format($avgSalary, 2) . "\n";
+echo '  Total Salary: $' . number_format($totalSalary, 2) . "\n";
+echo '  Average Salary: $' . number_format($avgSalary, 2) . "\n";
 echo "  Oldest: {$maxAge} years\n";
 echo "  Youngest: {$minAge} years\n\n";
 
@@ -158,10 +158,10 @@ echo "=== Example 7: Chaining Operations ===\n\n";
 
 // Find high-earning engineers
 $topEngineers = $collection
-    ->filter(fn($user) => $user['department'] === 'Engineering')
-    ->filter(fn($user) => $user['salary'] > 55000)
-    ->sort(fn($a, $b) => $b['salary'] <=> $a['salary'])
-    ->map(fn($user) => "{$user['name']}: \${$user['salary']}");
+    ->filter(fn ($user) => $user['department'] === 'Engineering')
+    ->filter(fn ($user) => $user['salary'] > 55000)
+    ->sort(fn ($a, $b) => $b['salary'] <=> $a['salary'])
+    ->map(fn ($user) => "{$user['name']}: \${$user['salary']}");
 
 echo "Top-paid engineers (>55k):\n";
 foreach ($topEngineers->toArray() as $engineer) {
@@ -176,7 +176,7 @@ echo "\n";
 echo "=== Example 8: Unique Values ===\n\n";
 
 $departments = $collection->pluck('department')->unique();
-echo "Departments: " . implode(', ', $departments->toArray()) . "\n\n";
+echo 'Departments: ' . implode(', ', $departments->toArray()) . "\n\n";
 
 // ===========================
 // Example 9: Chunking
@@ -222,14 +222,14 @@ echo "\n";
 
 echo "=== Example 11: Checking Conditions ===\n\n";
 
-$hasHighEarner = $collection->some(fn($user) => $user['salary'] > 65000);
-echo "Has user earning >65k: " . ($hasHighEarner ? 'Yes' : 'No') . "\n";
+$hasHighEarner = $collection->some(fn ($user) => $user['salary'] > 65000);
+echo 'Has user earning >65k: ' . ($hasHighEarner ? 'Yes' : 'No') . "\n";
 
-$allAdults = $collection->every(fn($user) => $user['age'] >= 18);
-echo "All users are adults: " . ($allAdults ? 'Yes' : 'No') . "\n";
+$allAdults = $collection->every(fn ($user) => $user['age'] >= 18);
+echo 'All users are adults: ' . ($allAdults ? 'Yes' : 'No') . "\n";
 
-$hasEngineers = $collection->some(fn($user) => $user['department'] === 'Engineering');
-echo "Has engineers: " . ($hasEngineers ? 'Yes' : 'No') . "\n\n";
+$hasEngineers = $collection->some(fn ($user) => $user['department'] === 'Engineering');
+echo 'Has engineers: ' . ($hasEngineers ? 'Yes' : 'No') . "\n\n";
 
 // ===========================
 // Example 12: Real-World Use Cases
@@ -241,28 +241,28 @@ echo "=== Example 12: Real-World Use Cases ===\n\n";
 echo "Department Statistics:\n";
 $deptStats = $collection
     ->groupBy('department')
-    ->map(function($deptUsers, $dept) {
+    ->map(function ($deptUsers, $dept) {
         $users = new Collection($deptUsers);
         return [
             'department' => $dept,
             'count' => $users->count(),
             'avg_salary' => $users->avg('salary'),
-            'total_salary' => $users->sum('salary')
+            'total_salary' => $users->sum('salary'),
         ];
     });
 
 foreach ($deptStats->toArray() as $stat) {
     echo "  {$stat['department']}:\n";
     echo "    Employees: {$stat['count']}\n";
-    echo "    Avg Salary: \$" . number_format($stat['avg_salary'], 2) . "\n";
-    echo "    Total Salary: \$" . number_format($stat['total_salary'], 2) . "\n";
+    echo '    Avg Salary: $' . number_format($stat['avg_salary'], 2) . "\n";
+    echo '    Total Salary: $' . number_format($stat['total_salary'], 2) . "\n";
 }
 echo "\n";
 
 // Use case 2: Generate email list for a department
 echo "Email list for Engineering:\n";
 $engineeringEmails = $collection
-    ->filter(fn($user) => $user['department'] === 'Engineering')
+    ->filter(fn ($user) => $user['department'] === 'Engineering')
     ->pluck('email')
     ->join(', ');
 echo "  {$engineeringEmails}\n\n";
@@ -270,10 +270,10 @@ echo "  {$engineeringEmails}\n\n";
 // Use case 3: Format for API response
 echo "API Response Format:\n";
 $apiResponse = $collection
-    ->map(fn($user) => [
+    ->map(fn ($user) => [
         'id' => $user['id'],
         'name' => $user['name'],
-        'department' => $user['department']
+        'department' => $user['department'],
     ])
     ->values(); // Reset array keys
 

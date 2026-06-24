@@ -54,6 +54,12 @@ See [Getting Started](documentation/01-getting-started.md) for detailed installa
 - **Scheduler**: Cron-like task scheduling → [Docs](documentation/11-scheduler.md)
 - **Console**: Attribute-based CLI commands → [Docs](documentation/12-console.md)
 
+### Application Composition & Advanced Features
+- **Modules**: Explicit application composition with dependency validation → [Docs](documentation/14-modules.md)
+- **GraphQL**: Type-safe GraphQL endpoint support → [Docs](documentation/15-graphql.md)
+- **Pipelines**: Ordered workflows with explicit extension points → [Docs](documentation/16-pipelines.md)
+- **Service Contracts**: Typed interfaces for domain logic → [Docs](documentation/17-service-contracts.md)
+
 ### PHP 8.5 Features
 - Native URI Extension for RFC 3986 compliance
 - `#[\NoDiscard]` attribute for return value enforcement
@@ -62,6 +68,8 @@ See [Getting Started](documentation/01-getting-started.md) for detailed installa
 - Final constructor properties
 
 Read about [PHP 8.5 Features](documentation/03-php85-features.md) used in the framework.
+
+> Lucid does not cache module, pipeline, or GraphQL registry output by default. The registries are deterministic and can be cached later if profiling shows a real need.
 
 ---
 

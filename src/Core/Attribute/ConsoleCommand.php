@@ -12,5 +12,6 @@ readonly class ConsoleCommand
     public function __construct(
         public string $name,
         public string $description = ''
-    ) {}
+    ) {
+    }
 }

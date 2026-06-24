@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use Core\Database\AbstractRepository;
 use App\Entity\User;
+use Core\Database\AbstractRepository;
 
 class UserRepository extends AbstractRepository
 {
@@ -13,16 +13,16 @@ class UserRepository extends AbstractRepository
     {
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
-        $sql = "INSERT INTO users (name, email, password) VALUES (:name, :email, :password)";
-        
+        $sql = 'INSERT INTO users (name, email, password) VALUES (:name, :email, :password)';
+
         $this->db->execute($sql, [
             ':name' => $name,
             ':email' => $email,
             ':password' => $hashedPassword,
         ]);
-        
+
         $id = (int) $this->db->lastInsertId();
-        
+
         return new User(
             id: $id,
             name: $name,
@@ -36,9 +36,9 @@ class UserRepository extends AbstractRepository
      */
     public function findAll(): array
     {
-        $rows = $this->db->query("SELECT * FROM users");
-        
-        return array_map(fn($row) => new User(
+        $rows = $this->db->query('SELECT * FROM users');
+
+        return array_map(fn ($row) => new User(
             id: (int) $row['id'],
             name: $row['name'],
             email: $row['email'],
@@ -50,7 +50,7 @@ class UserRepository extends AbstractRepository
 
     public function findByEmail(string $email): ?User
     {
-        $rows = $this->db->query("SELECT * FROM users WHERE email = :email LIMIT 1", ['email' => $email]);
+        $rows = $this->db->query('SELECT * FROM users WHERE email = :email LIMIT 1', ['email' => $email]);
 
         // PHP 8.5: array_first() returns first element or null if array is empty
         $row = array_first($rows);

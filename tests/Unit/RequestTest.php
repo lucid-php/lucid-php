@@ -36,7 +36,7 @@ class RequestTest extends TestCase
     public function testGetAttributeWithDefault(): void
     {
         $request = new Request('GET', '/');
-        
+
         $this->assertSame('default', $request->getAttribute('missing', 'default'));
         $this->assertNull($request->getAttribute('missing'));
     }

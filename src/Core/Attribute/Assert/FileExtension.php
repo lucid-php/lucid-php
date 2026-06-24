@@ -9,7 +9,7 @@ use Core\Http\UploadedFile;
 
 /**
  * Validates uploaded file extension against whitelist.
- * 
+ *
  * Explicit extension whitelist - no guessing allowed.
  * Extensions are case-insensitive.
  */

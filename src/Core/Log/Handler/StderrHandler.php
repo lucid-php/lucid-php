@@ -9,7 +9,7 @@ use Core\Log\LogHandlerInterface;
 
 /**
  * Stderr Log Handler
- * 
+ *
  * Philosophy: Explicit stderr output for containers/CLI.
  * Writes directly to STDERR stream.
  */
@@ -20,12 +20,13 @@ class StderrHandler implements LogHandlerInterface
      */
     public function __construct(
         private readonly bool $json = true
-    ) {}
+    ) {
+    }
 
     public function handle(LogEntry $entry): void
     {
-        $line = $this->json 
-            ? $entry->toJson() 
+        $line = $this->json
+            ? $entry->toJson()
             : $entry->toString();
 
         // Write to STDERR

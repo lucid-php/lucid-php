@@ -21,7 +21,7 @@ class ConsoleOutputTest extends TestCase
         ob_start();
         $this->output->write('test message');
         $output = ob_get_clean();
-        
+
         $this->assertEquals('test message', $output);
     }
 
@@ -30,8 +30,8 @@ class ConsoleOutputTest extends TestCase
         ob_start();
         $this->output->writeln('test message');
         $output = ob_get_clean();
-        
-        $this->assertEquals("test message" . PHP_EOL, $output);
+
+        $this->assertEquals('test message' . PHP_EOL, $output);
     }
 
     public function testSuccessOutputsGreenMessage(): void
@@ -39,7 +39,7 @@ class ConsoleOutputTest extends TestCase
         ob_start();
         $this->output->success('Success message');
         $output = ob_get_clean();
-        
+
         $this->assertStringContainsString('Success message', $output);
         $this->assertStringContainsString('✓', $output);
     }
@@ -49,7 +49,7 @@ class ConsoleOutputTest extends TestCase
         ob_start();
         $this->output->error('Error message');
         $output = ob_get_clean();
-        
+
         $this->assertStringContainsString('Error message', $output);
         $this->assertStringContainsString('✗', $output);
     }
@@ -59,7 +59,7 @@ class ConsoleOutputTest extends TestCase
         ob_start();
         $this->output->warning('Warning message');
         $output = ob_get_clean();
-        
+
         $this->assertStringContainsString('Warning message', $output);
         $this->assertStringContainsString('⚠', $output);
     }
@@ -69,7 +69,7 @@ class ConsoleOutputTest extends TestCase
         ob_start();
         $this->output->info('Info message');
         $output = ob_get_clean();
-        
+
         $this->assertStringContainsString('Info message', $output);
         $this->assertStringContainsString('ℹ', $output);
     }
@@ -81,11 +81,11 @@ class ConsoleOutputTest extends TestCase
             ['Name', 'Age'],
             [
                 ['John', '25'],
-                ['Jane', '30']
+                ['Jane', '30'],
             ]
         );
         $output = ob_get_clean();
-        
+
         $this->assertStringContainsString('Name', $output);
         $this->assertStringContainsString('Age', $output);
         $this->assertStringContainsString('John', $output);
@@ -98,7 +98,7 @@ class ConsoleOutputTest extends TestCase
         ob_start();
         $this->output->table([], [['data']]);
         $output = ob_get_clean();
-        
+
         $this->assertEquals('', $output);
     }
 
@@ -148,7 +148,7 @@ class ConsoleOutputTest extends TestCase
         $output->success('Done');
         $plain = ob_get_clean();
 
-        $this->assertSame("Driver: sqlite" . PHP_EOL . "✓ Done" . PHP_EOL, $plain);
+        $this->assertSame('Driver: sqlite' . PHP_EOL . '✓ Done' . PHP_EOL, $plain);
         $this->assertStringNotContainsString("\033[", $plain); // no ANSI at all
         $this->assertStringNotContainsString('<comment>', $plain);
     }

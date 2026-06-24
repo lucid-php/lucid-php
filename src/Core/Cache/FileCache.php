@@ -6,17 +6,17 @@ namespace Core\Cache;
 
 /**
  * File-based Cache Implementation
- * 
+ *
  * Stores cached values as serialized files in a directory structure.
  * Production-ready implementation with proper file locking and atomic writes.
- * 
+ *
  * Features:
  * - Persistent storage (survives restarts)
  * - TTL support with expiration checking
  * - Atomic writes to prevent corruption
  * - Automatic cleanup of expired entries
  * - Safe serialization/unserialization
- * 
+ *
  * Philosophy Compliance:
  * - Zero Magic: Explicit file paths, clear serialization
  * - Strict Typing: All parameters and returns typed

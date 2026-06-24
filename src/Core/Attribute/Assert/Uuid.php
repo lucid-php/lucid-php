@@ -8,19 +8,19 @@ use Attribute;
 
 /**
  * Uuid Validation Rule
- * 
+ *
  * Validates that a string is a valid UUID (v4 by default).
- * 
+ *
  * Philosophy: Explicit Over Convenient
  * - Can validate specific UUID versions
  * - Uses explicit regex patterns
  * - No hidden format assumptions
- * 
+ *
  * Example:
- * 
+ *
  * #[Uuid]
  * public string $id
- * 
+ *
  * #[Uuid(version: 4)]
  * public string $transactionId
  */
@@ -29,7 +29,8 @@ class Uuid implements ValidatorRuleInterface
 {
     public function __construct(
         private readonly ?int $version = null
-    ) {}
+    ) {
+    }
 
     public function validate(mixed $value): bool
     {

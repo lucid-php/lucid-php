@@ -8,16 +8,16 @@ use Attribute;
 
 /**
  * Max Validation Rule
- * 
+ *
  * Validates that a numeric value does not exceed the specified maximum.
- * 
+ *
  * Philosophy: Explicit Over Convenient
  * - Works only with numeric values (int/float)
  * - Clear error message specifying the maximum
  * - No type coercion magic
- * 
+ *
  * Example:
- * 
+ *
  * #[Max(100)]
  * public int $score
  */
@@ -26,7 +26,8 @@ class Max implements ValidatorRuleInterface
 {
     public function __construct(
         private readonly int|float $max
-    ) {}
+    ) {
+    }
 
     public function validate(mixed $value): bool
     {

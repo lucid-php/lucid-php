@@ -5,9 +5,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use Core\Config\Config;
 use Core\Database\Database;
 use Core\Database\Migrator;
-use Core\Config\Config;
 
 // 1. Load Config
 $config = new Config(__DIR__ . '/../config');
@@ -31,7 +31,7 @@ if ($dbConnection === 'sqlite') {
     $dbname = $config->get('database.mysql.database');
     $username = $config->get('database.mysql.username');
     $password = $config->get('database.mysql.password');
-    
+
     $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
 } else {
     echo "Unsupported DB_CONNECTION: $dbConnection\n";
@@ -41,7 +41,7 @@ if ($dbConnection === 'sqlite') {
 try {
     $db = new Database($dsn, $username, $password);
 } catch (\Exception $e) {
-    echo "Connection error: " . $e->getMessage() . "\n";
+    echo 'Connection error: ' . $e->getMessage() . "\n";
     exit(1);
 }
 
@@ -65,6 +65,6 @@ try {
     }
     echo "Done.\n";
 } catch (\Throwable $e) {
-    echo "Migration failed: " . $e->getMessage() . "\n";
+    echo 'Migration failed: ' . $e->getMessage() . "\n";
     exit(1);
 }

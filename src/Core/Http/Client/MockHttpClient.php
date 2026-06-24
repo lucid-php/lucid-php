@@ -25,18 +25,18 @@ class MockHttpClient implements HttpClientInterface
     public function send(HttpRequest $request): HttpResponse
     {
         $this->requests[] = $request;
-        
+
         if (empty($this->responses)) {
             // Default response if none queued
             return new HttpResponse(200, '{}', ['Content-Type' => 'application/json']);
         }
-        
+
         $response = $this->responses[$this->currentIndex] ?? $this->responses[count($this->responses) - 1];
-        
+
         if ($this->currentIndex < count($this->responses) - 1) {
             $this->currentIndex++;
         }
-        
+
         return $response;
     }
 
@@ -67,7 +67,7 @@ class MockHttpClient implements HttpClientInterface
 
     /**
      * Get all requests that were sent
-     * 
+     *
      * @return array<HttpRequest>
      */
     public function getRequests(): array
@@ -111,7 +111,7 @@ class MockHttpClient implements HttpClientInterface
                 return true;
             }
         }
-        
+
         return false;
     }
 

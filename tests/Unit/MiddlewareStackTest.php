@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Core\Http\Request;
-use Core\Http\Response;
 use Core\Http\MiddlewareInterface;
 use Core\Http\MiddlewareStack;
+use Core\Http\Request;
 use Core\Http\RequestHandlerInterface;
+use Core\Http\Response;
 use PHPUnit\Framework\TestCase;
 
 class TestMiddleware implements MiddlewareInterface

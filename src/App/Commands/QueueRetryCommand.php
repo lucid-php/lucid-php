@@ -26,7 +26,8 @@ class QueueRetryCommand implements CommandInterface
 {
     public function __construct(
         private readonly Database $db
-    ) {}
+    ) {
+    }
 
     public function execute(
         OutputInterface $output,

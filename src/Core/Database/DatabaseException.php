@@ -8,10 +8,10 @@ use Exception;
 
 /**
  * Database Exception
- * 
+ *
  * Thrown for database operation failures including transactions.
  * Provides static factory methods for common error scenarios.
- * 
+ *
  * Philosophy:
  * - Explicit exception types via factory methods
  * - Clear error messages

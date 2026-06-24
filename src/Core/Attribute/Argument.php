@@ -13,5 +13,6 @@ readonly class Argument
         public string $name,
         public string $description = '',
         public bool $required = true
-    ) {}
+    ) {
+    }
 }

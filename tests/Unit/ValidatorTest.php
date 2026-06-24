@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Core\Validation\Validator;
-use Core\Validation\ValidationException;
-use Core\Http\ValidatedDTO;
-use Core\Attribute\Assert\Required;
 use Core\Attribute\Assert\Email;
 use Core\Attribute\Assert\Length;
+use Core\Attribute\Assert\Required;
+use Core\Http\ValidatedDTO;
+use Core\Validation\ValidationException;
+use Core\Validation\Validator;
 use PHPUnit\Framework\TestCase;
 
 class TestDTO implements ValidatedDTO
@@ -17,14 +17,13 @@ class TestDTO implements ValidatedDTO
     public function __construct(
         #[Required]
         public string $name,
-
         #[Required]
         #[Email]
         public string $email,
-
         #[Length(min: 8)]
         public string $password
-    ) {}
+    ) {
+    }
 }
 
 class ValidatorTest extends TestCase
@@ -41,7 +40,7 @@ class ValidatorTest extends TestCase
         $data = [
             'name' => 'John Doe',
             'email' => 'john@example.com',
-            'password' => 'secure123'
+            'password' => 'secure123',
         ];
 
         $dto = $this->validator->validateAndHydrate(TestDTO::class, $data);
@@ -57,7 +56,7 @@ class ValidatorTest extends TestCase
 
         $data = [
             'email' => 'john@example.com',
-            'password' => 'secure123'
+            'password' => 'secure123',
         ];
 
         (void) $this->validator->validateAndHydrate(TestDTO::class, $data);
@@ -70,7 +69,7 @@ class ValidatorTest extends TestCase
         $data = [
             'name' => 'John Doe',
             'email' => 'not-an-email',
-            'password' => 'secure123'
+            'password' => 'secure123',
         ];
 
         (void) $this->validator->validateAndHydrate(TestDTO::class, $data);
@@ -83,7 +82,7 @@ class ValidatorTest extends TestCase
         $data = [
             'name' => 'John Doe',
             'email' => 'john@example.com',
-            'password' => 'short'
+            'password' => 'short',
         ];
 
         (void) $this->validator->validateAndHydrate(TestDTO::class, $data);

@@ -36,7 +36,7 @@ class PaginatorTest extends TestCase
     public function test_it_handles_zero_total(): void
     {
         $paginator = new Paginator(total: 0, page: 1, perPage: 20);
-        
+
         $this->assertSame(0, $paginator->getTotal());
         $this->assertSame(1, $paginator->getCurrentPage());
         $this->assertSame(1, $paginator->getLastPage());
@@ -136,7 +136,7 @@ class PaginatorTest extends TestCase
     public function test_it_handles_edge_case_with_single_item(): void
     {
         $paginator = new Paginator(total: 1, page: 1, perPage: 20);
-        
+
         $this->assertSame(1, $paginator->getTotal());
         $this->assertSame(1, $paginator->getCurrentPage());
         $this->assertSame(1, $paginator->getLastPage());

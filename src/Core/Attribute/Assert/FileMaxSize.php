@@ -9,7 +9,7 @@ use Core\Http\UploadedFile;
 
 /**
  * Validates that an uploaded file does not exceed maximum size.
- * 
+ *
  * Explicit validation - no hidden size limits.
  * Works with UploadedFile value objects only.
  */

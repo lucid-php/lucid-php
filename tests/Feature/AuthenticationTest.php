@@ -29,7 +29,7 @@ class AuthenticationTest extends TestCase
         $this->db = new Database('sqlite::memory:');
 
         // Create users table
-        $this->db->execute("
+        $this->db->execute('
             CREATE TABLE users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -37,10 +37,10 @@ class AuthenticationTest extends TestCase
                 password TEXT NOT NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
-        ");
+        ');
 
         // Create tokens table
-        $this->db->execute("
+        $this->db->execute('
             CREATE TABLE personal_access_tokens (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
@@ -48,7 +48,7 @@ class AuthenticationTest extends TestCase
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id)
             )
-        ");
+        ');
 
         // Setup repositories
         $this->userRepo = new UserRepository($this->db);
@@ -59,7 +59,7 @@ class AuthenticationTest extends TestCase
         $container->set(Database::class, $this->db);
         $container->set(UserRepository::class, $this->userRepo);
         $container->set(TokenRepository::class, $this->tokenRepo);
-        
+
         // Setup exception handling
         $exceptionHandler = new ExceptionHandler(debug: false);
         $container->set(ExceptionHandler::class, $exceptionHandler);
@@ -70,7 +70,7 @@ class AuthenticationTest extends TestCase
         $this->router->addGlobalMiddleware(ExceptionMiddleware::class);
         $this->router->registerControllers([
             AuthController::class,
-            ApiController::class
+            ApiController::class,
         ]);
     }
 
@@ -91,7 +91,7 @@ class AuthenticationTest extends TestCase
             query: [],
             body: [
                 'email' => 'john@example.com',
-                'password' => 'password123'
+                'password' => 'password123',
             ],
             server: []
         );
@@ -119,7 +119,7 @@ class AuthenticationTest extends TestCase
             query: [],
             body: [
                 'email' => 'john@example.com',
-                'password' => 'wrongpassword'
+                'password' => 'wrongpassword',
             ],
             server: []
         );
@@ -143,7 +143,7 @@ class AuthenticationTest extends TestCase
             query: [],
             body: [
                 'email' => 'nonexistent@example.com',
-                'password' => 'password123'
+                'password' => 'password123',
             ],
             server: []
         );
@@ -239,7 +239,7 @@ class AuthenticationTest extends TestCase
             query: [],
             body: [
                 'email' => 'bob@example.com',
-                'password' => 'secret123'
+                'password' => 'secret123',
             ],
             server: []
         );

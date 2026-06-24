@@ -86,7 +86,7 @@ class ApiResponseTest extends TestCase
     {
         $errors = [
             'email' => ['Email is required', 'Email must be valid'],
-            'password' => ['Password too short']
+            'password' => ['Password too short'],
         ];
         $response = ApiResponse::validationError($errors);
 
@@ -177,11 +177,11 @@ class ApiResponseTest extends TestCase
         $this->assertEquals($items, $response->data);
         $this->assertEquals('Items retrieved', $response->message);
         $this->assertEquals(200, $response->statusCode);
-        
+
         // Check pagination metadata
         $this->assertNotNull($response->meta);
         $this->assertArrayHasKey('pagination', $response->meta);
-        
+
         $pagination = $response->meta['pagination'];
         $this->assertEquals(100, $pagination['total']);
         $this->assertEquals(2, $pagination['page']);
@@ -270,7 +270,7 @@ class ApiResponseTest extends TestCase
         $this->assertInstanceOf(Response::class, $httpResponse);
         $this->assertEquals(200, $httpResponse->status);
         $this->assertEquals('application/json', $httpResponse->headers['Content-Type']);
-        
+
         $content = json_decode($httpResponse->content, true);
         $this->assertTrue($content['success']);
         $this->assertEquals(['id' => 1], $content['data']);
@@ -285,7 +285,7 @@ class ApiResponseTest extends TestCase
         $httpResponse = $apiResponse->toResponse();
 
         $this->assertEquals(404, $httpResponse->status);
-        
+
         $content = json_decode($httpResponse->content, true);
         $this->assertFalse($content['success']);
         $this->assertEquals('User not found', $content['message']);
@@ -338,19 +338,19 @@ class ApiResponseTest extends TestCase
         $complexData = [
             'users' => [
                 ['id' => 1, 'name' => 'John'],
-                ['id' => 2, 'name' => 'Jane']
+                ['id' => 2, 'name' => 'Jane'],
             ],
             'nested' => [
                 'level1' => [
-                    'level2' => ['value' => 123]
-                ]
-            ]
+                    'level2' => ['value' => 123],
+                ],
+            ],
         ];
 
         $response = ApiResponse::success(data: $complexData);
 
         $this->assertEquals($complexData, $response->data);
-        
+
         $array = $response->toArray();
         $this->assertEquals($complexData, $array['data']);
     }

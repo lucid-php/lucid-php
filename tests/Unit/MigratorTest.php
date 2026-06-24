@@ -32,11 +32,11 @@ class MigratorTest extends TestCase
         // Create a test migration
         file_put_contents(
             $this->migrationsPath . '/001_create_test.up.sql',
-            "CREATE TABLE test_table (id INTEGER PRIMARY KEY)"
+            'CREATE TABLE test_table (id INTEGER PRIMARY KEY)'
         );
 
         $migrator = new Migrator($this->db, $this->migrationsPath);
-        
+
         ob_start();
         $migrator->migrate();
         ob_end_clean();
@@ -53,17 +53,17 @@ class MigratorTest extends TestCase
     {
         file_put_contents(
             $this->migrationsPath . '/001_create_test.up.sql',
-            "CREATE TABLE test_table (id INTEGER PRIMARY KEY)"
+            'CREATE TABLE test_table (id INTEGER PRIMARY KEY)'
         );
 
         $migrator = new Migrator($this->db, $this->migrationsPath);
-        
+
         ob_start();
         $migrator->migrate();
         ob_end_clean();
 
         // Check migrations table
-        $applied = $this->db->query("SELECT migration FROM migrations");
+        $applied = $this->db->query('SELECT migration FROM migrations');
 
         $this->assertCount(1, $applied);
         $this->assertSame('001_create_test.up.sql', array_first($applied)['migration']);
@@ -73,11 +73,11 @@ class MigratorTest extends TestCase
     {
         file_put_contents(
             $this->migrationsPath . '/001_create_test.up.sql',
-            "CREATE TABLE test_table (id INTEGER PRIMARY KEY)"
+            'CREATE TABLE test_table (id INTEGER PRIMARY KEY)'
         );
         file_put_contents(
             $this->migrationsPath . '/001_create_test.down.sql',
-            "DROP TABLE test_table"
+            'DROP TABLE test_table'
         );
 
         $migrator = new Migrator($this->db, $this->migrationsPath);

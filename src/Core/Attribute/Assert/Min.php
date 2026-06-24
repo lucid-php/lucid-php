@@ -8,16 +8,16 @@ use Attribute;
 
 /**
  * Min Validation Rule
- * 
+ *
  * Validates that a numeric value is at least the specified minimum.
- * 
+ *
  * Philosophy: Explicit Over Convenient
  * - Works only with numeric values (int/float)
  * - Clear error message specifying the minimum
  * - No type coercion magic
- * 
+ *
  * Example:
- * 
+ *
  * #[Min(18)]
  * public int $age
  */
@@ -26,7 +26,8 @@ class Min implements ValidatorRuleInterface
 {
     public function __construct(
         private readonly int|float $min
-    ) {}
+    ) {
+    }
 
     public function validate(mixed $value): bool
     {

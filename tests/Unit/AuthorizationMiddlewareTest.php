@@ -64,7 +64,7 @@ class AuthorizationMiddlewareTest extends TestCase
 
     private function handler(): RequestHandlerInterface
     {
-        return new class implements RequestHandlerInterface {
+        return new class () implements RequestHandlerInterface {
             public function handle(Request $request): Response
             {
                 return new Response('OK', 200);

@@ -8,15 +8,15 @@ use Core\Attribute\ConsoleCommand;
 use Core\Attribute\Option;
 use Core\Console\CommandInterface;
 use Core\Console\OutputInterface;
+use Core\Container;
 use Core\Queue\QueueInterface;
 use Core\Queue\QueueWorker;
-use Core\Container;
 
 /**
  * Queue Work Command
- * 
+ *
  * Starts a queue worker that continuously processes jobs.
- * 
+ *
  * Usage:
  *   php console queue:work
  *   php console queue:work --queue=emails
@@ -31,7 +31,8 @@ class QueueWorkCommand implements CommandInterface
     public function __construct(
         private readonly QueueInterface $queue,
         private readonly Container $container
-    ) {}
+    ) {
+    }
 
     public function execute(
         OutputInterface $output,
@@ -39,12 +40,11 @@ class QueueWorkCommand implements CommandInterface
         string $queue = 'default',
         #[Option('sleep', 's', 'Seconds to sleep when queue is empty', 3)]
         int $sleep = 3
-    ): int
-    {
-        $output->info("Starting queue worker...");
+    ): int {
+        $output->info('Starting queue worker...');
         $output->writeln("Queue: <comment>$queue</comment>");
         $output->writeln("Sleep: <comment>{$sleep}s</comment>");
-        $output->writeln("");
+        $output->writeln('');
 
         $worker = new QueueWorker($this->queue, $this->container);
 

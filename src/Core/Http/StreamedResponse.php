@@ -8,10 +8,10 @@ use RuntimeException;
 
 /**
  * Streamed HTTP Response for Large Files
- * 
+ *
  * Streams files in chunks to avoid loading entire file into memory.
  * Supports range requests for partial content (video/audio seeking).
- * 
+ *
  * Philosophy:
  * - Explicit chunk size (no hidden defaults)
  * - Explicit range support (opt-in, not automatic)
@@ -49,7 +49,7 @@ class StreamedResponse
 
     /**
      * Send the streamed response.
-     * 
+     *
      * Handles range requests if enabled and requested.
      * Streams file in chunks to minimize memory usage.
      */
@@ -66,13 +66,13 @@ class StreamedResponse
         // Encode filename to prevent header injection and properly handle special characters
         // Use RFC 5987 encoding for international characters
         $encodedFilename = rawurlencode($filename);
-        
+
         // Sanitize filename for ASCII compatibility - remove control characters and quotes
         // Keep printable ASCII (0x20-0x7E) including spaces for better user experience
         // Spaces are safe within quoted filename parameter per RFC 2616
         $safeFilename = preg_replace('/[^\x20-\x7E]/', '', $filename);
         $safeFilename = str_replace(['"', '\\', "\r", "\n"], '', $safeFilename); // Remove problematic chars
-        
+
         $contentDisposition = "$disposition; filename=\"$safeFilename\"; filename*=UTF-8''" . $encodedFilename;
 
         // Check for range request
@@ -95,7 +95,7 @@ class StreamedResponse
             header('Content-Type: ' . $this->mimeType);
             header('Content-Disposition: ' . $contentDisposition);
             header('Content-Length: ' . (string) $fileSize);
-            
+
             if ($this->supportRanges) {
                 header('Accept-Ranges: bytes');
             }
@@ -106,9 +106,9 @@ class StreamedResponse
 
     /**
      * Parse HTTP Range header.
-     * 
+     *
      * Returns array with start, end, and length, or null if invalid.
-     * 
+     *
      * @return array{start: int, end: int, length: int}|null
      */
     private function parseRange(string $rangeHeader, int $fileSize): ?array
@@ -178,7 +178,7 @@ class StreamedResponse
             while ($remaining > 0 && !feof($handle)) {
                 $readSize = min($this->chunkSize, $remaining);
                 $chunk = fread($handle, $readSize);
-                
+
                 if ($chunk === false) {
                     throw new RuntimeException("Failed to read from file: {$this->path}");
                 }

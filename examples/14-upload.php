@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * Example 14: File Upload
- * 
+ *
  * Demonstrates:
  * - Handling file uploads
  * - File validation (size, type, dimensions)
@@ -14,8 +14,6 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Core\Upload\FileUploadHandler;
-use Core\Upload\UploadedFile;
 
 echo "File Upload Examples:\n";
 echo "=====================\n\n";

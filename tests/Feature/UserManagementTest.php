@@ -26,7 +26,7 @@ class UserManagementTest extends TestCase
         $this->db = new Database('sqlite::memory:');
 
         // Create users table
-        $this->db->execute("
+        $this->db->execute('
             CREATE TABLE users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -34,7 +34,7 @@ class UserManagementTest extends TestCase
                 password TEXT NOT NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
-        ");
+        ');
 
         // Setup repositories
         $this->userRepo = new UserRepository($this->db);
@@ -43,7 +43,7 @@ class UserManagementTest extends TestCase
         $container = new Container();
         $container->set(Database::class, $this->db);
         $container->set(UserRepository::class, $this->userRepo);
-        
+
         // Setup exception handling
         $exceptionHandler = new ExceptionHandler(debug: false);
         $container->set(ExceptionHandler::class, $exceptionHandler);
@@ -53,7 +53,7 @@ class UserManagementTest extends TestCase
         $this->router = new Router($container);
         $this->router->addGlobalMiddleware(ExceptionMiddleware::class);
         $this->router->registerControllers([
-            ApiController::class
+            ApiController::class,
         ]);
     }
 
@@ -71,7 +71,7 @@ class UserManagementTest extends TestCase
             body: [
                 'name' => 'Alice Johnson',
                 'email' => 'alice@example.com',
-                'password' => 'securepassword'
+                'password' => 'securepassword',
             ],
             server: []
         );
@@ -97,7 +97,7 @@ class UserManagementTest extends TestCase
             query: [],
             body: [
                 'email' => 'test@example.com',
-                'password' => 'password123'
+                'password' => 'password123',
             ],
             server: []
         );
@@ -120,7 +120,7 @@ class UserManagementTest extends TestCase
             body: [
                 'name' => 'John Doe',
                 'email' => 'invalid-email',
-                'password' => 'password123'
+                'password' => 'password123',
             ],
             server: []
         );
@@ -144,7 +144,7 @@ class UserManagementTest extends TestCase
             body: [
                 'name' => 'John Doe',
                 'email' => 'john@example.com',
-                'password' => '123' // Too short (min is 6)
+                'password' => '123', // Too short (min is 6)
             ],
             server: []
         );
@@ -189,7 +189,7 @@ class UserManagementTest extends TestCase
             body: [
                 'name' => 'Database Test',
                 'email' => 'dbtest@example.com',
-                'password' => 'password123'
+                'password' => 'password123',
             ],
             server: []
         );
@@ -203,7 +203,7 @@ class UserManagementTest extends TestCase
         $this->assertNotNull($user);
         $this->assertEquals('Database Test', $user->name);
         $this->assertEquals('dbtest@example.com', $user->email);
-        
+
         // Verify password is hashed
         $this->assertNotEquals('password123', $user->password);
         $this->assertTrue(password_verify('password123', $user->password));
@@ -230,7 +230,7 @@ class UserManagementTest extends TestCase
         $users = [
             ['name' => 'User One', 'email' => 'user1@example.com', 'password' => 'password123'],
             ['name' => 'User Two', 'email' => 'user2@example.com', 'password' => 'password456'],
-            ['name' => 'User Three', 'email' => 'user3@example.com', 'password' => 'password789']
+            ['name' => 'User Three', 'email' => 'user3@example.com', 'password' => 'password789'],
         ];
 
         foreach ($users as $userData) {
@@ -248,9 +248,9 @@ class UserManagementTest extends TestCase
 
         // Verify all users exist
         $allUsers = $this->userRepo->findAll();
-        
+
         $this->assertCount(3, $allUsers);
-        $emails = array_map(fn($u) => $u->email, $allUsers);
+        $emails = array_map(fn ($u) => $u->email, $allUsers);
         $this->assertContains('user1@example.com', $emails);
         $this->assertContains('user2@example.com', $emails);
         $this->assertContains('user3@example.com', $emails);

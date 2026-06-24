@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 /**
  * Cache Configuration
- * 
+ *
  * Configure cache behavior for the application.
- * 
+ *
  * Available Drivers:
  * - 'file': Persistent file-based cache (production)
  * - 'array': In-memory cache (testing/development)
- * 
+ *
  * Philosophy:
  * - Explicit configuration over conventions
  * - Environment variables for deployment flexibility
@@ -20,14 +20,14 @@ declare(strict_types=1);
 return [
     /**
      * Default cache driver
-     * 
+     *
      * Options: 'file', 'array'
      */
     'default' => getenv('CACHE_DRIVER') ?: 'file',
 
     /**
      * Default TTL (Time To Live) in seconds
-     * 
+     *
      * Used when no TTL is specified explicitly
      */
     'default_ttl' => (int) (getenv('CACHE_DEFAULT_TTL') ?: 3600), // 1 hour
@@ -54,7 +54,7 @@ return [
 
     /**
      * Cache key prefix
-     * 
+     *
      * Useful for namespacing caches in shared environments
      * or preventing key collisions across applications
      */
@@ -62,7 +62,7 @@ return [
 
     /**
      * Named cache stores for different use cases
-     * 
+     *
      * Example: Separate caches for HTTP responses, database queries, etc.
      */
     'stores' => [

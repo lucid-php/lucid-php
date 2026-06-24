@@ -17,7 +17,7 @@ class Config
 
     /**
      * Load a configuration file.
-     * 
+     *
      * @param string $file The config file name (without .php extension)
      * @return array The configuration array
      */
@@ -45,7 +45,7 @@ class Config
 
     /**
      * Get a configuration value using dot notation.
-     * 
+     *
      * @param string $key The config key (e.g., 'database.driver')
      * @param mixed $default Default value if key not found
      * @return mixed

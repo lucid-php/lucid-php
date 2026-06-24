@@ -6,7 +6,7 @@ namespace Core\Session;
 
 /**
  * Native PHP Session Implementation
- * 
+ *
  * Philosophy: Zero Magic, Explicit Over Convenient
  * - Wraps native PHP session functions with explicit API
  * - No auto-start (must call start() explicitly)
@@ -19,7 +19,8 @@ class Session implements SessionInterface
 
     public function __construct(
         private readonly array $options = []
-    ) {}
+    ) {
+    }
 
     public function start(): void
     {
@@ -82,13 +83,13 @@ class Session implements SessionInterface
     public function destroy(): void
     {
         $this->ensureStarted();
-        
+
         $_SESSION = [];
-        
+
         if (session_id() !== '') {
             session_destroy();
         }
-        
+
         $this->started = false;
     }
 
@@ -111,7 +112,7 @@ class Session implements SessionInterface
 
     /**
      * Ensure session is started before operations
-     * 
+     *
      * @throws \RuntimeException
      */
     private function ensureStarted(): void
